@@ -65,6 +65,20 @@ Exercises registry + lifecycle + `createArticleHelpers` (no database).
 - Stripe / Brevo / OneSignal / RAG
 - Opinionated public front-end
 
+## npm
+
+Published as [`@electronlibre/pupitre-core`](https://www.npmjs.com/package/@electronlibre/pupitre-core) (public scoped package).
+
+```bash
+npm install @electronlibre/pupitre-core busboy
+```
+
+Maintainers: create the npm org `electronlibre`, add an automation token as GitHub secret `NPM_TOKEN`, then publish via GitHub Release or:
+
+```bash
+npm publish --access public
+```
+
 ## License
 
 MIT — see [LICENSE](./LICENSE).

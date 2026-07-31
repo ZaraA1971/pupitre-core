@@ -37,5 +37,9 @@
     "desk",
     "pupitre",
     "plugins"
-  ]
+  ],
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
 }
