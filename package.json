@@ -18,7 +18,8 @@
   ],
   "scripts": {
     "test": "node --test 'src/**/*.test.mjs' 'src/*.test.mjs'",
-    "demo": "node examples/minimal/demo.mjs"
+    "demo": "node examples/minimal/demo.mjs",
+    "prepublishOnly": "npm test"
   },
   "peerDependencies": {
     "busboy": "^1.6.0"
