@@ -1,0 +1,41 @@
+{
+  "name": "@electronlibre/pupitre-core",
+  "version": "0.1.0",
+  "description": "Portable editorial CMS core for Pupitre — plugin registry, lifecycle hooks, injectable CRUD (articles, categories, media, authors, users).",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "files": [
+    "src",
+    "LICENSE",
+    "README.md",
+    "examples"
+  ],
+  "scripts": {
+    "test": "node --test 'src/**/*.test.mjs' 'src/*.test.mjs'",
+    "demo": "node examples/minimal/demo.mjs"
+  },
+  "peerDependencies": {
+    "busboy": "^1.6.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ZaraA1971/pupitre-core.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ZaraA1971/pupitre-core/issues"
+  },
+  "homepage": "https://github.com/ZaraA1971/pupitre-core#readme",
+  "keywords": [
+    "cms",
+    "editorial",
+    "desk",
+    "pupitre",
+    "plugins"
+  ]
+}
