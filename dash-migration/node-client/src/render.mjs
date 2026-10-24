@@ -110,6 +110,7 @@ export function renderIndexHtml({ login, feed, flash = null }) {
     <span>Connecté·e <strong>${esc(login)}</strong></span>
     <a href="/">Flux Live</a>
     <a href="/timeline">Chronologie</a>
+    <a href="/messages">Messages</a>
     <a href="/api/feed">API feed JSON</a>
     <a href="/disconnect">Déconnexion</a>
   </div>
@@ -142,6 +143,7 @@ export function renderTimelineHtml({ login }) {
   <div class="nav">
     <span>${esc(login)}</span>
     <a href="/">Flux Live</a>
+    <a href="/messages">Messages</a>
     <a href="/disconnect">Déconnexion</a>
   </div>
   <div id="my-timeline"><p class="muted">Événements via <a href="/results.json">results.json</a>.</p></div>
@@ -152,6 +154,110 @@ export function renderTimelineHtml({ login }) {
         || '<p>Aucun événement.</p>';
     });
   </script>
+</body>
+</html>`;
+}
+
+export function renderMessagesHtml({
+  login,
+  conversations = [],
+  thread = null,
+  peer = null,
+  users = [],
+  alert = null,
+  idPost = 0,
+  postBrief = null,
+}) {
+  let body;
+  if (peer) {
+    const msgs = (thread || [])
+      .map(
+        (m) => `<div class="bubble ${m.from_self ? 'mine' : 'theirs'}">
+      <p><strong>${esc(m.login_user)}</strong> <span class="muted">[${esc(m.converted_date)}]</span>
+      ${m.id_post ? ' <small>(à propos de l\'article)</small>' : ''}</p>
+      <p>${m.text}</p>
+    </div>`
+      )
+      .join('\n');
+    body = `
+    <p><a href="/messages">← Retour</a></p>
+    <h2>Conversation avec ${esc(peer.login_user || peer.id)}</h2>
+    ${alert ? `<p class="flash">${esc(alert)}</p>` : ''}
+    <div class="thread">${msgs || '<p class="muted">Aucun message.</p>'}</div>
+    <form method="post" action="/messages?user=${esc(peer.id)}" class="sendbox">
+      <input type="hidden" name="to_user" value="${esc(peer.id)}" />
+      ${idPost ? `<input type="hidden" name="sent_id_post" value="${esc(idPost)}" />` : ''}
+      <textarea name="message" required placeholder="Tapez ici votre message"></textarea>
+      <button type="submit" name="send_message" value="1">Envoyer</button>
+    </form>`;
+  } else if (idPost) {
+    body = `
+    <p><a href="/messages">← Retour</a></p>
+    <h2>Nouveau message${postBrief ? ` — ${esc(postBrief.title)}` : ''}</h2>
+    ${alert ? `<p class="flash">${esc(alert)}</p>` : ''}
+    <form method="post" action="/messages_post?id_post=${esc(idPost)}" class="sendbox">
+      <input type="hidden" name="sent_id_post" value="${esc(idPost)}" />
+      <label>Pour
+        <select name="to_user" required>
+          <option value="empty">Sélectionnez un destinataire</option>
+          ${users.map((u) => `<option value="${esc(u.id_user)}">${esc(u.login_user)}</option>`).join('')}
+        </select>
+      </label>
+      <textarea name="message" required placeholder="Tapez ici votre message"></textarea>
+      <button type="submit" name="send_message" value="1">Envoyer</button>
+    </form>`;
+  } else {
+    const list = conversations
+      .map(
+        (c) => `<li>
+      <a href="/messages?user=${esc(c.peer_id)}"><strong>${esc(c.login_user)}</strong></a>
+      <span class="muted">${esc(c.date)}</span>
+      <p>${c.text}</p>
+    </li>`
+      )
+      .join('\n');
+    body = `
+    <h2>Messages privés</h2>
+    ${alert ? `<p class="flash">${esc(alert)}</p>` : ''}
+    <ul class="inbox">${list || '<li class="muted">Aucune conversation.</li>'}</ul>
+    <p><a href="/messages_post?id_post=1">Écrire à propos de l’article #1</a></p>`;
+  }
+
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Le Dash · Messages (Node local)</title>
+  <style>
+    :root { --bg:#eef2ef; --ink:#1a1f1c; --accent:#0b5f4b; --line:#c5d0c8; --card:#fff; --muted:#5c675f; }
+    body { margin:0; font-family:"Iowan Old Style",Palatino,Georgia,serif; color:var(--ink);
+      background:radial-gradient(ellipse 80% 50% at 10% -10%,#d5e6dc,transparent 55%),linear-gradient(180deg,#e8efe9,var(--bg)); }
+    header { padding:1.2rem 1.5rem .8rem; border-bottom:1px solid var(--line); background:rgba(255,255,255,.7); }
+    header h1 { margin:0; }
+    .banner { padding:.65rem 1.5rem; background:#1a1f1c; color:#eef2ef; font-size:.9rem; }
+    .nav { display:flex; flex-wrap:wrap; gap:.75rem 1.25rem; padding:.85rem 1.5rem; border-bottom:1px solid var(--line); }
+    #container { padding:1rem 1.5rem 3rem; max-width:720px; }
+    .inbox { list-style:none; padding:0; }
+    .inbox li { background:var(--card); border:1px solid var(--line); margin:.6rem 0; padding:.75rem 1rem; }
+    .bubble { background:var(--card); border:1px solid var(--line); margin:.5rem 0; padding:.65rem .8rem; max-width:85%; }
+    .bubble.mine { margin-left:auto; border-color:var(--accent); }
+    .muted { color:var(--muted); font-size:.9rem; }
+    .flash { padding:.6rem .8rem; border:1px solid var(--accent); background:#e7f3ee; }
+    .sendbox textarea { width:100%; min-height:5rem; font:inherit; }
+    .sendbox button { margin-top:.5rem; font:inherit; background:var(--accent); color:#fff; border:0; padding:.4rem .8rem; }
+  </style>
+</head>
+<body>
+  <header><h1><a href="/">Le Dash</a></h1></header>
+  <aside class="banner">Messages locaux — sendPush enregistré, APNS/mail coupés (DASH_DISABLE_EXTERNAL=1). Pas de route HTTP /webservice.</aside>
+  <div class="nav">
+    <span>${esc(login)}</span>
+    <a href="/">Flux Live</a>
+    <a href="/messages">Messages</a>
+    <a href="/disconnect">Déconnexion</a>
+  </div>
+  <div id="container">${body}</div>
 </body>
 </html>`;
 }

@@ -2,16 +2,31 @@ import { URL } from 'node:url';
 import { attemptLogin, sessionStillValid } from './auth.mjs';
 import { loadLiveFeed, renderGetArticlesHtml, timelineJson } from './feed.mjs';
 import {
+  handleSendMessage,
+  listConversations,
+  listThread,
+  markRead,
+} from './messages.mjs';
+import {
   renderIndexHtml,
   renderLoginHtml,
+  renderMessagesHtml,
   renderTimelineHtml,
 } from './render.mjs';
 import { parseCookies, sessionCookieHeader } from './session.mjs';
 
 /**
- * Local HTTP app — client read lot only.
+ * Local HTTP app — client read + messages (internal sendPush).
  */
-export function createApp({ db, sessions, config }) {
+export function createApp({ db, sessions, config, push, mailLog } = {}) {
+  if (!push || typeof push.sendPush !== 'function') {
+    throw new Error('createApp requires push={ sendPush, calls } (internal sendPush module)');
+  }
+  const mailSend = async (payload) => {
+    mailLog?.push?.({ kind: 'mail', ...payload, at: Date.now() });
+    return { ok: true, skipped: true, reason: 'DASH_DISABLE_EXTERNAL', to: payload.to };
+  };
+
   return async function app(req, res) {
     const host = req.headers.host || `${config.listenHost}:${config.listenPort}`;
     const url = new URL(req.url || '/', `http://${host}`);
@@ -31,6 +46,7 @@ export function createApp({ db, sessions, config }) {
           mode: config.mode,
           disableExternal: config.disableExternal,
           authenticated: Boolean(session),
+          sendPushInternal: true,
         });
       }
 
@@ -53,7 +69,6 @@ export function createApp({ db, sessions, config }) {
             return html(res, 200, renderLoginHtml({ message: result.message }));
           }
           const newSid = sessions.create(result.user.id_user, result.user.login_user);
-          // stash last_connexion on session via store mutation
           const s = sessions.get(newSid);
           if (s) s.last_connexion = result.user.last_connexion;
           res.writeHead(303, {
@@ -79,9 +94,13 @@ export function createApp({ db, sessions, config }) {
         return;
       }
 
-      // Auth gate for the rest
       if (!session && path !== '/login') {
-        if (path.startsWith('/api/') || path === '/get_articles' || path === '/results.json') {
+        if (
+          path.startsWith('/api/') ||
+          path === '/get_articles' ||
+          path === '/results.json' ||
+          path === '/messages_loader'
+        ) {
           return json(res, 401, { ok: false, error: 'auth_required' });
         }
         res.writeHead(303, { Location: '/login' });
@@ -158,6 +177,134 @@ export function createApp({ db, sessions, config }) {
         return json(res, 200, timelineJson(events));
       }
 
+      // —— Messages (internal sendPush) ——
+      if (path === '/messages' || path === '/messages_post') {
+        if (req.method === 'POST') {
+          const body = await readBody(req);
+          const wantsJson =
+            (req.headers.accept || '').includes('application/json') ||
+            body.format === 'json';
+          const result = await handleSendMessage(body, user, {
+            db,
+            sendPush: push.sendPush,
+            mailSend,
+            config,
+          });
+          if (wantsJson) {
+            return json(res, result.ok ? 200 : 400, {
+              ...result,
+              pushCalls: push.calls.length,
+            });
+          }
+          if (result.ok) {
+            const to = Number(body.to_user);
+            const loc =
+              path === '/messages_post'
+                ? `/messages?user=${to}&flash=${encodeURIComponent(result.alert)}`
+                : `/messages?user=${to}&flash=${encodeURIComponent(result.alert)}`;
+            res.writeHead(303, { Location: loc });
+            res.end();
+            return;
+          }
+        }
+
+        const peerId = Number(url.searchParams.get('user') || 0);
+        const idPost = Number(url.searchParams.get('id_post') || 0);
+        const flash = url.searchParams.get('flash');
+        const msgId = Number(url.searchParams.get('id_message') || 0);
+        if (msgId > 0) await markRead(db, user.id_user, msgId);
+
+        if (peerId > 0) {
+          const thread = await listThread(db, user.id_user, peerId, {
+            offset: 0,
+            limit: 50,
+          });
+          const peerUser = await db.findUserById(peerId);
+          return html(
+            res,
+            200,
+            renderMessagesHtml({
+              login: user.login_user,
+              peer: { id: peerId, login_user: peerUser?.login_user },
+              thread,
+              alert: flash,
+              idPost,
+            })
+          );
+        }
+
+        if (path === '/messages_post' || idPost > 0) {
+          const users = await db.listUsersExcept(user.id_user);
+          const postBrief = idPost ? await db.getPostBrief(idPost) : null;
+          return html(
+            res,
+            200,
+            renderMessagesHtml({
+              login: user.login_user,
+              users,
+              idPost: idPost || 1,
+              postBrief,
+              alert: flash,
+            })
+          );
+        }
+
+        const conversations = await listConversations(db, user.id_user);
+        return html(
+          res,
+          200,
+          renderMessagesHtml({
+            login: user.login_user,
+            conversations,
+            alert: flash,
+          })
+        );
+      }
+
+      if (req.method === 'POST' && path === '/messages_loader') {
+        const body = await readBody(req);
+        const peerId = Number(body.user || 0);
+        const start = Math.max(0, Number(body.start || 0));
+        if (!peerId) {
+          res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('0');
+          return;
+        }
+        const thread = await listThread(db, user.id_user, peerId, {
+          offset: start,
+          limit: 5,
+        });
+        if (!thread.length) {
+          res.writeHead(200, { 'Content-Type': 'text/plain; charset=utf-8' });
+          res.end('0');
+          return;
+        }
+        const htmlBits = thread
+          .map(
+            (m) =>
+              `<div class="show_message ${m.from_self ? 'right from_me' : 'left not_from_me'}">` +
+              `<p><strong>${esc(m.login_user)}</strong><br/><span class="grey2 small">[${esc(m.converted_date)}]</span></p>` +
+              `<p>${m.text}</p></div>`
+          )
+          .join('\n');
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(htmlBits);
+        return;
+      }
+
+      if (req.method === 'GET' && path === '/api/messages') {
+        const peerId = Number(url.searchParams.get('user') || 0);
+        if (peerId > 0) {
+          const thread = await listThread(db, user.id_user, peerId, {
+            offset: 0,
+            limit: 50,
+          });
+          return json(res, 200, { ok: true, peerId, thread });
+        }
+        const conversations = await listConversations(db, user.id_user);
+        return json(res, 200, { ok: true, conversations });
+      }
+
       res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
       res.end('Not found');
     } catch (err) {
@@ -166,6 +313,15 @@ export function createApp({ db, sessions, config }) {
       res.end(JSON.stringify({ ok: false, error: String(err?.message || err) }));
     }
   };
+}
+
+function esc(value) {
+  return String(value ?? '')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
 }
 
 function json(res, status, payload) {

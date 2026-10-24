@@ -15,6 +15,7 @@ import {
 import { createClientDb } from '../src/db.mjs';
 import { createSessionStore } from '../src/session.mjs';
 import { createApp } from '../src/app.mjs';
+import { createSendPush } from '../src/send-push.mjs';
 import { seedClientDisposableMysql } from '../src/seed-disposable-mysql.mjs';
 
 const wantMysql = String(process.env.DASH_DB_MODE || '').toLowerCase() === 'mysql';
@@ -138,7 +139,11 @@ describe('MySQL disposable client journey', { skip: !wantMysql }, () => {
       return;
     }
     const sessions = createSessionStore({ ttlSeconds: config.sessionTtlSeconds });
-    const app = createApp({ db, sessions, config });
+    const push = createSendPush({
+      config,
+      listDevices: (id) => db.listDevices(id),
+    });
+    const app = createApp({ db, sessions, config, push, mailLog: [] });
     svc = await listen(app);
   });
 
@@ -199,5 +204,26 @@ describe('MySQL disposable client journey', { skip: !wantMysql }, () => {
     });
     assert.equal(results.status, 200);
     assert.ok(results.json.events.length >= 2);
+  });
+
+  it('send message records internal sendPush on disposable MySQL', async () => {
+    requireDb();
+    const r = await req(svc.base, '/messages', {
+      method: 'POST',
+      headers: {
+        Cookie: cookie,
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        send_message: '1',
+        to_user: 3,
+        message: 'Message MySQL jetable',
+      }),
+    });
+    assert.equal(r.status, 200);
+    assert.equal(r.json.ok, true);
+    assert.equal(r.json.push.skipped, true);
+    assert.ok(r.json.pushCalls >= 1);
   });
 });

@@ -2,6 +2,7 @@ import http from 'node:http';
 import { ConfigError, loadConfig } from './config.mjs';
 import { createClientDb } from './db.mjs';
 import { createSessionStore } from './session.mjs';
+import { createSendPush } from './send-push.mjs';
 import { createApp } from './app.mjs';
 
 let config;
@@ -17,7 +18,12 @@ try {
 
 const db = await createClientDb(config);
 const sessions = createSessionStore({ ttlSeconds: config.sessionTtlSeconds });
-const app = createApp({ db, sessions, config });
+const push = createSendPush({
+  config,
+  listDevices: (id) => db.listDevices(id),
+});
+const mailLog = [];
+const app = createApp({ db, sessions, config, push, mailLog });
 
 const server = http.createServer((req, res) => {
   app(req, res).catch((err) => {
@@ -31,7 +37,7 @@ const server = http.createServer((req, res) => {
 
 server.listen(config.listenPort, config.listenHost, () => {
   console.log(
-    `dash-client listening on http://${config.listenHost}:${config.listenPort} (mode=${config.mode}, external=off)`
+    `dash-client listening on http://${config.listenHost}:${config.listenPort} (mode=${config.mode}, external=off, sendPush=internal-stub)`
   );
 });
 

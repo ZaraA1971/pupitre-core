@@ -8,7 +8,9 @@
       "active_user": 1,
       "admin_user": "0",
       "help": "1",
-      "last_connexion": "2026-10-19 08:00:00"
+      "last_connexion": "2026-10-19 08:00:00",
+      "mail_user": "alice@example.test",
+      "message_notification": "0"
     },
     {
       "id_user": 2,
@@ -17,7 +19,48 @@
       "active_user": 0,
       "admin_user": "0",
       "help": "1",
-      "last_connexion": "2026-10-01 00:00:00"
+      "last_connexion": "2026-10-01 00:00:00",
+      "mail_user": "bobby@example.test",
+      "message_notification": "0"
+    },
+    {
+      "id_user": 3,
+      "login_user": "carol",
+      "pass_user": "placeholder",
+      "active_user": 1,
+      "admin_user": "0",
+      "help": "1",
+      "last_connexion": "2026-10-18 12:00:00",
+      "mail_user": "carol@example.test",
+      "message_notification": "1"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "from_user": 3,
+      "to_user": 1,
+      "id_post": 0,
+      "text": "Salut Alice, as-tu vu l article IA ?",
+      "date": "2026-10-20 09:00:00",
+      "has_been_read": 0
+    },
+    {
+      "id": 2,
+      "from_user": 1,
+      "to_user": 3,
+      "id_post": 1,
+      "text": "Oui, je regarde ça.",
+      "date": "2026-10-20 09:15:00",
+      "has_been_read": 1
+    }
+  ],
+  "ios_devices": [
+    {
+      "id_user": 3,
+      "token": "aabbccddeeff00112233445566778899aabbccdd",
+      "push_message": 1,
+      "push_alert": 0
     }
   ],
   "config_themes": [5, 7],

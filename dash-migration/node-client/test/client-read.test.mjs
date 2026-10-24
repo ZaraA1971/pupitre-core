@@ -8,6 +8,7 @@ import { createSessionStore } from '../src/session.mjs';
 import { createApp } from '../src/app.mjs';
 import { attemptLogin } from '../src/auth.mjs';
 import { renderGetArticlesHtml, timelineJson } from '../src/feed.mjs';
+import { createSendPush } from '../src/send-push.mjs';
 
 function listen(app) {
   const server = http.createServer((req, res) => {
@@ -140,7 +141,11 @@ describe('HTTP client read journey (fixtures)', () => {
     });
     db = createFakeClientDb(loadFixtureSeed());
     const sessions = createSessionStore({ ttlSeconds: config.sessionTtlSeconds });
-    const app = createApp({ db, sessions, config });
+    const push = createSendPush({
+      config,
+      listDevices: (id) => db.listDevices(id),
+    });
+    const app = createApp({ db, sessions, config, push, mailLog: [] });
     svc = await listen(app);
   });
 

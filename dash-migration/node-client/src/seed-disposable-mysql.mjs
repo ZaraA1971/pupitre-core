@@ -14,6 +14,8 @@ export async function seedClientDisposableMysql(pool, seed = loadFixtureSeed()) 
 
   await pool.query('SET FOREIGN_KEY_CHECKS=0');
   for (const t of [
+    'client_ios_devices',
+    'client_messages',
     'client_users',
     'client_config',
     'post_keyword',
@@ -76,8 +78,9 @@ export async function seedClientDisposableMysql(pool, seed = loadFixtureSeed()) 
   for (const row of seed.users || []) {
     await pool.query(
       `INSERT INTO client_users(
-        id_user, login_user, pass_user, active_user, admin_user, help, last_connexion
-      ) VALUES (?,?,?,?,?,?,?)`,
+        id_user, login_user, pass_user, active_user, admin_user, help, last_connexion,
+        mail_user, message_notification
+      ) VALUES (?,?,?,?,?,?,?,?,?)`,
       [
         row.id_user,
         row.login_user,
@@ -86,6 +89,35 @@ export async function seedClientDisposableMysql(pool, seed = loadFixtureSeed()) 
         row.admin_user ?? '0',
         row.help ?? '1',
         row.last_connexion || null,
+        row.mail_user || null,
+        row.message_notification ?? '0',
+      ]
+    );
+  }
+  for (const row of seed.messages || []) {
+    await pool.query(
+      `INSERT INTO client_messages(id, from_user, to_user, id_post, text, date, has_been_read)
+       VALUES (?,?,?,?,?,?,?)`,
+      [
+        row.id,
+        row.from_user,
+        row.to_user,
+        row.id_post ?? 0,
+        row.text,
+        row.date,
+        row.has_been_read ?? 0,
+      ]
+    );
+  }
+  for (const row of seed.ios_devices || []) {
+    await pool.query(
+      `INSERT INTO client_ios_devices(id_user, token, push_message, push_alert)
+       VALUES (?,?,?,?)`,
+      [
+        row.id_user,
+        row.token,
+        row.push_message ?? 1,
+        row.push_alert ?? 0,
       ]
     );
   }

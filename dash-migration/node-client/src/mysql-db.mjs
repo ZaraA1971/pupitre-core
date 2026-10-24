@@ -39,6 +39,14 @@ export async function createMysqlClientDb(config) {
   }
 
   function requireWrites() {
+    // Destructive seed needs SCHEMA_INIT; runtime message writes only need disposable loopback.
+    assertLoopbackDisposableMysql(config);
+    if (!config.disableExternal) {
+      throw new Error('DASH_DISABLE_EXTERNAL=1 requis pour écritures client MySQL jetable.');
+    }
+  }
+
+  function requireSeedWrites() {
     assertClientMysqlWritesAllowed(config);
   }
 
@@ -51,7 +59,8 @@ export async function createMysqlClientDb(config) {
 
     async findUserByLogin(login) {
       const [rows] = await pool.query(
-        `SELECT id_user, login_user, pass_user, active_user, admin_user, help, last_connexion
+        `SELECT id_user, login_user, pass_user, active_user, admin_user, help, last_connexion,
+                mail_user, message_notification
          FROM client_users WHERE login_user = ? LIMIT 1`,
         [login]
       );
@@ -60,16 +69,130 @@ export async function createMysqlClientDb(config) {
 
     async findUserById(id) {
       const [rows] = await pool.query(
-        `SELECT id_user, login_user, pass_user, active_user, admin_user, help, last_connexion
+        `SELECT id_user, login_user, pass_user, active_user, admin_user, help, last_connexion,
+                mail_user, message_notification
          FROM client_users WHERE id_user = ? LIMIT 1`,
         [id]
       );
       return rows[0] || null;
     },
 
+    async listUsersExcept(userId) {
+      const [rows] = await pool.query(
+        `SELECT id_user, login_user FROM client_users
+         WHERE id_user != ? AND active_user = 1 ORDER BY login_user`,
+        [userId]
+      );
+      return rows;
+    },
+
     async userThemeIds(_userId) {
       const [rows] = await pool.query('SELECT id_theme FROM client_config ORDER BY id_theme');
       return rows.map((r) => Number(r.id_theme));
+    },
+
+    async listDevices(idUser) {
+      const [rows] = await pool.query(
+        `SELECT token, push_message, push_alert FROM client_ios_devices WHERE id_user = ?`,
+        [idUser]
+      );
+      return rows;
+    },
+
+    async insertMessage({ fromUser, toUser, idPost, text, date }) {
+      requireWrites();
+      const [res] = await pool.query(
+        `INSERT INTO client_messages(from_user, to_user, id_post, text, date, has_been_read)
+         VALUES (?, ?, ?, ?, ?, 0)`,
+        [fromUser, toUser, idPost || 0, text, date]
+      );
+      return {
+        id: res.insertId,
+        from_user: fromUser,
+        to_user: toUser,
+        id_post: idPost || 0,
+        text,
+        date,
+        has_been_read: 0,
+      };
+    },
+
+    async listConversations(userId) {
+      const [rows] = await pool.query(
+        `SELECT m.*,
+           CASE WHEN m.from_user = ? THEN m.to_user ELSE m.from_user END AS peer_id
+         FROM client_messages m
+         WHERE m.from_user = ? OR m.to_user = ?
+         ORDER BY m.date DESC`,
+        [userId, userId, userId]
+      );
+      const seen = new Set();
+      const out = [];
+      for (const m of rows) {
+        const peer = Number(m.peer_id);
+        if (seen.has(peer)) continue;
+        seen.add(peer);
+        const [users] = await pool.query(
+          'SELECT login_user FROM client_users WHERE id_user = ? LIMIT 1',
+          [peer]
+        );
+        out.push({
+          peer_id: peer,
+          login_user: users[0]?.login_user || String(peer),
+          text: m.text,
+          date: m.date,
+          has_been_read: Number(m.has_been_read),
+          from_self: Number(m.from_user) === Number(userId),
+        });
+      }
+      return out;
+    },
+
+    async listThread(userId, peerId, { offset = 0, limit = 5 } = {}) {
+      const [rows] = await pool.query(
+        `SELECT * FROM (
+           SELECT m.id, m.id_post, m.from_user, m.to_user, m.text, m.date,
+                  DATE_FORMAT(m.date, '%d/%m/%Y %H:%i') AS converted_date,
+                  u.login_user
+           FROM client_messages m
+           JOIN client_users u ON u.id_user = m.from_user
+           WHERE (m.from_user = ? OR m.to_user = ?)
+             AND (m.to_user = ? OR m.from_user = ?)
+           ORDER BY m.date DESC
+           LIMIT ? OFFSET ?
+         ) AS bg
+         ORDER BY date ASC`,
+        [peerId, peerId, userId, userId, limit, offset]
+      );
+      return rows.map((m) => ({
+        ...m,
+        id: Number(m.id),
+        id_post: Number(m.id_post) || 0,
+        from_user: Number(m.from_user),
+        to_user: Number(m.to_user),
+        from_self: Number(m.from_user) === Number(userId),
+      }));
+    },
+
+    async markMessageRead(userId, messageId) {
+      requireWrites();
+      const [res] = await pool.query(
+        `UPDATE client_messages SET has_been_read = 1
+         WHERE id = ? AND from_user != ?`,
+        [messageId, userId]
+      );
+      return res.affectedRows > 0;
+    },
+
+    async getPostBrief(idPost) {
+      const [rows] = await pool.query(
+        `SELECT r.id AS id_post, r.title, r.source, r.link, t.name AS theme
+         FROM rss_post r
+         LEFT JOIN theme t ON t.id = r.id_theme
+         WHERE r.id = ? LIMIT 1`,
+        [idPost]
+      );
+      return rows[0] || null;
     },
 
     async listChrono({ themeIds, lastConnexion, offset = 0, limit = 25, textMax = 1200 }) {
@@ -160,7 +283,7 @@ export async function createMysqlClientDb(config) {
 
     /** Exposed for seed script / tests. */
     async _requireWrites() {
-      requireWrites();
+      requireSeedWrites();
     },
   };
 }
@@ -240,12 +363,47 @@ export async function initClientDisposableSchema(pool) {
       admin_user VARCHAR(8) NOT NULL DEFAULT '0',
       help VARCHAR(8) NOT NULL DEFAULT '1',
       last_connexion DATETIME NULL,
+      mail_user VARCHAR(255) NULL,
+      message_notification VARCHAR(8) NOT NULL DEFAULT '0',
       UNIQUE KEY uq_login (login_user)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
+  // Older benches may lack mail columns
+  try {
+    await pool.query(
+      `ALTER TABLE client_users
+       ADD COLUMN mail_user VARCHAR(255) NULL,
+       ADD COLUMN message_notification VARCHAR(8) NOT NULL DEFAULT '0'`
+    );
+  } catch {
+    /* already present */
+  }
   await pool.query(`
     CREATE TABLE IF NOT EXISTS client_config (
       id_theme INT PRIMARY KEY
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS client_messages (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      from_user INT NOT NULL,
+      to_user INT NOT NULL,
+      id_post INT NOT NULL DEFAULT 0,
+      text TEXT NOT NULL,
+      date DATETIME NOT NULL,
+      has_been_read TINYINT NOT NULL DEFAULT 0,
+      KEY idx_users (from_user, to_user),
+      KEY idx_date (date)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
+  `);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS client_ios_devices (
+      id INT PRIMARY KEY AUTO_INCREMENT,
+      id_user INT NOT NULL,
+      token VARCHAR(128) NOT NULL,
+      push_message TINYINT NOT NULL DEFAULT 1,
+      push_alert TINYINT NOT NULL DEFAULT 0,
+      KEY idx_user (id_user)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4
   `);
 }
