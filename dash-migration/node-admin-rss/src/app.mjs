@@ -1,7 +1,12 @@
 import { URL } from 'node:url';
 import { handleIndexActions } from './actions.mjs';
 import { loadInboxPage, parseInboxQuery } from './inbox.mjs';
-import { renderInboxHtml } from './render.mjs';
+import { loadConfigCatalog, loadDeletedPage, loadSentPage } from './lists.mjs';
+import {
+  renderConfigHtml,
+  renderInboxHtml,
+  renderStatusListHtml,
+} from './render.mjs';
 import { handleSendToDesk } from './send-to-desk.mjs';
 import { createLocalDeskInjectables } from './local-desk.mjs';
 
@@ -56,6 +61,34 @@ export function createApp({
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(html);
         return;
+      }
+
+      if (req.method === 'GET' && path === '/sent') {
+        const model = await loadSentPage(db, Object.fromEntries(url.searchParams));
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(renderStatusListHtml(model));
+        return;
+      }
+      if (req.method === 'GET' && path === '/api/sent') {
+        return json(res, 200, await loadSentPage(db, Object.fromEntries(url.searchParams)));
+      }
+      if (req.method === 'GET' && path === '/deleted') {
+        const model = await loadDeletedPage(db, Object.fromEntries(url.searchParams));
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(renderStatusListHtml(model));
+        return;
+      }
+      if (req.method === 'GET' && path === '/api/deleted') {
+        return json(res, 200, await loadDeletedPage(db, Object.fromEntries(url.searchParams)));
+      }
+      if (req.method === 'GET' && (path === '/config' || path === '/config/')) {
+        const catalog = await loadConfigCatalog(db);
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.end(renderConfigHtml(catalog));
+        return;
+      }
+      if (req.method === 'GET' && path === '/api/config') {
+        return json(res, 200, await loadConfigCatalog(db));
       }
 
       if (req.method === 'POST' && (path === '/actions' || path === '/index')) {

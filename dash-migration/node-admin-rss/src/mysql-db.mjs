@@ -129,6 +129,49 @@ export async function createMysqlAdminDb(config) {
       return rows;
     },
 
+    async listAuthors() {
+      const [rows] = await pool.query('SELECT id, name FROM authors ORDER BY name');
+      return rows;
+    },
+
+    async listSent({ page = 1, perPage = listPerPage('sent') } = {}) {
+      const [[c]] = await pool.query(
+        `SELECT COUNT(*) AS c FROM rss_post WHERE ${rssSentSql()}`
+      );
+      const totalRows = Number(c.c || 0);
+      const pagination = paginationState(page, totalRows, perPage);
+      const [rows] = await pool.query(
+        `SELECT id, id_theme, source, author, title, LEFT(text, 1200) AS text, link, hash,
+                DATE_FORMAT(date, "%d") AS jour,
+                DATE_FORMAT(date, "%c") AS numero_mois,
+                DATE_FORMAT(date, "%Y %T") AS annee_heure
+         FROM rss_post WHERE ${rssSentSql()}
+         ORDER BY date DESC, id DESC
+         LIMIT ?, ?`,
+        [pagination.offset, perPage]
+      );
+      return { rows: await attachKeywords(rows), ...pagination };
+    },
+
+    async listDeleted({ page = 1, perPage = listPerPage('deleted') } = {}) {
+      const [[c]] = await pool.query(
+        `SELECT COUNT(*) AS c FROM rss_post WHERE ${rssDeletedSql()}`
+      );
+      const totalRows = Number(c.c || 0);
+      const pagination = paginationState(page, totalRows, perPage);
+      const [rows] = await pool.query(
+        `SELECT id, id_theme, source, author, title, LEFT(text, 1200) AS text, link, hash,
+                DATE_FORMAT(date, "%d") AS jour,
+                DATE_FORMAT(date, "%c") AS numero_mois,
+                DATE_FORMAT(date, "%Y %T") AS annee_heure
+         FROM rss_post WHERE ${rssDeletedSql()}
+         ORDER BY date DESC, id DESC
+         LIMIT ?, ?`,
+        [pagination.offset, perPage]
+      );
+      return { rows: await attachKeywords(rows), ...pagination };
+    },
+
     async listInbox({
       page = 1,
       perPage = listPerPage('index'),

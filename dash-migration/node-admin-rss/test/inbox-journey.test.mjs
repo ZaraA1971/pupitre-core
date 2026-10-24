@@ -99,7 +99,7 @@ describe('fixtures inbox filters & counts', () => {
     );
     assert.equal(page.counts.new, 3);
     assert.equal(page.counts.sent, 1);
-    assert.equal(page.counts.deleted, 0);
+    assert.equal(page.counts.deleted, 1);
   });
 
   it('filters by source and keyword', async () => {

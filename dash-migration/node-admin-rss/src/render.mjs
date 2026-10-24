@@ -233,9 +233,10 @@ export function renderInboxHtml(
   ${flashHtml}
   <div class="nav">
     <div class="counts" aria-label="Compteurs">
-      <span>Nouveaux <strong data-count="new">${esc(counts.new)}</strong></span>
-      <span>Envoyés <strong data-count="sent">${esc(counts.sent)}</strong></span>
-      <span>Supprimés <strong data-count="deleted">${esc(counts.deleted)}</strong></span>
+      <span><a href="/">Nouveaux</a> <strong data-count="new">${esc(counts.new)}</strong></span>
+      <span><a href="/sent">Envoyés</a> <strong data-count="sent">${esc(counts.sent)}</strong></span>
+      <span><a href="/deleted">Supprimés</a> <strong data-count="deleted">${esc(counts.deleted)}</strong></span>
+      <span><a href="/config">Config</a></span>
     </div>
     <form class="filters" method="get" action="/">
       ${filters.tri !== 'date' ? `<input type="hidden" name="tri" value="${esc(filters.tri)}" />` : ''}
@@ -282,4 +283,93 @@ export function renderInboxHtml(
   <!-- themeOptions reserved for future bulk UI: ${themeOptions.length} -->
 </body>
 </html>`;
+}
+
+function shellHtml({ title, banner, counts, body }) {
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>${esc(title)}</title>
+  <style>
+    :root { --bg:#f3efe6; --ink:#1c1a16; --line:#c9c0b0; --accent:#0b5f4b; --card:#fffdf8; --muted:#6b6458; }
+    body { margin:0; font-family:"Iowan Old Style",Palatino,Georgia,serif; color:var(--ink);
+      background:radial-gradient(ellipse 80% 50% at 10% -10%,#d9e8df,transparent 55%),linear-gradient(180deg,#efe8d8,var(--bg)); }
+    header.top { padding:1.25rem 1.5rem .75rem; border-bottom:1px solid var(--line); background:rgba(255,253,248,.72); }
+    header.top h1 { margin:0; font-size:clamp(1.6rem,3vw,2.2rem); }
+    .banner { padding:.65rem 1.5rem; background:#1c1a16; color:#f3efe6; font-size:.9rem; }
+    .nav { display:flex; flex-wrap:wrap; gap:.75rem 1.25rem; padding:.85rem 1.5rem; border-bottom:1px solid var(--line); }
+    .nav a { color:var(--ink); }
+    #container { padding:1rem 1.5rem 3rem; max-width:920px; }
+    .post { background:var(--card); border:1px solid var(--line); margin:.75rem 0; padding:.85rem 1rem; }
+    .meta { color:var(--muted); font-size:.9rem; }
+    table { width:100%; border-collapse:collapse; background:var(--card); }
+    th, td { border:1px solid var(--line); padding:.45rem .6rem; text-align:left; }
+  </style>
+</head>
+<body>
+  <header class="top"><h1>Le Dash</h1><p>${esc(title)} — banc local Node.</p></header>
+  <aside class="banner">${banner}</aside>
+  <div class="nav">
+    <a href="/">Nouveaux (${esc(counts.new)})</a>
+    <a href="/sent">Envoyés (${esc(counts.sent)})</a>
+    <a href="/deleted">Supprimés (${esc(counts.deleted)})</a>
+    <a href="/config">Config</a>
+  </div>
+  <div id="container">${body}</div>
+</body>
+</html>`;
+}
+
+export function renderStatusListHtml(model) {
+  const { kind, counts, rows, page, totalPages, totalRows } = model;
+  const label = kind === 'sent' ? 'Envoyés' : 'Supprimés';
+  const articles = (rows || [])
+    .map(
+      (r) => `<article class="post" data-id="${esc(r.id)}">
+  <p class="title"><a href="${esc(r.link)}" target="_blank" rel="noopener noreferrer">${esc(r.title)}</a></p>
+  <p class="meta">${esc(r.source)} · ${esc(r.author || '—')}</p>
+  <p class="excerpt">${esc(r.text)}</p>
+</article>`
+    )
+    .join('\n');
+  const body = `<h2>${esc(label)}</h2>
+<p class="meta">${esc(totalRows)} article(s) — page ${esc(page)} / ${esc(totalPages)}</p>
+${articles || '<p class="meta">Aucun article.</p>'}`;
+  return shellHtml({
+    title: `Le Dash — ${label}`,
+    banner: 'Listes sent/deleted locales — lecture seule, fixtures / MySQL jetable.',
+    counts,
+    body,
+  });
+}
+
+export function renderConfigHtml(catalog) {
+  const { themes, keywords, authors, counts } = catalog;
+  const table = (headers, rowsHtml) =>
+    `<table><thead><tr>${headers.map((h) => `<th>${esc(h)}</th>`).join('')}</tr></thead><tbody>${rowsHtml}</tbody></table>`;
+  const themeRows = themes
+    .map((t) => `<tr><td>${esc(t.id)}</td><td>${esc(t.name)}</td></tr>`)
+    .join('');
+  const kwRows = keywords
+    .map((k) => `<tr><td>${esc(k.id_keyword)}</td><td>${esc(k.name_keyword)}</td></tr>`)
+    .join('');
+  const authorRows = authors
+    .map((a) => `<tr><td>${esc(a.id)}</td><td>${esc(a.name)}</td></tr>`)
+    .join('');
+  const body = `<h2>Config éditoriale (lecture)</h2>
+<p class="meta">Pas d’écriture CRUD sur ce banc — catalogues fixtures uniquement.</p>
+<h3 id="themes">Thèmes</h3>
+${table(['id', 'name'], themeRows || '<tr><td colspan="2">—</td></tr>')}
+<h3 id="keywords">Mots-clés</h3>
+${table(['id', 'name'], kwRows || '<tr><td colspan="2">—</td></tr>')}
+<h3 id="authors">Auteurs</h3>
+${table(['id', 'name'], authorRows || '<tr><td colspan="2">—</td></tr>')}`;
+  return shellHtml({
+    title: 'Le Dash — Config',
+    banner: 'Config theme / keyword / author en lecture seule (parité partielle config_*.php).',
+    counts,
+    body,
+  });
 }

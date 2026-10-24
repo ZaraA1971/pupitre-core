@@ -122,6 +122,23 @@
       "alert": 0,
       "id_theme": 7,
       "breve_spip": 0
+    },
+    {
+      "id": 7,
+      "title": "Article supprimé",
+      "text": "dans la corbeille éditoriale",
+      "source": "Le Monde",
+      "link": "https://example.test/g",
+      "author": "Alice",
+      "date": "2026-10-16 06:00:00",
+      "hash": "h7",
+      "bin": 0,
+      "new": 0,
+      "sent": 0,
+      "deleted": 1,
+      "alert": 0,
+      "id_theme": 5,
+      "breve_spip": 0
     }
   ],
   "users": [
@@ -134,7 +151,10 @@
       "notif": 1
     }
   ],
-  "authors": [{ "id": 1, "name": "Alice" }],
+  "authors": [
+    { "id": 1, "name": "Alice" },
+    { "id": 2, "name": "Bob" }
+  ],
   "authors_posts": [],
   "dash_keys": [{ "dash_id": "demo", "expired": 0 }],
   "sectionDbs": {

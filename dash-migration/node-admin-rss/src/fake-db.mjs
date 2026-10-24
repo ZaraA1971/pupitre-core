@@ -107,6 +107,42 @@ export function createFakeAdminDb(seed = {}) {
       );
     },
 
+    async listAuthors() {
+      return [...state.authors].sort((a, b) => String(a.name).localeCompare(String(b.name)));
+    },
+
+    async listSent({ page = 1, perPage = listPerPage('sent') } = {}) {
+      const rows = state.rss_post
+        .filter(
+          (r) => Number(r.bin) === 0 && Number(r.sent) === 1 && Number(r.deleted) === 0
+        )
+        .sort(
+          (a, b) =>
+            String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id)
+        );
+      const totalRows = rows.length;
+      const pagination = paginationState(page, totalRows, perPage);
+      return {
+        rows: rows.slice(pagination.offset, pagination.offset + perPage).map(formatRow),
+        ...pagination,
+      };
+    },
+
+    async listDeleted({ page = 1, perPage = listPerPage('deleted') } = {}) {
+      const rows = state.rss_post
+        .filter((r) => Number(r.deleted) === 1)
+        .sort(
+          (a, b) =>
+            String(b.date).localeCompare(String(a.date)) || Number(b.id) - Number(a.id)
+        );
+      const totalRows = rows.length;
+      const pagination = paginationState(page, totalRows, perPage);
+      return {
+        rows: rows.slice(pagination.offset, pagination.offset + perPage).map(formatRow),
+        ...pagination,
+      };
+    },
+
     async listInbox({
       page = 1,
       perPage = listPerPage('index'),
