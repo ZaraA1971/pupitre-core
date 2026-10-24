@@ -1,5 +1,5 @@
 /**
- * Wipe + load fixtures/seed.json into a disposable MySQL/MariaDB.
+ * Wipe + load seed into a disposable MySQL/MariaDB.
  * Only for DASH_DB_ALLOW_SCHEMA_INIT=1 benches — never production.
  */
 import { loadFixtureSeed } from './db.mjs';
@@ -16,29 +16,71 @@ export async function seedDisposableMysql(pool, seed = loadFixtureSeed()) {
     'dash_keys',
     'users',
     'post_keyword',
+    'keyword_alias',
+    'alias',
     'keyword',
     'rss_post',
     'theme',
     'rss_url',
   ]) {
-    await pool.query(`TRUNCATE TABLE ${t}`);
+    try {
+      await pool.query(`DELETE FROM ${t}`);
+    } catch {
+      /* table may not exist yet on older benches */
+    }
   }
   await pool.query('SET FOREIGN_KEY_CHECKS=1');
 
+  await pool.query(
+    `INSERT INTO refresh_rss (id, status, last_refresh, last_update, current)
+     VALUES (1, '0', NULL, NULL, 0)
+     ON DUPLICATE KEY UPDATE status='0', last_refresh=NULL, last_update=NULL, current=0`
+  );
+
   for (const row of seed.rss_url || []) {
-    await pool.query('INSERT INTO rss_url(name, audience) VALUES (?, ?)', [
-      row.name,
-      row.audience || 'editorial',
-    ]);
+    await pool.query(
+      'INSERT INTO rss_url(name, audience, url, theme) VALUES (?, ?, ?, ?)',
+      [
+        row.name,
+        row.audience || 'editorial',
+        row.url || null,
+        row.theme || null,
+      ]
+    );
   }
   for (const row of seed.theme || []) {
     await pool.query('INSERT INTO theme(id, name) VALUES (?, ?)', [row.id, row.name]);
   }
   for (const row of seed.keyword || []) {
-    await pool.query('INSERT INTO keyword(id_keyword, name_keyword) VALUES (?, ?)', [
-      row.id_keyword,
-      row.name_keyword,
+    await pool.query(
+      'INSERT INTO keyword(id_keyword, name_keyword, alias_keyword) VALUES (?, ?, ?)',
+      [row.id_keyword, row.name_keyword, row.alias_keyword || null]
+    );
+  }
+  for (const row of seed.alias || []) {
+    await pool.query('INSERT INTO alias(id_alias, name_alias) VALUES (?, ?)', [
+      row.id_alias,
+      row.name_alias,
     ]);
+  }
+  for (const row of seed.keyword_alias || []) {
+    await pool.query(
+      'INSERT INTO keyword_alias(id_keyword, id_alias) VALUES (?, ?)',
+      [row.id_keyword, row.id_alias]
+    );
+  }
+  // Flat aliases from seed.aliases → disposable alias + keyword_alias rows
+  let nextAliasId = 1000;
+  for (const row of seed.aliases || []) {
+    const idAlias = nextAliasId++;
+    await pool.query('INSERT INTO alias(id_alias, name_alias) VALUES (?, ?)', [
+      idAlias,
+      row.name_alias,
+    ]);
+    await pool.query(
+      'INSERT INTO keyword_alias(id_keyword, id_alias) VALUES (?, ?)',
+      [row.id_keyword, idAlias]
+    );
   }
   for (const row of seed.rss_post || []) {
     await pool.query(
@@ -85,6 +127,18 @@ export async function seedDisposableMysql(pool, seed = loadFixtureSeed()) {
       row.dash_id,
       row.expired ?? 0,
     ]);
+  }
+  if (seed.refresh_rss) {
+    const r = seed.refresh_rss;
+    await pool.query(
+      `UPDATE refresh_rss SET status=?, last_refresh=?, last_update=?, current=? WHERE id=1`,
+      [
+        r.status ?? '0',
+        r.last_refresh ?? null,
+        r.last_update ?? null,
+        r.current ?? 0,
+      ]
+    );
   }
 
   const [[c]] = await pool.query('SELECT COUNT(*) AS n FROM rss_post');

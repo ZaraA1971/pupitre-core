@@ -1,4 +1,8 @@
 import {
+  assertLoopbackDisposableMysql,
+  assertRefreshMysqlWritesAllowed,
+} from './config.mjs';
+import {
   indexPromoSqlFragment,
   listPerPage,
   paginationState,
@@ -8,11 +12,14 @@ import {
 } from './filters.mjs';
 
 /**
- * MySQL adapter for the existing Qualif admin schema (rss_post, theme, …).
- * Requires mysql2. Never embeds credentials. Optional schema init only when
- * DASH_DB_ALLOW_SCHEMA_INIT=1 (disposable DB).
+ * MySQL adapter for disposable Qualif-like schema (rss_post, theme, refresh, …).
+ * Requires mysql2. Never embeds credentials.
+ * Pool creation refuses non-loopback / non-disposable schema names.
+ * Schema init + refresh writes only when DASH_DB_ALLOW_SCHEMA_INIT=1.
  */
 export async function createMysqlAdminDb(config) {
+  assertLoopbackDisposableMysql(config);
+
   let mysql;
   try {
     mysql = await import('mysql2/promise');
@@ -31,13 +38,18 @@ export async function createMysqlAdminDb(config) {
     waitForConnections: true,
     connectionLimit: 4,
     namedPlaceholders: true,
+    // Keep DATETIME as strings so lock/purge clocks stay deterministic vs fixtures.
+    dateStrings: true,
   });
 
-  // Fail fast: ping
   await pool.query('SELECT 1');
 
   if (config.allowSchemaInit) {
     await initDisposableSchema(pool);
+  }
+
+  function requireRefreshWrites() {
+    assertRefreshMysqlWritesAllowed(config);
   }
 
   const orderSql = (tri) => {
@@ -265,8 +277,6 @@ export async function createMysqlAdminDb(config) {
     },
 
     async sectionFollowsTheme(dashId, themeId) {
-      // Cross-database dash_{id}.config — disabled without explicit multi-db config.
-      // Interface kept; returns false so Firebase device collection stays empty safely.
       void dashId;
       void themeId;
       return false;
@@ -304,15 +314,239 @@ export async function createMysqlAdminDb(config) {
       );
       return true;
     },
+
+    // --- refresh / cron surface (disposable MySQL only) ---
+
+    async listRssUrls() {
+      requireRefreshWrites();
+      const [rows] = await pool.query(
+        'SELECT url, name, audience, theme FROM rss_url WHERE url IS NOT NULL AND url != ""'
+      );
+      return rows.map((u) => ({
+        url: String(u.url),
+        name: String(u.name || ''),
+        audience: String(u.audience || 'editorial'),
+        theme: u.theme != null ? String(u.theme) : '',
+      }));
+    },
+
+    async loadKeywordData() {
+      requireRefreshWrites();
+      const [keywords] = await pool.query(
+        'SELECT id_keyword, name_keyword FROM keyword'
+      );
+      const aliases = [];
+      try {
+        const [aliasRows] = await pool.query(`
+          SELECT keyword.id_keyword, alias.name_alias
+          FROM keyword
+          INNER JOIN keyword_alias ON keyword.id_keyword = keyword_alias.id_keyword
+          INNER JOIN alias ON alias.id_alias = keyword_alias.id_alias
+        `);
+        for (const row of aliasRows) {
+          aliases.push({
+            id_keyword: Number(row.id_keyword),
+            name_alias: String(row.name_alias),
+          });
+        }
+      } catch {
+        /* disposable tables may be empty / absent on older benches */
+      }
+      try {
+        const [legacy] = await pool.query(
+          `SELECT id_keyword, alias_keyword FROM keyword
+           WHERE alias_keyword IS NOT NULL AND TRIM(alias_keyword) <> ''`
+        );
+        for (const row of legacy) {
+          for (const part of String(row.alias_keyword).split(',')) {
+            const name_alias = part.trim();
+            if (name_alias) {
+              aliases.push({
+                id_keyword: Number(row.id_keyword),
+                name_alias,
+              });
+            }
+          }
+        }
+      } catch {
+        /* column optional */
+      }
+      return {
+        keywords: keywords.map((k) => ({
+          id_keyword: Number(k.id_keyword),
+          name_keyword: String(k.name_keyword),
+        })),
+        aliases,
+      };
+    },
+
+    async countByHash(hash) {
+      requireRefreshWrites();
+      const [[row]] = await pool.query(
+        'SELECT COUNT(*) AS c FROM rss_post WHERE hash = ?',
+        [hash]
+      );
+      return Number(row?.c || 0);
+    },
+
+    async markAllNewAsBin() {
+      requireRefreshWrites();
+      const [res] = await pool.query('UPDATE rss_post SET bin = 1 WHERE new = 1');
+      return res.affectedRows || 0;
+    },
+
+    async clearBinByHash(hash) {
+      requireRefreshWrites();
+      const [res] = await pool.query('UPDATE rss_post SET bin = 0 WHERE hash = ?', [
+        hash,
+      ]);
+      return res.affectedRows || 0;
+    },
+
+    async insertRssPost(row) {
+      requireRefreshWrites();
+      const [res] = await pool.query(
+        `INSERT INTO rss_post (date, source, title, text, author, link, hash, new, bin, sent, deleted, alert, id_theme)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        [
+          row.date,
+          row.source,
+          row.title,
+          row.text,
+          row.author || '',
+          row.link,
+          row.hash,
+          row.new ?? 1,
+          row.bin ?? 0,
+          row.sent ?? 0,
+          row.deleted ?? 0,
+          row.alert ?? 0,
+          row.id_theme ?? 0,
+        ]
+      );
+      return { id: res.insertId, ...row };
+    },
+
+    async attachPostKeyword(hash, idKeyword) {
+      requireRefreshWrites();
+      const [res] = await pool.query(
+        'INSERT IGNORE INTO post_keyword (hash_post, id_keyword) VALUES (?, ?)',
+        [hash, Number(idKeyword)]
+      );
+      return (res.affectedRows || 0) > 0;
+    },
+
+    async trashLowKeywordHash(hash) {
+      requireRefreshWrites();
+      const [res] = await pool.query(
+        'UPDATE rss_post SET new = 0, deleted = 1 WHERE hash = ?',
+        [hash]
+      );
+      return res.affectedRows || 0;
+    },
+
+    /**
+     * Purge using injectable cutoff (test clock), not server NOW() —
+     * documents deviation from PHP DATE_SUB(NOW(), …) for determinism.
+     */
+    async deleteOlderThanDays(days, nowMs = Date.now()) {
+      requireRefreshWrites();
+      if (days < 1) return 0;
+      const cutoff = new Date(nowMs - days * 864e5)
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+      let removed = 0;
+      for (;;) {
+        const [hashes] = await pool.query(
+          'SELECT hash FROM rss_post WHERE date < ? LIMIT 2000',
+          [cutoff]
+        );
+        if (!hashes.length) break;
+        const list = hashes.map((h) => h.hash);
+        const ph = list.map(() => '?').join(',');
+        await pool.query(
+          `DELETE FROM post_keyword WHERE hash_post IN (${ph})`,
+          list
+        );
+        const [del] = await pool.query(
+          `DELETE FROM rss_post WHERE hash IN (${ph})`,
+          list
+        );
+        removed += del.affectedRows || 0;
+        if (list.length < 2000) break;
+      }
+      return removed;
+    },
+
+    async deleteStaleBinUnsent() {
+      requireRefreshWrites();
+      await pool.query(`
+        DELETE pk FROM post_keyword pk
+        INNER JOIN rss_post r ON r.hash = pk.hash_post
+        WHERE r.bin = 1 AND r.sent = 0 AND r.deleted = 0
+      `);
+      const [del] = await pool.query(
+        'DELETE FROM rss_post WHERE bin = 1 AND sent = 0 AND deleted = 0'
+      );
+      return del.affectedRows || 0;
+    },
+
+    async getRefreshRow() {
+      requireRefreshWrites();
+      const [rows] = await pool.query(
+        'SELECT status, last_refresh, last_update, current FROM refresh_rss WHERE id = 1 LIMIT 1'
+      );
+      return rows[0] || null;
+    },
+
+    async setRefreshStatus(status) {
+      requireRefreshWrites();
+      await pool.query('UPDATE refresh_rss SET status = ? WHERE id = 1', [
+        String(status),
+      ]);
+    },
+
+    async setRefreshCurrent(n) {
+      requireRefreshWrites();
+      await pool.query('UPDATE refresh_rss SET current = ? WHERE id = 1', [
+        Number(n) || 0,
+      ]);
+    },
+
+    async setLastRefresh(ts) {
+      requireRefreshWrites();
+      await pool.query('UPDATE refresh_rss SET last_refresh = ? WHERE id = 1', [ts]);
+    },
+
+    async touchRefreshActivity(ts) {
+      requireRefreshWrites();
+      await pool.query('UPDATE refresh_rss SET last_update = ? WHERE id = 1', [ts]);
+    },
   };
+}
+
+async function addColumnIfMissing(pool, table, column, definition) {
+  try {
+    await pool.query(`ALTER TABLE \`${table}\` ADD COLUMN \`${column}\` ${definition}`);
+  } catch (err) {
+    const msg = String(err?.message || err);
+    if (!/Duplicate column/i.test(msg)) throw err;
+  }
 }
 
 async function initDisposableSchema(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS rss_url (
       name VARCHAR(255) PRIMARY KEY,
-      audience VARCHAR(32) NOT NULL DEFAULT 'editorial'
+      audience VARCHAR(32) NOT NULL DEFAULT 'editorial',
+      url VARCHAR(512) NULL,
+      theme VARCHAR(64) NULL,
+      UNIQUE KEY uq_rss_url_url (url)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await addColumnIfMissing(pool, 'rss_url', 'url', 'VARCHAR(512) NULL');
+  await addColumnIfMissing(pool, 'rss_url', 'theme', 'VARCHAR(64) NULL');
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS theme (
       id INT PRIMARY KEY AUTO_INCREMENT,
@@ -321,8 +555,23 @@ async function initDisposableSchema(pool) {
   await pool.query(`
     CREATE TABLE IF NOT EXISTS keyword (
       id_keyword INT PRIMARY KEY AUTO_INCREMENT,
-      name_keyword VARCHAR(120) NOT NULL
+      name_keyword VARCHAR(120) NOT NULL,
+      alias_keyword TEXT NULL
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await addColumnIfMissing(pool, 'keyword', 'alias_keyword', 'TEXT NULL');
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS alias (
+      id_alias INT PRIMARY KEY AUTO_INCREMENT,
+      name_alias VARCHAR(120) NOT NULL
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS keyword_alias (
+      id_keyword INT NOT NULL,
+      id_alias INT NOT NULL,
+      PRIMARY KEY (id_keyword, id_alias)
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS post_keyword (
       hash_post VARCHAR(64) NOT NULL,
@@ -350,6 +599,19 @@ async function initDisposableSchema(pool) {
       KEY idx_inbox (bin, new, sent, deleted),
       KEY idx_hash (hash)
     ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS refresh_rss (
+      id INT PRIMARY KEY,
+      status VARCHAR(32) NOT NULL DEFAULT '0',
+      last_refresh DATETIME NULL,
+      last_update DATETIME NULL,
+      current INT NOT NULL DEFAULT 0
+    ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4`);
+  await pool.query(
+    `INSERT IGNORE INTO refresh_rss (id, status, last_refresh, last_update, current)
+     VALUES (1, '0', NULL, NULL, 0)`
+  );
+
   await pool.query(`
     CREATE TABLE IF NOT EXISTS users (
       id INT PRIMARY KEY AUTO_INCREMENT,

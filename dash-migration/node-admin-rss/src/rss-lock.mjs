@@ -28,7 +28,13 @@ export function statusIsBusy(raw, pair = statusPair()) {
 
 function parseSqlTs(raw) {
   if (raw == null || raw === '' || raw === '0000-00-00 00:00:00') return null;
-  const s = String(raw).replace(' ', 'T');
+  // mysql2 may return JS Date for DATETIME — use epoch directly (no TZ re-parse).
+  if (raw instanceof Date) {
+    const t = raw.getTime();
+    return Number.isFinite(t) ? Math.floor(t / 1000) : null;
+  }
+  const s = String(raw).trim().replace(' ', 'T');
+  // Treat SQL DATETIME as UTC wall clock for disposable benches (documented deviation).
   const t = Date.parse(s.endsWith('Z') ? s : `${s}Z`);
   return Number.isFinite(t) ? Math.floor(t / 1000) : null;
 }

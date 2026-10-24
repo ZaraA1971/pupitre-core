@@ -4,6 +4,11 @@ const PROD_HOST_MARKERS = [
   'electronlibre.info',
 ];
 
+const LOOPBACK_HOSTS = new Set(['127.0.0.1', 'localhost', '::1']);
+
+/** Schema name must look disposable (test bench), never a bare production name. */
+const DISPOSABLE_DB_NAME_RE = /(disposable|jetable|_test$|^test_|dash_test)/i;
+
 /**
  * Configuration locale. Defaults to fixtures.
  * MySQL mode requires explicit disposable credentials and refuses known prod hosts
@@ -66,6 +71,43 @@ export function loadConfig(env = process.env) {
     listenPort: Number(env.DASH_ADMIN_PORT || 8791),
     allowSchemaInit: String(env.DASH_DB_ALLOW_SCHEMA_INIT || '') === '1',
   };
+}
+
+/**
+ * Fail before any pool/SQL: MySQL must be loopback + disposable schema name.
+ * Does not open a connection.
+ */
+export function assertLoopbackDisposableMysql(config) {
+  if (!config || config.mode !== 'mysql') {
+    throw new ConfigError('assertLoopbackDisposableMysql exige DASH_DB_MODE=mysql');
+  }
+  const host = String(config.dbHost || '').toLowerCase();
+  if (!LOOPBACK_HOSTS.has(host)) {
+    throw new ConfigError(
+      `Hôte MySQL non loopback refusé pour banc jetable (${config.dbHost}). Uniquement 127.0.0.1 ou localhost.`
+    );
+  }
+  const name = String(config.dbName || '');
+  if (!DISPOSABLE_DB_NAME_RE.test(name)) {
+    throw new ConfigError(
+      `Nom de schéma non reconnu comme jetable (${name}). Exiger disposable|jetable|_test|test_ dans le nom.`
+    );
+  }
+}
+
+/**
+ * Refresh writes require schema-init flag on top of loopback disposable checks.
+ */
+export function assertRefreshMysqlWritesAllowed(config) {
+  assertLoopbackDisposableMysql(config);
+  if (!config.allowSchemaInit) {
+    throw new ConfigError(
+      'Écritures refresh MySQL refusées sans DASH_DB_ALLOW_SCHEMA_INIT=1 (banc jetable uniquement).'
+    );
+  }
+  if (!config.disableExternal) {
+    throw new ConfigError('DASH_DISABLE_EXTERNAL=1 requis pour refresh MySQL jetable.');
+  }
 }
 
 export class ConfigError extends Error {
