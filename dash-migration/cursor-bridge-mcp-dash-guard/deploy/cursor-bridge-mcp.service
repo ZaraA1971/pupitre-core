@@ -1,0 +1,23 @@
+[Unit]
+Description=Cursor Bridge MCP local mock
+After=network.target
+
+[Service]
+Type=simple
+DynamicUser=yes
+WorkingDirectory=/srv/cursor-bridge-mcp
+Environment=CURSOR_BRIDGE_MODE=local_mock
+Environment=PORT=8815
+Environment=PYTHONDONTWRITEBYTECODE=1
+EnvironmentFile=/etc/cursor-bridge-mcp.env
+ExecStart=/srv/cursor-bridge-mcp/.venv/bin/python /srv/cursor-bridge-mcp/server.py
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadOnlyPaths=/srv/cursor-bridge-mcp
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -4,3 +4,5 @@
 **/*.pem
 **/*.key
 **/node_modules/
+
+cursor-bridge-mcp-dash-guard/.venv/
