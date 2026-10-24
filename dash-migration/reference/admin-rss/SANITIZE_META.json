@@ -99,5 +99,54 @@
     "sha256_sanitized": "cb61d8d9ed44196c1c1aa6b16724f62e4ec24f0dc23c18cb79844b23f54fe59d",
     "bytes": 6049,
     "note": "fetched separately"
+  },
+  "admin/refresh_rss.php": {
+    "sha256_original": "0bb10ad29c93607371d72bf9ce84ffa83e891904fdb8a8b7382b7de5a128e8e0",
+    "bytes_original": 3765,
+    "sha256_sanitized": "0bb10ad29c93607371d72bf9ce84ffa83e891904fdb8a8b7382b7de5a128e8e0",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/cron.php": {
+    "sha256_original": "1639b11034380fe82e8e9ec8c7d5d81a06d84ebe125233f949db375fff2eb046",
+    "bytes_original": 3806,
+    "sha256_sanitized": "1639b11034380fe82e8e9ec8c7d5d81a06d84ebe125233f949db375fff2eb046",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/rss_refresh_engine.php": {
+    "sha256_original": "5c09bd07d71b484a814a0f10ff0ce02569892b47e0b8d375c03c2aea86eedb10",
+    "bytes_original": 11597,
+    "sha256_sanitized": "5c09bd07d71b484a814a0f10ff0ce02569892b47e0b8d375c03c2aea86eedb10",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/check_rss.php": {
+    "sha256_original": "00bb92e1dc0b32e97d063b6584b2c01cbc0133d3d4d2a68119d2dbf974834b9b",
+    "bytes_original": 5529,
+    "sha256_sanitized": "00bb92e1dc0b32e97d063b6584b2c01cbc0133d3d4d2a68119d2dbf974834b9b",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/verif_rss.php": {
+    "sha256_original": "09eb64c826e92979d9da8c12f49c7750784d73ae1148656382154d4de613e6f5",
+    "bytes_original": 2344,
+    "sha256_sanitized": "09eb64c826e92979d9da8c12f49c7750784d73ae1148656382154d4de613e6f5",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/inc/rss-refresh.php": {
+    "sha256_original": "700afd266e0e15c34abde0e49dd1a07abf4ae023c2a4db0539a15b8d6fc8a6e1",
+    "bytes_original": 8370,
+    "sha256_sanitized": "700afd266e0e15c34abde0e49dd1a07abf4ae023c2a4db0539a15b8d6fc8a6e1",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/inc/rss-feed.php": {
+    "sha256_original": "82242fb0aae3fa1870ec24da00ef97676a9edb2f6ee91ad4e8b15c1cfc8b02a8",
+    "bytes_original": 2704,
+    "sha256_sanitized": "82242fb0aae3fa1870ec24da00ef97676a9edb2f6ee91ad4e8b15c1cfc8b02a8",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
   }
 }
