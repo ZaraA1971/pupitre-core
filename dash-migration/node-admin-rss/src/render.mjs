@@ -36,7 +36,10 @@ const MOIS = [
 /**
  * Local admin inbox HTML (functional parity, not a pixel clone of PHP CSS).
  */
-export function renderInboxHtml(model, { flash = null, externalsNote = true } = {}) {
+export function renderInboxHtml(
+  model,
+  { flash = null, externalsNote = true, deskEnabled = false } = {}
+) {
   const { filters, counts, themes, sources, rows, page, totalPages, totalRows, keywordName } =
     model;
   const baseParams = {
@@ -112,7 +115,9 @@ export function renderInboxHtml(model, { flash = null, externalsNote = true } = 
     : '';
 
   const note = externalsNote
-    ? `<aside class="banner">Banc local Node — effets externes désactivés (Desk / Vigie / Firebase / OpenAI / mail / push). « Envoyer au Pupitre » reste derrière une interface désactivée sans LLM injectable.</aside>`
+    ? deskEnabled
+      ? `<aside class="banner">Banc local Node — aucun HTTP Desk/OpenAI/Vigie/Firebase/mail. « Envoyer au Pupitre » utilise des injectables locaux (HTML fixtures + LLM déterministe) et un brouillon stub (article_id ≥ 900000).</aside>`
+      : `<aside class="banner">Banc local Node — effets externes désactivés (Desk / Vigie / Firebase / OpenAI / mail / push). « Envoyer au Pupitre » reste derrière une interface désactivée sans LLM injectable.</aside>`
     : '';
 
   return `<!DOCTYPE html>
@@ -263,7 +268,11 @@ export function renderInboxHtml(model, { flash = null, externalsNote = true } = 
       </div>
       <div class="bar" role="toolbar">
         <button type="submit" name="send" value="1" class="primary">Envoyer</button>
-        <button type="submit" name="to_desk" value="1" disabled title="Désactivé localement : LLM / Desk non configurés">Envoyer au Pupitre</button>
+        ${
+          deskEnabled
+            ? `<button type="submit" name="to_desk" value="1" title="Pont Desk local : fixtures HTML + LLM déterministe, sans réseau">Envoyer au Pupitre</button>`
+            : `<button type="submit" name="to_desk" value="1" disabled title="Désactivé localement : LLM / Desk non configurés">Envoyer au Pupitre</button>`
+        }
         <button type="submit" name="delete" value="1" class="danger">Supprimer</button>
         <button type="submit" name="delete_all" value="1" class="danger"
           onclick="return confirm('Tout supprimer de l\\'inbox ?')">Tout supprimer</button>

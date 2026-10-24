@@ -2,12 +2,33 @@ import { URL } from 'node:url';
 import { handleIndexActions } from './actions.mjs';
 import { loadInboxPage, parseInboxQuery } from './inbox.mjs';
 import { renderInboxHtml } from './render.mjs';
+import { handleSendToDesk } from './send-to-desk.mjs';
+import { createLocalDeskInjectables } from './local-desk.mjs';
 
 /**
  * Minimal HTTP app for the local admin inbox journey.
- * @param {{ db: object, externals: object, config: object }} deps
+ * Desk (`to_desk`) uses local injectables (fixture HTML + deterministic LLM), never real OpenAI/Desk HTTP.
+ * @param {{
+ *   db: object,
+ *   externals: object,
+ *   config: object,
+ *   fetchArticle?: Function,
+ *   llm?: Function,
+ *   resolveRssHint?: Function,
+ * }} deps
  */
-export function createApp({ db, externals, config }) {
+export function createApp({
+  db,
+  externals,
+  config,
+  fetchArticle,
+  llm,
+  resolveRssHint,
+} = {}) {
+  const localDesk = createLocalDeskInjectables();
+  const deskFetchArticle = typeof fetchArticle === 'function' ? fetchArticle : localDesk.fetchArticle;
+  const deskLlm = typeof llm === 'function' ? llm : localDesk.llm;
+
   return async function app(req, res) {
     const host = req.headers.host || `${config.listenHost}:${config.listenPort}`;
     const url = new URL(req.url || '/', `http://${host}`);
@@ -19,6 +40,7 @@ export function createApp({ db, externals, config }) {
           ok: true,
           mode: config.mode,
           disableExternal: config.disableExternal,
+          deskLocal: true,
         });
       }
 
@@ -30,7 +52,7 @@ export function createApp({ db, externals, config }) {
       if (req.method === 'GET' && (path === '/' || path === '/index')) {
         const model = await loadInboxPage(db, Object.fromEntries(url.searchParams));
         const flash = url.searchParams.get('flash');
-        const html = renderInboxHtml(model, { flash });
+        const html = renderInboxHtml(model, { flash, deskEnabled: true });
         res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
         res.end(html);
         return;
@@ -39,13 +61,14 @@ export function createApp({ db, externals, config }) {
       if (req.method === 'POST' && (path === '/actions' || path === '/index')) {
         const body = await readBody(req);
         if (body.to_desk !== undefined) {
-          return json(res, 503, {
-            success: false,
-            disabled: true,
-            error:
-              'Envoyer au Pupitre désactivé en local : LLM (OpenAI) et Desk ingest non branchés. Injecter fetchArticle/llm en test uniquement.',
-            missing: ['DASH_OPENAI_API_KEY', 'DASH_DESK_INGEST_URL', 'DASH_DESK_INGEST_KEY'],
+          const out = await handleSendToDesk(body, {
+            db,
+            externals,
+            fetchArticle: deskFetchArticle,
+            llm: deskLlm,
+            resolveRssHint,
           });
+          return json(res, out.status, out.json);
         }
 
         const result = await handleIndexActions(body, { db, externals, config });

@@ -157,6 +157,7 @@ describe('HTTP inbox journey (fixtures)', () => {
     assert.equal(health.status, 200);
     assert.equal(health.json.mode, 'fixtures');
     assert.equal(health.json.disableExternal, true);
+    assert.equal(health.json.deskLocal, true);
 
     const html = await req(svc.base, '/');
     assert.equal(html.status, 200);
@@ -255,16 +256,50 @@ describe('HTTP inbox journey (fixtures)', () => {
     assert.equal((await db.navCounts()).new, 0);
   });
 
-  it('POST to_desk stays disabled with explicit missing deps', async () => {
+  it('POST to_desk uses local injectables without network', async () => {
+    // post 1 was already sent earlier in this suite — re-open a fresh editorial row
+    db.state.rss_post.push({
+      id: 101,
+      title: 'Pour Pupitre local',
+      text: 'Corps seed pour pont Desk local.',
+      source: 'Le Monde',
+      link: 'https://example.test/a',
+      author: 'Alice',
+      date: '2026-10-21 12:00:00',
+      hash: 'h101',
+      bin: 0,
+      new: 1,
+      sent: 0,
+      deleted: 0,
+      alert: 0,
+      id_theme: 0,
+      breve_spip: 0,
+    });
+    const beforeLog = externals.log.length;
     const r = await req(svc.base, '/actions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ to_desk: '1', id_post: [1] }),
+      body: JSON.stringify({ to_desk: '1', id_post: [101] }),
     });
-    assert.equal(r.status, 503);
-    assert.equal(r.json.disabled, true);
-    assert.ok(Array.isArray(r.json.missing));
-    assert.ok(r.json.missing.includes('DASH_OPENAI_API_KEY'));
+    assert.equal(r.status, 200);
+    assert.equal(r.json.success, true);
+    assert.equal(r.json.local, true);
+    assert.deepEqual(r.json.processed, [101]);
+    assert.ok(r.json.created[0].article_id >= 900000);
+    assert.equal(Number((await db.getPost(101)).breve_spip), 1);
+    const added = externals.log.slice(beforeLog);
+    assert.ok(added.some((x) => x.kind === 'desk' && x.payload?.payload?.draft === true));
+  });
+
+  it('GET / shows Envoyer au Pupitre enabled for local desk', async () => {
+    const html = await req(svc.base, '/');
+    assert.equal(html.status, 200);
+    assert.match(html.text, /name="to_desk"/);
+    assert.doesNotMatch(
+      html.text,
+      /name="to_desk"[^>]*disabled/
+    );
+    assert.match(html.text, /injectables locaux/i);
   });
 });
 

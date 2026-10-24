@@ -2,6 +2,11 @@
  * Outbound side effects. With disableExternal=true (default), only records calls.
  * No real desk / Firebase / mail / OpenAI / APNS.
  */
+import {
+  buildDeskIngestPayload,
+  parseDeskIngestResponse,
+  slugifyDeskTitle,
+} from './desk-client.mjs';
 
 export function createExternals({ config, deskFetch, mailSend, firebasePush, llmRequest } = {}) {
   const log = [];
@@ -36,20 +41,42 @@ export function createExternals({ config, deskFetch, mailSend, firebasePush, llm
   }
 
   async function createDeskDraft(article) {
-    record('desk', { title: article.title, source_url: article.source_url });
+    const payload = buildDeskIngestPayload(article);
+    record('desk', {
+      title: payload.title,
+      source_url: payload.source_url,
+      payload,
+    });
     if (config.disableExternal) {
-      // Local safe stub: deterministic fake id, no HTTP
+      // Local safe stub: deterministic fake id, no HTTP. Optional deskFetch
+      // may still parse a fake response object for unit tests.
+      if (typeof deskFetch === 'function') {
+        const fake = await deskFetch(payload);
+        if (fake && typeof fake === 'object' && 'raw' in fake) {
+          return parseDeskIngestResponse(fake.raw, fake.status ?? 200);
+        }
+        if (fake && typeof fake === 'object' && fake.article_id) {
+          return {
+            article_id: Number(fake.article_id),
+            slug: String(fake.slug || slugifyDeskTitle(payload.title)),
+            skipped: true,
+          };
+        }
+      }
       return {
-        article_id: 900000 + (log.filter((x) => x.kind === 'desk').length),
-        slug: String(article.slug || article.title || 'draft')
-          .toLowerCase()
-          .replace(/[^a-z0-9]+/g, '-')
-          .replace(/^-|-$/g, '')
-          .slice(0, 80),
+        article_id: 900000 + log.filter((x) => x.kind === 'desk').length,
+        slug: slugifyDeskTitle(payload.slug || payload.title),
         skipped: true,
+        payload,
       };
     }
-    if (typeof deskFetch === 'function') return deskFetch(article);
+    if (typeof deskFetch === 'function') {
+      const res = await deskFetch(payload);
+      if (res && typeof res === 'object' && 'raw' in res) {
+        return parseDeskIngestResponse(res.raw, res.status ?? 200);
+      }
+      return res;
+    }
     if (!config.deskUrl || !config.deskKey) {
       throw new Error('Desk ingest config missing (DASH_DESK_INGEST_URL/KEY)');
     }

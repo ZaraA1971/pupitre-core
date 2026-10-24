@@ -203,14 +203,20 @@ describe('MySQL disposable inbox journey', { skip: !wantMysql }, () => {
     assert.equal((await db.navCounts()).new, 0);
   });
 
-  it('to_desk stays disabled', async () => {
+  it('to_desk uses local injectables on disposable MySQL', async () => {
     requireDb();
+    // Prefer a still-new editorial row if any; else use id 1 after prior sends.
+    const model = await loadInboxPage(db, {});
+    const id = model.rows[0]?.id ?? 1;
     const r = await req(svc.base, '/actions', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
-      body: JSON.stringify({ to_desk: '1', id_post: [1] }),
+      body: JSON.stringify({ to_desk: '1', id_post: [id] }),
     });
-    assert.equal(r.status, 503);
-    assert.equal(r.json.disabled, true);
+    assert.equal(r.status, 200);
+    assert.equal(r.json.success, true);
+    assert.equal(r.json.local, true);
+    assert.ok(r.json.created[0].article_id >= 900000);
+    assert.equal(Number((await db.getPost(id)).breve_spip), 1);
   });
 });
