@@ -9,8 +9,11 @@
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",
+    "test:mysql": "node --test test/mysql-inbox-journey.test.mjs",
+    "seed:mysql": "node scripts/seed-mysql.mjs",
     "start": "node src/server.mjs",
-    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
+    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
+    "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
   },
   "optionalDependencies": {
     "mysql2": "^3.14.0"
