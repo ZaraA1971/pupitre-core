@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>Le Monde</title>
+    <link>https://example.test/lemonde</link>
+    <item>
+      <title>Nouvelle régulation IA et RGPD en Europe</title>
+      <link>https://example.test/feeds/lm-1</link>
+      <guid isPermaLink="false">guid-lm-1</guid>
+      <description>Analyse de l'intelligence artificielle, de la régulation IA et du RGPD pour les entreprises.</description>
+      <pubDate>Mon, 20 Oct 2026 10:00:00 GMT</pubDate>
+      <author>Alice</author>
+    </item>
+    <item>
+      <title>Bon plan smartphone flash sale</title>
+      <link>https://example.test/feeds/lm-promo</link>
+      <guid isPermaLink="false">guid-lm-promo</guid>
+      <description>code promo exclusif aujourd'hui</description>
+      <pubDate>Mon, 20 Oct 2026 11:00:00 GMT</pubDate>
+    </item>
+    <item>
+      <title>Article trop peu thématisé</title>
+      <link>https://example.test/feeds/lm-thin</link>
+      <guid isPermaLink="false">guid-lm-thin</guid>
+      <description>Un texte sans assez de mots-clés éditoriaux distincts pour le seuil.</description>
+      <pubDate>Mon, 20 Oct 2026 12:00:00 GMT</pubDate>
+    </item>
+  </channel>
+</rss>

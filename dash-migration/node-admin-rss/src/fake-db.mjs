@@ -7,12 +7,24 @@ export function createFakeAdminDb(seed = {}) {
     theme: seed.theme ? structuredClone(seed.theme) : [],
     keyword: seed.keyword ? structuredClone(seed.keyword) : [],
     post_keyword: seed.post_keyword ? structuredClone(seed.post_keyword) : [],
+    aliases: seed.aliases ? structuredClone(seed.aliases) : [],
     users: seed.users ? structuredClone(seed.users) : [],
     dash_keys: seed.dash_keys ? structuredClone(seed.dash_keys) : [],
     authors: seed.authors ? structuredClone(seed.authors) : [],
     authors_posts: seed.authors_posts ? structuredClone(seed.authors_posts) : [],
     sectionDbs: seed.sectionDbs ? structuredClone(seed.sectionDbs) : {},
+    refresh_rss: seed.refresh_rss
+      ? structuredClone(seed.refresh_rss)
+      : {
+          id: 1,
+          status: '0',
+          last_refresh: null,
+          last_update: null,
+          current: 0,
+        },
   };
+  let nextPostId =
+    state.rss_post.reduce((m, r) => Math.max(m, Number(r.id) || 0), 0) + 1;
 
   function vigieSources() {
     return new Set(
@@ -264,6 +276,163 @@ export function createFakeAdminDb(seed = {}) {
         date: post.date,
       });
       return true;
+    },
+
+    // --- refresh / cron surface (fixtures) ---
+
+    async listRssUrls() {
+      return state.rss_url
+        .filter((u) => u.url)
+        .map((u) => ({
+          url: String(u.url),
+          name: String(u.name || ''),
+          audience: String(u.audience || 'editorial'),
+          theme: u.theme != null ? String(u.theme) : '',
+        }));
+    },
+
+    async loadKeywordData() {
+      const keywords = state.keyword.map((k) => ({
+        id_keyword: Number(k.id_keyword),
+        name_keyword: String(k.name_keyword),
+      }));
+      const aliases = [...state.aliases];
+      for (const k of state.keyword) {
+        if (k.alias_keyword) {
+          for (const part of String(k.alias_keyword).split(',')) {
+            const name_alias = part.trim();
+            if (name_alias) {
+              aliases.push({
+                id_keyword: Number(k.id_keyword),
+                name_alias,
+              });
+            }
+          }
+        }
+      }
+      return { keywords, aliases };
+    },
+
+    async countByHash(hash) {
+      return state.rss_post.filter((r) => r.hash === hash).length;
+    },
+
+    async markAllNewAsBin() {
+      let n = 0;
+      for (const row of state.rss_post) {
+        if (Number(row.new) === 1) {
+          row.bin = 1;
+          n += 1;
+        }
+      }
+      return n;
+    },
+
+    async clearBinByHash(hash) {
+      let n = 0;
+      for (const row of state.rss_post) {
+        if (row.hash === hash) {
+          row.bin = 0;
+          n += 1;
+        }
+      }
+      return n;
+    },
+
+    async insertRssPost(row) {
+      const post = {
+        id: nextPostId++,
+        title: row.title,
+        text: row.text,
+        source: row.source,
+        link: row.link,
+        author: row.author || '',
+        date: row.date,
+        hash: row.hash,
+        bin: row.bin ?? 0,
+        new: row.new ?? 1,
+        sent: row.sent ?? 0,
+        deleted: row.deleted ?? 0,
+        alert: row.alert ?? 0,
+        id_theme: row.id_theme ?? 0,
+        breve_spip: row.breve_spip ?? 0,
+      };
+      state.rss_post.push(post);
+      return post;
+    },
+
+    async attachPostKeyword(hash, idKeyword) {
+      const id = Number(idKeyword);
+      if (
+        state.post_keyword.some(
+          (pk) => pk.hash_post === hash && Number(pk.id_keyword) === id
+        )
+      ) {
+        return false;
+      }
+      state.post_keyword.push({ hash_post: hash, id_keyword: id });
+      return true;
+    },
+
+    async trashLowKeywordHash(hash) {
+      let n = 0;
+      for (const row of state.rss_post) {
+        if (row.hash === hash) {
+          row.new = 0;
+          row.deleted = 1;
+          n += 1;
+        }
+      }
+      return n;
+    },
+
+    async deleteOlderThanDays(days, nowMs = Date.now()) {
+      if (days < 1) return 0;
+      const cutoff = nowMs - days * 864e5;
+      const doomed = new Set();
+      for (const row of state.rss_post) {
+        const t = Date.parse(String(row.date).replace(' ', 'T') + 'Z');
+        if (Number.isFinite(t) && t < cutoff) doomed.add(row.hash);
+      }
+      state.post_keyword = state.post_keyword.filter((pk) => !doomed.has(pk.hash_post));
+      const before = state.rss_post.length;
+      state.rss_post = state.rss_post.filter((r) => !doomed.has(r.hash));
+      return before - state.rss_post.length;
+    },
+
+    async deleteStaleBinUnsent() {
+      const doomed = new Set(
+        state.rss_post
+          .filter(
+            (r) =>
+              Number(r.bin) === 1 && Number(r.sent) === 0 && Number(r.deleted) === 0
+          )
+          .map((r) => r.hash)
+      );
+      state.post_keyword = state.post_keyword.filter((pk) => !doomed.has(pk.hash_post));
+      const before = state.rss_post.length;
+      state.rss_post = state.rss_post.filter((r) => !doomed.has(r.hash));
+      return before - state.rss_post.length;
+    },
+
+    async getRefreshRow() {
+      return { ...state.refresh_rss };
+    },
+
+    async setRefreshStatus(status) {
+      state.refresh_rss.status = String(status);
+    },
+
+    async setRefreshCurrent(n) {
+      state.refresh_rss.current = Number(n) || 0;
+    },
+
+    async setLastRefresh(ts) {
+      state.refresh_rss.last_refresh = ts;
+    },
+
+    async touchRefreshActivity(ts) {
+      state.refresh_rss.last_update = ts;
     },
   };
 }

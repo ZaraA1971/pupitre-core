@@ -3,14 +3,16 @@
   "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Isolated Node parity of Le Dash admin RSS inbox + actions. Fixtures by default. Not deployed.",
+  "description": "Isolated Node parity of Le Dash admin RSS inbox, actions, and fixture-based refresh/cron engine. Not deployed.",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
     "test": "node --test test/*.test.mjs",
     "test:mysql": "node --test test/mysql-inbox-journey.test.mjs",
+    "test:refresh": "node --test test/rss-refresh.test.mjs",
     "seed:mysql": "node scripts/seed-mysql.mjs",
+    "refresh:once": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node scripts/refresh-once.mjs",
     "start": "node src/server.mjs",
     "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
     "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
