@@ -1,6 +1,6 @@
 import http from 'node:http';
 import { ConfigError, loadConfig } from './config.mjs';
-import { createFakeClientDb, loadFixtureSeed } from './fake-db.mjs';
+import { createClientDb } from './db.mjs';
 import { createSessionStore } from './session.mjs';
 import { createApp } from './app.mjs';
 
@@ -15,7 +15,7 @@ try {
   throw err;
 }
 
-const db = createFakeClientDb(loadFixtureSeed());
+const db = await createClientDb(config);
 const sessions = createSessionStore({ ttlSeconds: config.sessionTtlSeconds });
 const app = createApp({ db, sessions, config });
 

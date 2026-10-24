@@ -1,15 +1,21 @@
 {
   "name": "dash-client-node",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Isolated Node parity of Le Dash client read path (login, live feed, get_articles, timeline). Not deployed.",
+  "description": "Isolated Node parity of Le Dash client read path (login, live feed, get_articles, timeline) on fixtures or disposable MySQL. Not deployed.",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
     "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "test:mysql": "node --test --test-concurrency=1 test/mysql-client-journey.test.mjs",
+    "seed:mysql": "node scripts/seed-mysql.mjs",
     "start": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
-    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
+    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
+    "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
+  },
+  "optionalDependencies": {
+    "mysql2": "^3.14.0"
   }
 }

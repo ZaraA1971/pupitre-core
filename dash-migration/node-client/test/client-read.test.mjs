@@ -61,11 +61,19 @@ describe('config guards', () => {
     );
   });
 
-  it('refuses non-fixtures DB mode in this lot', () => {
+  it('allows mysql mode only with host/user/name present (no connect)', () => {
     assert.throws(
       () => loadConfig({ DASH_DISABLE_EXTERNAL: '1', DASH_DB_MODE: 'mysql' }),
-      /fixtures uniquement/
+      /incomplet/
     );
+    const c = loadConfig({
+      DASH_DISABLE_EXTERNAL: '1',
+      DASH_DB_MODE: 'mysql',
+      DASH_DB_HOST: '127.0.0.1',
+      DASH_DB_USER: 'dash_local',
+      DASH_DB_NAME: 'dash_disposable',
+    });
+    assert.equal(c.mode, 'mysql');
   });
 });
 
