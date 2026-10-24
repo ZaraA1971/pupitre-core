@@ -33,7 +33,7 @@ Vérifié sur la copie sanitizée et par test automatisé :
 ## Vérifications et résultats
 
 Commande : `cd dash-migration/node-admin-rss && npm test`  
-Résultat : **11/13…** correction : **11 tests, 11 passés**, 0 échec.  
+Résultat : **11 tests, 11 passés**, 0 échec.  
 Journal : `/opt/cursor/artifacts/dash-admin-rss-node-tests.log`.
 
 Couverture : include mort `sendPush`, fragments SQL inbox, prédicat promo/vigie, `send`/`delete`/`delete_all`, alerte (mail+Firebase enregistrés non envoyés), `send_to_desk` avec LLM/fetch injectés, refus LLM sans fallback anglais.
