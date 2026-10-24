@@ -71,8 +71,8 @@ Trafic nginx : **`/admin` et `/client` sont actifs** sur `dash.electronlibre.inf
 | Session / accès | `login.php`, `disconnect.php`, `activate.php`, `register.php`, `connect.php` | session, BDD section | non |
 | Flux live | `index.php` (volumineux), `get_articles.php`, `timeline.php` | `connect_admin`, RSS/`rss_post` | non |
 | Archives / auteurs / graph | `archives.php`, `archives_pdf.php`, `author.php`, `graph.php` | session, admin DB | non |
-| Messages | `messages.php`, `messages_loader.php`, `messages_post.php` | session, `messages`, users | **oui** (`messages.php`) |
-| Notifications UI | `notification_*.php`, `notifications.php`, `inc/notifications*.php` | messages non lus | non |
+| Messages | `messages.php`, `messages_loader.php`, `messages_post.php` | session, `messages`, users | **oui** (`messages.php`) — Node local |
+| Notifications UI | `notification_*.php`, `notifications.php`, `inc/notifications*.php` | messages non lus | non (Node : non lus seulement) |
 | Config / mail / favoris | `config.php`, `mail.php`, `favorites.php`, `user_*` | users, mails | non |
 | Storify / events / aide | `storify.php`, `events.php`, `help.php`, `vcard.php` | divers | non |
 
@@ -82,9 +82,9 @@ Trafic nginx : **`/admin` et `/client` sont actifs** sur `dash.electronlibre.inf
 | --- | --- | --- | --- |
 | Inbox RSS | `index.php`, `index_actions.php`, `get_articles.php` | `rss_post`, thèmes, Firebase push (pas APNS `sendPush`) | include mort seulement |
 | Refresh RSS / cron | `cron.php`, `refresh_rss.php`, `rss_refresh_engine.php`, `check_rss.php`, `verif_rss.php` | feeds, lock, parfois Vigie (`vigie_ingress`) | non (`vigie_ingress_push_infos` ≠ `sendPush`) |
-| Config éditoriale | `config.php`, `config_theme.php`, `config_keyword.php`, `config_author.php` | thèmes, mots-clés, auteurs | non |
+| Config éditoriale | `config.php`, `config_theme.php`, `config_keyword.php`, `config_author.php` | thèmes, mots-clés, auteurs | non (Node : lecture catalogues) |
 | Desk Astro | `send_to_desk.php`, `inc/desk.php` | `POST /api/desk/articles` | non |
-| Envoyés / supprimés / storify | `sent.php`, `deleted.php`, `storify.php`, `edit_*` | `rss_post` | non |
+| Envoyés / supprimés / storify | `sent.php`, `deleted.php`, `storify.php`, `edit_*` | `rss_post` | non (Node : sent/deleted lecture) |
 | Ops / tests | `ops.php`, `test_*.php`, `test-dash-push.php` | diagnostics | non |
 
 ## Prochain périmètre Node recommandé (non commencé)

@@ -128,6 +128,29 @@ export function createFakeClientDb(seed = loadFixtureSeed()) {
       m.has_been_read = 1;
       return true;
     },
+    async countUnread(userId) {
+      return state.messages.filter(
+        (m) => Number(m.to_user) === Number(userId) && Number(m.has_been_read) === 0
+      ).length;
+    },
+    async listUnread(userId) {
+      return state.messages
+        .filter(
+          (m) => Number(m.to_user) === Number(userId) && Number(m.has_been_read) === 0
+        )
+        .sort((a, b) => String(b.date).localeCompare(String(a.date)))
+        .map((m) => {
+          const from = state.users.find((u) => Number(u.id_user) === Number(m.from_user));
+          return {
+            id: m.id,
+            from_user: Number(m.from_user),
+            login_user: from?.login_user || String(m.from_user),
+            text: m.text,
+            date: m.date,
+            id_post: Number(m.id_post) || 0,
+          };
+        });
+    },
     async getPostBrief(idPost) {
       const r = state.rssPost.find((p) => Number(p.id) === Number(idPost));
       if (!r) return null;

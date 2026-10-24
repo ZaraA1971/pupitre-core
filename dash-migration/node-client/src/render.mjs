@@ -111,12 +111,18 @@ export function renderIndexHtml({ login, feed, flash = null }) {
     <a href="/">Flux Live</a>
     <a href="/timeline">Chronologie</a>
     <a href="/messages">Messages</a>
+    <a href="/notifications">Notifications <span class="badge" data-unread="0">0</span></a>
     <a href="/api/feed">API feed JSON</a>
     <a href="/disconnect">Déconnexion</a>
   </div>
   <div id="container">
     ${blocks.join('\n') || '<p>Aucun article dans vos thèmes.</p>'}
   </div>
+  <script>
+    fetch('/api/unread').then(r=>r.json()).then(d=>{
+      document.querySelectorAll('[data-unread]').forEach(el=>{ el.textContent=String(d.count||0); });
+    }).catch(()=>{});
+  </script>
 </body>
 </html>`;
 }
@@ -144,6 +150,7 @@ export function renderTimelineHtml({ login }) {
     <span>${esc(login)}</span>
     <a href="/">Flux Live</a>
     <a href="/messages">Messages</a>
+    <a href="/notifications">Notifications <span data-unread="0">0</span></a>
     <a href="/disconnect">Déconnexion</a>
   </div>
   <div id="my-timeline"><p class="muted">Événements via <a href="/results.json">results.json</a>.</p></div>
@@ -153,6 +160,9 @@ export function renderTimelineHtml({ login }) {
       root.innerHTML = (data.events||[]).map(e=>'<div class="event"><strong>'+e.start+'</strong> — '+e.title+' <em>('+(e.caption||'')+')</em></div>').join('')
         || '<p>Aucun événement.</p>';
     });
+    fetch('/api/unread').then(r=>r.json()).then(d=>{
+      document.querySelectorAll('[data-unread]').forEach(el=>{ el.textContent=String(d.count||0); });
+    }).catch(()=>{});
   </script>
 </body>
 </html>`;
@@ -167,6 +177,7 @@ export function renderMessagesHtml({
   alert = null,
   idPost = 0,
   postBrief = null,
+  unreadCount = 0,
 }) {
   let body;
   if (peer) {
@@ -255,9 +266,60 @@ export function renderMessagesHtml({
     <span>${esc(login)}</span>
     <a href="/">Flux Live</a>
     <a href="/messages">Messages</a>
+    <a href="/notifications">Notifications <strong data-unread="badge">${esc(unreadCount)}</strong></a>
     <a href="/disconnect">Déconnexion</a>
   </div>
   <div id="container">${body}</div>
+</body>
+</html>`;
+}
+
+export function renderNotificationsHtml({ login, unread = [], unreadCount = 0 }) {
+  const items = unread
+    .map(
+      (n) => `<li>
+  <a href="/messages?user=${esc(n.from_user)}&id_message=${esc(n.id)}">
+    <strong>${esc(n.login_user)}</strong>
+    <span class="muted">${esc(n.date)}</span>
+    <p>${n.text}</p>
+  </a>
+</li>`
+    )
+    .join('\n');
+  return `<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Le Dash · Notifications</title>
+  <style>
+    :root { --bg:#eef2ef; --ink:#1a1f1c; --accent:#0b5f4b; --line:#c5d0c8; --card:#fff; --muted:#5c675f; }
+    body { margin:0; font-family:"Iowan Old Style",Palatino,Georgia,serif; color:var(--ink);
+      background:radial-gradient(ellipse 80% 50% at 10% -10%,#d5e6dc,transparent 55%),linear-gradient(180deg,#e8efe9,var(--bg)); }
+    header { padding:1.2rem 1.5rem .8rem; border-bottom:1px solid var(--line); }
+    .banner { padding:.65rem 1.5rem; background:#1a1f1c; color:#eef2ef; font-size:.9rem; }
+    .nav { display:flex; flex-wrap:wrap; gap:.75rem 1.25rem; padding:.85rem 1.5rem; border-bottom:1px solid var(--line); }
+    #container { padding:1rem 1.5rem 3rem; max-width:720px; }
+    ul { list-style:none; padding:0; }
+    li { background:var(--card); border:1px solid var(--line); margin:.55rem 0; padding:.75rem 1rem; }
+    .muted { color:var(--muted); font-size:.9rem; }
+    a { color:var(--ink); text-decoration:none; }
+  </style>
+</head>
+<body>
+  <header><h1><a href="/">Le Dash</a></h1></header>
+  <aside class="banner">Centre de notifications local — messages non lus uniquement (pas de mentions/AJAX PHP). Badge = ${esc(unreadCount)}.</aside>
+  <div class="nav">
+    <span>${esc(login)}</span>
+    <a href="/">Flux Live</a>
+    <a href="/messages">Messages</a>
+    <a href="/notifications">Notifications <strong>${esc(unreadCount)}</strong></a>
+    <a href="/disconnect">Déconnexion</a>
+  </div>
+  <div id="container">
+    <h2>Non lus</h2>
+    <ul>${items || '<li class="muted">Aucune notification.</li>'}</ul>
+  </div>
 </body>
 </html>`;
 }

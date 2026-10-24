@@ -49,4 +49,4 @@ Journaux : `/opt/cursor/artifacts/dash-client-messages-fixtures.log`, `dash-clie
 ## Suite recommandée
 
 1. Ne pas déployer ; ne pas lever `DASH_DISABLE_EXTERNAL`.
-2. Config éditoriale admin restante (`config_*`, sent/deleted) ou notifications UI client — toujours hors webservice HTTP.
+2. ~~Config éditoriale admin (`config_*`, sent/deleted)~~ et ~~notifications UI client~~ — faits (lecture / non lus) ; suite possible : config client / favoris / mail, toujours hors webservice HTTP.

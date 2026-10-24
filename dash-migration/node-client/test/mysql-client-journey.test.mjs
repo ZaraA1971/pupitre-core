@@ -226,4 +226,14 @@ describe('MySQL disposable client journey', { skip: !wantMysql }, () => {
     assert.equal(r.json.push.skipped, true);
     assert.ok(r.json.pushCalls >= 1);
   });
+
+  it('unread notifications on disposable MySQL', async () => {
+    requireDb();
+    const unread = await req(svc.base, '/api/unread', { headers: { Cookie: cookie } });
+    assert.equal(unread.status, 200);
+    assert.equal(unread.json.count, 1);
+    const page = await req(svc.base, '/notifications', { headers: { Cookie: cookie } });
+    assert.equal(page.status, 200);
+    assert.match(page.text, /Salut Alice|Centre de notifications/);
+  });
 });

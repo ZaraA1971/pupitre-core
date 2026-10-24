@@ -11,12 +11,13 @@ import {
   renderIndexHtml,
   renderLoginHtml,
   renderMessagesHtml,
+  renderNotificationsHtml,
   renderTimelineHtml,
 } from './render.mjs';
 import { parseCookies, sessionCookieHeader } from './session.mjs';
 
 /**
- * Local HTTP app — client read + messages (internal sendPush).
+ * Local HTTP app — client read + messages (internal sendPush) + unread notifications.
  */
 export function createApp({ db, sessions, config, push, mailLog } = {}) {
   if (!push || typeof push.sendPush !== 'function') {
@@ -177,6 +178,28 @@ export function createApp({ db, sessions, config, push, mailLog } = {}) {
         return json(res, 200, timelineJson(events));
       }
 
+      // —— Notifications (unread messages only) ——
+      if (req.method === 'GET' && path === '/api/unread') {
+        const count = await db.countUnread(user.id_user);
+        return json(res, 200, { ok: true, count });
+      }
+
+      if (req.method === 'GET' && path === '/notifications') {
+        const [unread, unreadCount] = await Promise.all([
+          db.listUnread(user.id_user),
+          db.countUnread(user.id_user),
+        ]);
+        return html(
+          res,
+          200,
+          renderNotificationsHtml({
+            login: user.login_user,
+            unread,
+            unreadCount,
+          })
+        );
+      }
+
       // —— Messages (internal sendPush) ——
       if (path === '/messages' || path === '/messages_post') {
         if (req.method === 'POST') {
@@ -213,6 +236,7 @@ export function createApp({ db, sessions, config, push, mailLog } = {}) {
         const flash = url.searchParams.get('flash');
         const msgId = Number(url.searchParams.get('id_message') || 0);
         if (msgId > 0) await markRead(db, user.id_user, msgId);
+        const unreadCount = await db.countUnread(user.id_user);
 
         if (peerId > 0) {
           const thread = await listThread(db, user.id_user, peerId, {
@@ -229,6 +253,7 @@ export function createApp({ db, sessions, config, push, mailLog } = {}) {
               thread,
               alert: flash,
               idPost,
+              unreadCount,
             })
           );
         }
@@ -245,6 +270,7 @@ export function createApp({ db, sessions, config, push, mailLog } = {}) {
               idPost: idPost || 1,
               postBrief,
               alert: flash,
+              unreadCount,
             })
           );
         }
@@ -257,6 +283,7 @@ export function createApp({ db, sessions, config, push, mailLog } = {}) {
             login: user.login_user,
             conversations,
             alert: flash,
+            unreadCount,
           })
         );
       }

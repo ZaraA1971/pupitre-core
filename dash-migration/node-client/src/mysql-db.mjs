@@ -184,6 +184,34 @@ export async function createMysqlClientDb(config) {
       return res.affectedRows > 0;
     },
 
+    async countUnread(userId) {
+      const [[row]] = await pool.query(
+        `SELECT COUNT(*) AS c FROM client_messages
+         WHERE to_user = ? AND has_been_read = 0`,
+        [userId]
+      );
+      return Number(row.c || 0);
+    },
+
+    async listUnread(userId) {
+      const [rows] = await pool.query(
+        `SELECT m.id, m.from_user, m.text, m.date, m.id_post, u.login_user
+         FROM client_messages m
+         JOIN client_users u ON u.id_user = m.from_user
+         WHERE m.to_user = ? AND m.has_been_read = 0
+         ORDER BY m.date DESC`,
+        [userId]
+      );
+      return rows.map((m) => ({
+        id: Number(m.id),
+        from_user: Number(m.from_user),
+        login_user: m.login_user,
+        text: m.text,
+        date: m.date,
+        id_post: Number(m.id_post) || 0,
+      }));
+    },
+
     async getPostBrief(idPost) {
       const [rows] = await pool.query(
         `SELECT r.id AS id_post, r.title, r.source, r.link, t.name AS theme
