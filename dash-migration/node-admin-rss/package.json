@@ -1,13 +1,18 @@
 {
   "name": "dash-admin-rss-node",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
   "type": "module",
-  "description": "Isolated Node parity of Le Dash admin RSS actions + Desk bridge. Not deployed.",
+  "description": "Isolated Node parity of Le Dash admin RSS inbox + actions. Fixtures by default. Not deployed.",
   "engines": {
     "node": ">=22.12.0"
   },
   "scripts": {
-    "test": "node --test test/*.test.mjs"
+    "test": "node --test test/*.test.mjs",
+    "start": "node src/server.mjs",
+    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
+  },
+  "optionalDependencies": {
+    "mysql2": "^3.14.0"
   }
 }
