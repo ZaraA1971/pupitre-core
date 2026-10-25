@@ -6,10 +6,11 @@ Hôte : `rag-server-EL` · surface `https://electronlibre.info/admin/rss/` (ongl
 
 ## Livré
 
-Édition des catalogues éditoriaux (parité utile des `config_*.php`) :
+Édition des catalogues éditoriaux (Sources en premier) (parité utile des `config_*.php`) :
 
 | Section | Actions |
 | --- | --- |
+| **Sources** | créer / modifier / supprimer (`rss_url`) ; audience éditorial|Vigie + thème Vigie ; filtres |
 | **Thèmes** | créer, renommer, supprimer (posts liés remis en flux) |
 | **Mots-clés** | filtre A–Z / 0–9, créer, renommer, supprimer ; **alias** créer / modifier / supprimer |
 | **Auteurs** | liste + fiche (name, nom, prénom, média, twitter, mail, tél, site, description) ; créer / enregistrer / supprimer |
