@@ -1,0 +1,80 @@
+# Admin Dash — UI Astro RSS (PHP admin coupé).
+# Rollback: restore *.php-cut-backup-* / *.basic-auth-backup-*
+
+# Assets / app Astro
+location ^~ /_astro/ {
+    proxy_pass http://127.0.0.1:4322;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Cookie $http_cookie;
+    proxy_cache off;
+}
+
+# Desk SPA (login / session UI)
+location = /desk {
+    return 302 /desk/;
+}
+location ^~ /desk/ {
+    alias /var/www/el-astro/desk/;
+    index index.html;
+    add_header Cache-Control "no-store";
+}
+
+# API RSS + Desk (session el_session)
+location ^~ /api/rss {
+    proxy_pass http://127.0.0.1:8787;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+    proxy_buffering off;
+    proxy_cache off;
+}
+
+location ^~ /api/desk {
+    proxy_pass http://127.0.0.1:8787;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Cookie $http_cookie;
+    proxy_set_header Authorization $http_authorization;
+    proxy_buffering off;
+    proxy_cache off;
+}
+
+# Canonical new admin UI
+location ^~ /admin/rss {
+    proxy_pass http://127.0.0.1:4322;
+    proxy_http_version 1.1;
+    proxy_set_header Host $host;
+    proxy_set_header X-Real-IP $remote_addr;
+    proxy_set_header X-Forwarded-For $remote_addr;
+    proxy_set_header X-Forwarded-Proto $scheme;
+    proxy_set_header Cookie $http_cookie;
+    proxy_cache off;
+}
+
+# Anciennes URLs PHP admin → nouvelle UI (coupe le PHP)
+location = /admin {
+    return 301 /admin/rss/;
+}
+location = /admin/ {
+    return 302 /admin/rss/;
+}
+location = /admin/index.php {
+    return 302 /admin/rss/;
+}
+location ~ ^/admin/.*\.php$ {
+    return 410;
+}
+location ^~ /admin/ {
+    return 302 /admin/rss/;
+}
