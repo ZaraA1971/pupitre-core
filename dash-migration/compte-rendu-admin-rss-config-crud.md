@@ -30,9 +30,9 @@ Backup serveur : `/var/www/el-astro/backups/admin-rss-config-*`.
 Déploiement : `./scripts/deploy.sh all` (tests + web + api).
 
 
-## Espace Vigie (séparé)
+## Espace Vigie (config seule)
 
-- Nav principale : onglet **Espace Vigie** (inbox `audience=vigie` + compteur).
+- Pas d’onglet flux Vigie dans la nav principale (voir `compte-rendu-admin-rss-entities-vigie.md`).
 - Config : sous-onglet **Espace Vigie** pour les sources Vigie ; **Sources** = éditorial seul.
 ## Layout
 
