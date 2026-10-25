@@ -8,29 +8,33 @@ Hôte : `rag-server-EL`.
 
 Couper l’ancienne UI PHP derrière  
 `https://dash.electronlibre.info/admin/index.php`  
-et servir l’UI Astro RSS à la place.
+et aboutir sur l’UI Astro RSS avec session Desk valide.
 
-## URL après bascule
+## Cause du « Accès pupitre refusé »
+
+Premier essai : proxy Astro + API sur le host `dash`.  
+Le cookie `el_session` est **host-only** (pas de `Domain=.electronlibre.info`) ; la session Desk créée sur `electronlibre.info` n’est pas envoyée à `dash`.  
+De plus `/api/auth/login` n’était pas proxifié sur dash → impossible de se reconnecter proprement.  
+Résultat UI : message API `Accès pupitre refusé` (403 `/api/desk/me`).
+
+## URL après bascule (correctif auth)
 
 | URL | Comportement |
 | --- | --- |
-| `https://dash.electronlibre.info/admin/index.php` | **302** → `/admin/rss/` |
-| `https://dash.electronlibre.info/admin/` | **302** → `/admin/rss/` |
-| `https://dash.electronlibre.info/admin/rss/` | **200** Astro — titre « Administration RSS \| ElectronLibre », marqueur « Articles RSS » |
-| `https://dash.electronlibre.info/admin/*.php` (autres) | **410** (snippet) ou redirection vers `/admin/rss/` pour les chemins prefix |
-
-L’ancienne page « Administration · Electron Libre » (PHP) n’est plus renvoyée sur ces URLs.
+| `https://dash.electronlibre.info/admin/index.php` | **302** → `https://electronlibre.info/admin/rss/` |
+| `https://dash.electronlibre.info/admin/` | **302** → même cible |
+| `https://dash.electronlibre.info/admin/rss/` | **302** → même cible |
+| `https://dash.electronlibre.info/admin/*.php` (autres) | **410** |
+| `https://electronlibre.info/admin/rss/` | **200** Astro — auth Desk inchangée |
 
 ## Modifications serveur
 
 | Élément | Action |
 | --- | --- |
-| `/etc/nginx/snippets/dash-admin-auth.conf` | Proxy Astro `:4322` (`/admin/rss`, `/_astro/`), API `:8787` (`/api/rss`, `/api/desk`), Desk static `/desk/`, redirections `/admin` → `/admin/rss/`, PHP admin → 302/410 |
-| Backup snippet | `dash-admin-auth.conf.php-cut-backup-20261025-130831` (+ basic-auth backup antérieur) |
-| `/etc/nginx/sites-available/dash.electronlibre.info` | Retrait du `location = /admin` (conflit duplicate avec le snippet) |
-| Backup site | `dash.electronlibre.info.php-cut-site-fix-*` |
-| `sites-enabled` | Suppression du symlink parasite `dash.electronlibre.info.php-cut-backup-*` (même cible → double `server_name`) |
-| nginx | `nginx -t` OK + `systemctl reload nginx` |
+| `/etc/nginx/snippets/dash-admin-auth.conf` | Redirections absolues vers `electronlibre.info/admin/rss/` ; PHP admin 410 |
+| Backups snippet | `*.php-cut-backup-*`, `*.auth-fix-backup-*`, `*.basic-auth-backup-*` |
+| Site vhost | `location = /admin` retiré (conflit) ; symlink backup `sites-enabled` retiré |
+| nginx | `nginx -t` OK + reload |
 
 Snapshots repo :  
 `dash-migration/deploy-snapshots/dash-admin-auth.conf.astro-cut`  
@@ -40,19 +44,14 @@ Snapshots repo :
 
 ```text
 curl -sSI https://dash.electronlibre.info/admin/index.php
-  → HTTP/2 302  Location: /admin/rss/
+  → HTTP/2 302  Location: https://electronlibre.info/admin/rss/
 
-curl -sS -L https://dash.electronlibre.info/admin/index.php
+curl -sS -L …/admin/index.php
+  → url=https://electronlibre.info/admin/rss/
   → title Administration RSS | ElectronLibre
-  → Articles RSS présent ; titre PHP absent
 ```
 
-Services locaux actifs : `el-astro-web` (:4322), `el-astro-rag-proxy` (:8787).
-
-## Auth
-
-Session Desk (`el_session`) via `/api/desk` proxifié sur le même host `dash.electronlibre.info`.  
-Le client `/client/` Dash PHP n’est pas touché.
+Sans session Desk sur `electronlibre.info`, l’UI demande toujours une connexion Pupitre (comportement normal) — pas le 403 « host dash ».
 
 ## Rollback
 
@@ -60,7 +59,7 @@ Le client `/client/` Dash PHP n’est pas touché.
 # sur rag-server-EL
 cp -a /etc/nginx/snippets/dash-admin-auth.conf.php-cut-backup-20261025-130831 \
       /etc/nginx/snippets/dash-admin-auth.conf
-# restaurer aussi le bloc location = /admin dans le site
-# (backup: /etc/nginx/sites-available/dash.electronlibre.info.php-cut-site-fix-*)
+# ou le backup auth-fix le plus récent si besoin
+# restaurer aussi le site *.php-cut-site-fix-* si le bloc location = /admin manque
 nginx -t && systemctl reload nginx
 ```
