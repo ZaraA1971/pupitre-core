@@ -28,6 +28,10 @@ Hôte : `rag-server-EL` · surface `https://electronlibre.info/admin/rss/` (ongl
 Backup serveur : `/var/www/el-astro/backups/admin-rss-config-*`.  
 Déploiement : `./scripts/deploy.sh all` (tests + web + api).
 
+## Layout
+
+Corrigé : en onglet Config, `rss-admin__layout--config` force une seule colonne pleine largeur (évite le panneau coincé dans la piste 240px).
+
 ## Hors lot (suite)
 
 - Upload images thèmes / auteurs (`dash_img/…`)
