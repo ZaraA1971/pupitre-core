@@ -49,15 +49,18 @@ function parseSqlTs(raw) {
 export function createRssLock({
   db,
   nowMs = () => Date.now(),
+  stamp = null,
   lockConfig = {},
   pair = statusPair(),
 } = {}) {
   const cfg = { ...DEFAULT_LOCK_CONFIG, ...lockConfig };
+  const makeTs =
+    typeof stamp === 'function' ? stamp : () => sqlNow(nowMs);
 
   async function setBusy(busy) {
     await db.setRefreshStatus(busy ? pair.busy : pair.idle);
     if (busy && typeof db.touchRefreshActivity === 'function') {
-      await db.touchRefreshActivity(sqlNow(nowMs()));
+      await db.touchRefreshActivity(makeTs());
     }
   }
 
@@ -145,4 +148,26 @@ export function createRssLock({
 export function sqlNow(nowMsFn = () => Date.now()) {
   const ms = typeof nowMsFn === 'function' ? nowMsFn() : Number(nowMsFn);
   return new Date(ms).toISOString().slice(0, 19).replace('T', ' ');
+}
+
+/**
+ * Format SQL DATETIME in an IANA timezone (PHP cron uses Europe/Paris).
+ * @param {number|(() => number)} nowMsFn
+ * @param {string} timeZone
+ */
+export function sqlNowInZone(nowMsFn = () => Date.now(), timeZone = 'Europe/Paris') {
+  const ms = typeof nowMsFn === 'function' ? nowMsFn() : Number(nowMsFn);
+  if (!timeZone || timeZone === 'UTC') return sqlNow(ms);
+  const parts = new Intl.DateTimeFormat('en-GB', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hourCycle: 'h23',
+  }).formatToParts(new Date(ms));
+  const get = (type) => parts.find((p) => p.type === type)?.value || '00';
+  return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
 }

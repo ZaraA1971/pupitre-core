@@ -6,7 +6,7 @@ import {
   manualRefreshOptions,
   runRssRefresh,
 } from './rss-refresh-engine.mjs';
-import { createRssLock, sqlNow } from './rss-lock.mjs';
+import { createRssLock, sqlNow, sqlNowInZone } from './rss-lock.mjs';
 import { createVigieIngress } from './vigie-ingress.mjs';
 
 /**
@@ -17,6 +17,8 @@ import { createVigieIngress } from './vigie-ingress.mjs';
  * @param {Function} [opts.hashItem]
  * @param {() => number} [opts.nowMs]
  * @param {boolean} [opts.disableExternal]
+ * @param {boolean} [opts.allowProdRefresh]
+ * @param {string} [opts.timeZone]
  * @param {object} [opts.vigie]
  */
 export async function runRefreshOnce({
@@ -26,15 +28,22 @@ export async function runRefreshOnce({
   hashItem,
   nowMs = () => Date.now(),
   disableExternal = true,
+  allowProdRefresh = false,
+  timeZone = 'UTC',
   vigie,
 } = {}) {
-  if (!disableExternal) {
+  if (!disableExternal && !allowProdRefresh) {
     throw new Error(
-      'runRefreshOnce refuse disableExternal=false sur ce banc (feeds/Vigie réels interdits).'
+      'runRefreshOnce refuse disableExternal=false hors prod refresh explicite.'
     );
   }
 
-  const lock = createRssLock({ db, nowMs });
+  const stamp = () =>
+    timeZone && timeZone !== 'UTC'
+      ? sqlNowInZone(nowMs, timeZone)
+      : sqlNow(nowMs);
+
+  const lock = createRssLock({ db, nowMs, stamp });
   await lock.tryUnlock();
   if (await lock.isLocked()) {
     return {
@@ -46,6 +55,7 @@ export async function runRefreshOnce({
   }
 
   await lock.setBusy(true);
+
   const options = mode === 'cron' ? cronRefreshOptions() : manualRefreshOptions();
   const vigieClient =
     vigie ||
@@ -60,9 +70,10 @@ export async function runRefreshOnce({
       hashItem,
       nowMs,
       vigie: vigieClient,
+      stamp,
       ...options,
     });
-    const ts = sqlNow(nowMs);
+    const ts = stamp();
     await db.setLastRefresh(ts);
     if (typeof db.touchRefreshActivity === 'function') {
       await db.touchRefreshActivity(ts);

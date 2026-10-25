@@ -1,5 +1,6 @@
 import {
   assertLoopbackDisposableMysql,
+  assertProdRefreshAllowed,
   assertRefreshMysqlWritesAllowed,
 } from './config.mjs';
 import {
@@ -18,7 +19,11 @@ import {
  * Schema init + refresh writes only when DASH_DB_ALLOW_SCHEMA_INIT=1.
  */
 export async function createMysqlAdminDb(config) {
-  assertLoopbackDisposableMysql(config);
+  if (config.prodRefresh) {
+    assertProdRefreshAllowed(config);
+  } else {
+    assertLoopbackDisposableMysql(config);
+  }
 
   let mysql;
   try {
@@ -44,7 +49,7 @@ export async function createMysqlAdminDb(config) {
 
   await pool.query('SELECT 1');
 
-  if (config.allowSchemaInit) {
+  if (config.allowSchemaInit && !config.prodRefresh) {
     await initDisposableSchema(pool);
   }
 
@@ -489,22 +494,33 @@ export async function createMysqlAdminDb(config) {
     },
 
     /**
-     * Purge using injectable cutoff (test clock), not server NOW() —
-     * documents deviation from PHP DATE_SUB(NOW(), …) for determinism.
+     * Purge older posts.
+     * Prod: PHP parity via DATE_SUB(NOW(), INTERVAL ? DAY).
+     * Disposable benches: injectable cutoff for deterministic tests.
      */
     async deleteOlderThanDays(days, nowMs = Date.now()) {
       requireRefreshWrites();
       if (days < 1) return 0;
-      const cutoff = new Date(nowMs - days * 864e5)
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
       let removed = 0;
       for (;;) {
-        const [hashes] = await pool.query(
-          'SELECT hash FROM rss_post WHERE date < ? LIMIT 2000',
-          [cutoff]
-        );
+        let hashes;
+        if (config.prodRefresh) {
+          const [rows] = await pool.query(
+            'SELECT hash FROM rss_post WHERE date < DATE_SUB(NOW(), INTERVAL ? DAY) LIMIT 2000',
+            [days]
+          );
+          hashes = rows;
+        } else {
+          const cutoff = new Date(nowMs - days * 864e5)
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' ');
+          const [rows] = await pool.query(
+            'SELECT hash FROM rss_post WHERE date < ? LIMIT 2000',
+            [cutoff]
+          );
+          hashes = rows;
+        }
         if (!hashes.length) break;
         const list = hashes.map((h) => h.hash);
         const ph = list.map(() => '?').join(',');

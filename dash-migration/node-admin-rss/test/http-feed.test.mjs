@@ -72,6 +72,12 @@ describe('feed HTTP config guards', () => {
     assert.throws(() => assertSafeFeedUrl('file:///tmp/x.xml'), /Protocole/);
     assert.throws(() => assertSafeFeedUrl('https://169.254.169.254/latest'), /refusé/);
   });
+
+  it('normalizes feed:// to http://', () => {
+    const u = assertSafeFeedUrl('feed://www.example.test/rss.xml');
+    assert.equal(u.protocol, 'http:');
+    assert.equal(u.hostname, 'www.example.test');
+  });
 });
 
 describe('HTTP feed loader + refresh (loopback)', () => {

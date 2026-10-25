@@ -36,6 +36,7 @@ export async function runRssRefresh({
   loadFeed,
   hashItem = defaultFixtureHash,
   nowMs = () => Date.now(),
+  stamp = null,
   vigie = null,
   mode = 'manual',
   skipMarkBin = false,
@@ -68,8 +69,15 @@ export async function runRssRefresh({
 
   const kwData = await db.loadKeywordData();
   const feeds = [];
+  const feedErrors = [];
   for (const url of feedUrls) {
-    feeds.push(await loadFeed(url));
+    try {
+      feeds.push(await loadFeed(url));
+    } catch (err) {
+      // Parity with SimplePie multi-feed: one bad URL must not abort the cron.
+      feedErrors.push({ url, error: String(err?.message || err) });
+      feeds.push({ feedUrl: url, feedTitle: '', items: [] });
+    }
   }
 
   // Flatten items; each item already carries feedUrl from parser
@@ -84,7 +92,7 @@ export async function runRssRefresh({
     }
   }
 
-  return processItems({
+  const stats = await processItems({
     db,
     items,
     rssUrlMap,
@@ -93,12 +101,19 @@ export async function runRssRefresh({
     kwData,
     hashItem,
     nowMs,
+    stamp: typeof stamp === 'function' ? stamp : () => sqlNow(nowMs),
     vigie,
     skipMarkBin,
     deleteOlderThanDays,
     deleteStaleBinUnsent,
     progress,
   });
+  return {
+    ...stats,
+    feedsOk: feedUrls.length - feedErrors.length,
+    feedsFailed: feedErrors.length,
+    feedErrors: feedErrors.slice(0, 20),
+  };
 }
 
 async function processItems({
@@ -110,6 +125,7 @@ async function processItems({
   kwData,
   hashItem,
   nowMs,
+  stamp = () => sqlNow(nowMs),
   vigie,
   skipMarkBin,
   deleteOlderThanDays,
@@ -142,7 +158,7 @@ async function processItems({
     if (progress && (idx === 1 || idx % 50 === 0 || idx === num)) {
       await db.setRefreshCurrent(idx);
       if (typeof db.touchRefreshActivity === 'function') {
-        await db.touchRefreshActivity(sqlNow(nowMs));
+        await db.touchRefreshActivity(stamp());
       }
     }
 
@@ -179,7 +195,7 @@ async function processItems({
     if (item.dateMs && Number.isFinite(item.dateMs)) {
       date = new Date(item.dateMs).toISOString().slice(0, 19).replace('T', ' ');
     } else {
-      date = sqlNow(nowMs);
+      date = stamp();
     }
 
     await db.insertRssPost({

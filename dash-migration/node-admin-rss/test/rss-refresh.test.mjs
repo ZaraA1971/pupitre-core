@@ -306,7 +306,28 @@ describe('fixture feed ingest', () => {
     assert.ok(db.state.rss_post.some((x) => x.hash === 'bin-keep'));
   });
 
-  it('refuses unknown feed URL (no network fallback)', async () => {
+    it('continues when one feed loadFeed throws', async () => {
+      const db = createFakeAdminDb(refreshSeed());
+      const base = loader();
+      const loadFeed = async (url) => {
+        if (url === FEED_URLS.ars) throw new Error('HTTP 403 fixture');
+        return base(url);
+      };
+      const result = await runRefreshOnce({
+        mode: 'manual',
+        db,
+        loadFeed,
+        hashItem: defaultFixtureHash,
+        disableExternal: true,
+        nowMs: () => Date.parse('2026-10-21T08:00:00Z'),
+      });
+      assert.equal(result.ok, true);
+      assert.equal(result.stats.feedsFailed, 1);
+      assert.ok(result.stats.inserted >= 1);
+      await db.close();
+    });
+
+  it('skips unknown fixture URL without aborting the run', async () => {
     const db = createFakeAdminDb(
       refreshSeed({
         rss_url: [
@@ -318,16 +339,16 @@ describe('fixture feed ingest', () => {
         ],
       })
     );
-    await assert.rejects(
-      () =>
-        runRefreshOnce({
-          mode: 'manual',
-          db,
-          loadFeed: loader(),
-          disableExternal: true,
-        }),
-      /Fixture feed introuvable/
-    );
+    const result = await runRefreshOnce({
+      mode: 'manual',
+      db,
+      loadFeed: loader(),
+      disableExternal: true,
+    });
+    assert.equal(result.ok, true);
+    assert.equal(result.stats.feedsFailed, 1);
+    assert.match(String(result.stats.feedErrors?.[0]?.error || ''), /Fixture feed introuvable/);
+    await db.close();
   });
 
   it('busy lock short-circuits cron with exitCode 2', async () => {

@@ -12,9 +12,14 @@ const DEFAULT_TIMEOUT_MS = 20_000;
  * @returns {URL}
  */
 export function assertSafeFeedUrl(url) {
+  let raw = String(url || '').trim();
+  // SimplePie accepts feed:// — normalize like browsers do.
+  if (raw.startsWith('feed://')) {
+    raw = `http://${raw.slice('feed://'.length)}`;
+  }
   let parsed;
   try {
-    parsed = new URL(String(url || ''));
+    parsed = new URL(raw);
   } catch {
     throw new Error(`URL de flux invalide: ${url}`);
   }
