@@ -17,6 +17,8 @@ const DISPOSABLE_DB_NAME_RE = /(disposable|jetable|_test$|^test_|dash_test)/i;
 export function loadConfig(env = process.env) {
   const mode = String(env.DASH_DB_MODE || 'fixtures').toLowerCase();
   const disableExternal = String(env.DASH_DISABLE_EXTERNAL ?? '1') !== '0';
+  /** Narrow escape: HTTP(S) RSS fetch only. Does not enable Desk/Vigie/Firebase/LLM. */
+  const allowFeedHttp = String(env.DASH_ALLOW_FEED_HTTP || '') === '1';
   const allowRemote = String(env.DASH_DB_ALLOW_REMOTE || '') === '1';
   const host = env.DASH_DB_HOST || '';
   const user = env.DASH_DB_USER || '';
@@ -53,6 +55,7 @@ export function loadConfig(env = process.env) {
   return {
     mode,
     disableExternal,
+    allowFeedHttp,
     allowRemote,
     dbHost: host || 'localhost',
     dbUser: user,
@@ -91,6 +94,22 @@ export function assertLoopbackDisposableMysql(config) {
   if (!DISPOSABLE_DB_NAME_RE.test(name)) {
     throw new ConfigError(
       `Nom de schéma non reconnu comme jetable (${name}). Exiger disposable|jetable|_test|test_ dans le nom.`
+    );
+  }
+}
+
+/**
+ * HTTP feed fetch for qualif. Keeps DASH_DISABLE_EXTERNAL=1 (no Vigie/Desk).
+ */
+export function assertFeedHttpAllowed(config) {
+  if (!config?.allowFeedHttp) {
+    throw new ConfigError(
+      'Fetch HTTP des flux refusé sans DASH_ALLOW_FEED_HTTP=1 (qualif contrôlée uniquement).'
+    );
+  }
+  if (!config.disableExternal) {
+    throw new ConfigError(
+      'DASH_DISABLE_EXTERNAL=1 requis même avec DASH_ALLOW_FEED_HTTP=1 (Vigie/Desk restent coupés).'
     );
   }
 }

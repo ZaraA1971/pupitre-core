@@ -60,7 +60,8 @@ export function parseFeedXml(xml, meta = {}) {
     const feedTitle = nettoyerTexteAvance(decodeXmlEntities(firstTag(trimmed, 'title')));
     const entries = trimmed.match(/<entry\b[\s\S]*?<\/entry>/gi) || [];
     const items = entries.map((entry) => {
-      const title = nettoyerTexteAvance(decodeXmlEntities(firstTag(entry, 'title')));
+      const titleRaw = decodeXmlEntities(firstTag(entry, 'title')).trim();
+      const title = nettoyerTexteAvance(titleRaw);
       let link = '';
       const linkTags = entry.match(/<link\b[^>]*>/gi) || [];
       for (const lt of linkTags) {
@@ -85,6 +86,7 @@ export function parseFeedXml(xml, meta = {}) {
       return {
         id: id || link,
         title,
+        titleRaw,
         text,
         link,
         author,
@@ -100,7 +102,10 @@ export function parseFeedXml(xml, meta = {}) {
   const feedTitle = nettoyerTexteAvance(decodeXmlEntities(firstTag(channel, 'title')));
   const itemBlocks = channel.match(/<item\b[\s\S]*?<\/item>/gi) || [];
   const items = itemBlocks.map((item) => {
-    const title = nettoyerTexteAvance(decodeXmlEntities(firstTag(item, 'title')));
+    // titleRaw: closest input for simplePieGetIdTrue (before nettoyerTexteAvance).
+    // Entity edge-cases vs SimplePie sanitize remain documented separately.
+    const titleRaw = decodeXmlEntities(firstTag(item, 'title')).trim();
+    const title = nettoyerTexteAvance(titleRaw);
     const link = decodeXmlEntities(firstTag(item, 'link')).trim();
     const guid = decodeXmlEntities(firstTag(item, 'guid')).trim();
     const description = decodeXmlEntities(
@@ -117,6 +122,7 @@ export function parseFeedXml(xml, meta = {}) {
     return {
       id: guid || link,
       title,
+      titleRaw,
       text,
       link,
       author,

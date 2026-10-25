@@ -12,9 +12,11 @@
     "test:mysql": "node --test --test-concurrency=1 test/mysql-inbox-journey.test.mjs",
     "test:mysql-refresh": "node --test --test-concurrency=1 test/mysql-rss-refresh.test.mjs",
     "test:refresh": "node --test test/rss-refresh.test.mjs",
+    "test:feed-http": "node --test test/simplepie-hash.test.mjs test/http-feed.test.mjs",
     "test:desk": "node --test --test-concurrency=1 test/desk-local.test.mjs",
     "seed:mysql": "node scripts/seed-mysql.mjs",
     "refresh:once": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node scripts/refresh-once.mjs",
+    "refresh:http-local": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 DASH_ALLOW_FEED_HTTP=1 node scripts/refresh-http-local.mjs",
     "start": "node src/server.mjs",
     "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
     "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"

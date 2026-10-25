@@ -9,7 +9,8 @@
 import { loadConfig, ConfigError } from '../src/config.mjs';
 import { loadFixtureSeed } from '../src/db.mjs';
 import { createFakeAdminDb } from '../src/fake-db.mjs';
-import { createFixtureFeedLoader } from '../src/feed-parse.mjs';
+import { createFixtureFeedLoader, defaultFixtureHash } from '../src/feed-parse.mjs';
+import { simplePieHashItem } from '../src/simplepie-hash.mjs';
 import { runRefreshOnce } from '../src/run-refresh.mjs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -56,11 +57,19 @@ const loadFeed = createFixtureFeedLoader({
 });
 
 const mode = process.argv.includes('--cron') ? 'cron' : 'manual';
+const useSimplePie = process.argv.includes('--simplepie-hash');
 const result = await runRefreshOnce({
   mode,
   db,
   loadFeed,
+  hashItem: useSimplePie ? simplePieHashItem : defaultFixtureHash,
   disableExternal: true,
 });
-console.log(JSON.stringify(result, null, 2));
+console.log(
+  JSON.stringify(
+    { ...result, hashMode: useSimplePie ? 'simplepie_get_id_true' : 'fixture_guid' },
+    null,
+    2
+  )
+);
 await db.close();
