@@ -17,6 +17,8 @@
     "seed:mysql": "node scripts/seed-mysql.mjs",
     "refresh:once": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node scripts/refresh-once.mjs",
     "refresh:http-local": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 DASH_ALLOW_FEED_HTTP=1 node scripts/refresh-http-local.mjs",
+    "refresh:shadow": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 DASH_ALLOW_FEED_HTTP=1 DASH_DB_ALLOW_SCHEMA_INIT=1 node scripts/refresh-shadow.mjs",
+    "test:shadow": "node --test test/shadow-refresh.test.mjs",
     "start": "node src/server.mjs",
     "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
     "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"

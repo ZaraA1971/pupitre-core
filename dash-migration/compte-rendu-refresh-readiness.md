@@ -54,7 +54,7 @@ Comportements couverts : lock idle/busy/stale/phantom, ingest fixtures, dédup h
 ## Suite recommandée (ordre)
 
 1. Qualif contrôlée : `loadFeed` HTTP + hash de parité (ou table de migration de hash) sur une DB non-prod.  
-   → **Fait en banc** le 25 oct. 2026 : voir `compte-rendu-refresh-http-hash.md` (hash `get_id(true)` + HTTP loopback). Reste : vrais flux / DB miroir.  
-2. Déployer un worker Node one-shot (`refresh:once` mode cron) derrière un cron, **en parallèle** du PHP (lecture seule / dry-run stats) ou sur schéma miroir.  
+   → **Fait** : `compte-rendu-refresh-http-hash.md` + `compte-rendu-refresh-shadow.md` (vrais flux → `dash_disposable`, matchRate hash prod **1.0** sur échantillon Guardian).  
+2. Déployer un worker Node one-shot derrière un cron, **en parallèle** du PHP (même hôte / dry-run) — script `refresh:shadow` prêt, **timer système pas encore installé**.  
 3. Bascule : Node seul → observer inbox Astro + `refresh_rss` + logs.  
 4. **Ensuite** retirer PHP du pipeline Dash (`dash-cron` + chemins refresh admin PHP).
