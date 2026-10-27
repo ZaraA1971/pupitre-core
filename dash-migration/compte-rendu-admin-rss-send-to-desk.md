@@ -37,3 +37,10 @@ Parité `send_to_desk.php` + `inc/desk.php` dans EL Astro :
 - Unit tests `admin-dash-send-to-desk.test.mjs` : OK  
 - Deploy `all` puis `api` : health OK  
 - Page admin contient `data-action="to_desk"`
+
+## Correctif client (27 oct. 2026)
+
+Le flux `/client` filtre par `id_theme`. **Envoyer au Pupitre** envoie aussi vers le client :
+
+- `themeId` obligatoire dans l’UI
+- `markDeskSent` : `sent=1` + `id_theme` + `breve_spip='1'`
