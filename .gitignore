@@ -3,3 +3,7 @@ node_modules/
 *.log
 .env
 .env.*
+
+# Clone de travail Astro (dépôt séparé) — ne pas versionner ici.
+/EL_ASTRO_CMS/
+diagnostic-mcp-cursor-bridge.md
