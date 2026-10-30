@@ -1,0 +1,152 @@
+{
+  "admin/index.php": {
+    "sha256_original": "c532656acbb9d936c002ab22f21cd01a8f35131aabd34ab0b7617f95bbb84170",
+    "bytes_original": 16051,
+    "sha256_sanitized": "c532656acbb9d936c002ab22f21cd01a8f35131aabd34ab0b7617f95bbb84170",
+    "plain_secret_remaining": false
+  },
+  "admin/index_actions.php": {
+    "sha256_original": "9b46f695d7d177e66204a03bf097f0f577adfd5bcc98909af5d4780d71efc915",
+    "bytes_original": 7040,
+    "sha256_sanitized": "9b46f695d7d177e66204a03bf097f0f577adfd5bcc98909af5d4780d71efc915",
+    "plain_secret_remaining": false
+  },
+  "admin/send_to_desk.php": {
+    "sha256_original": "d081c7c1d4ee631212367408c349623b3c70f0a41f83e04ee347ac14336258ea",
+    "bytes_original": 6085,
+    "sha256_sanitized": "d081c7c1d4ee631212367408c349623b3c70f0a41f83e04ee347ac14336258ea",
+    "plain_secret_remaining": false
+  },
+  "admin/get_articles.php": {
+    "sha256_original": "49289109df67b576ac8192156d8ef22b3d1982f2a3a672379844b75a05045060",
+    "bytes_original": 2147,
+    "sha256_sanitized": "49289109df67b576ac8192156d8ef22b3d1982f2a3a672379844b75a05045060",
+    "plain_secret_remaining": false
+  },
+  "admin/header.php": {
+    "sha256_original": "3401f0874af28a2b56a87b82ca390f505bb3ec648108f8ae1f862f05c5cd4dcc",
+    "bytes_original": 4281,
+    "sha256_sanitized": "3401f0874af28a2b56a87b82ca390f505bb3ec648108f8ae1f862f05c5cd4dcc",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/desk.php": {
+    "sha256_original": "330c3df96ebf1c2d8a94cd8565f613258882d7d059ca64eb3c1049d307e3a3c2",
+    "bytes_original": 4112,
+    "sha256_sanitized": "330c3df96ebf1c2d8a94cd8565f613258882d7d059ca64eb3c1049d307e3a3c2",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/posts.php": {
+    "sha256_original": "21e1e0964285cf4b4171615e26b1645af2a3b7053293f3086f3e9aa6909cba56",
+    "bytes_original": 2697,
+    "sha256_sanitized": "21e1e0964285cf4b4171615e26b1645af2a3b7053293f3086f3e9aa6909cba56",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/lists.php": {
+    "sha256_original": "22a0fd63ea5ecc6c34444857368cdd61bc949b331d88f2b22e1315fb041d3d63",
+    "bytes_original": 4175,
+    "sha256_sanitized": "22a0fd63ea5ecc6c34444857368cdd61bc949b331d88f2b22e1315fb041d3d63",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/bootstrap.php": {
+    "sha256_original": "4ad77851ce96f94faed804463c9ed5906eafc038ad0a224e1999c5c84800a2a9",
+    "bytes_original": 482,
+    "sha256_sanitized": "4ad77851ce96f94faed804463c9ed5906eafc038ad0a224e1999c5c84800a2a9",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/helpers.php": {
+    "sha256_original": "e67d2bbb7ae000739b06ec12035b5c452e24842b0963c9853a57b10bb09c2cd0",
+    "bytes_original": 95,
+    "sha256_sanitized": "e67d2bbb7ae000739b06ec12035b5c452e24842b0963c9853a57b10bb09c2cd0",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/vigie_ingress.php": {
+    "sha256_original": "5801c93c05d185019bf58e53bc55ee9a48e6f7d337d429defbbcc9d273895b26",
+    "bytes_original": 1864,
+    "sha256_sanitized": "3bc36811befeefce01403e38920a9c8b181a3d4f7c515a6c243f222a753025c5",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/fetch-article.php": {
+    "sha256_original": "e77e69ba93e75c4dd2f4df671f53dc939a31f21d5a36d771d7ee0acc8e3fe35a",
+    "bytes_original": 17230,
+    "sha256_sanitized": "e77e69ba93e75c4dd2f4df671f53dc939a31f21d5a36d771d7ee0acc8e3fe35a",
+    "plain_secret_remaining": false
+  },
+  "admin/functions.php": {
+    "sha256_original": "b04a2ca52179d7a919c064d677c8b4108633d4c59f01b5625e8d16be547c6b2f",
+    "bytes_original": 537,
+    "sha256_sanitized": "b04a2ca52179d7a919c064d677c8b4108633d4c59f01b5625e8d16be547c6b2f",
+    "plain_secret_remaining": false
+  },
+  "admin/functions-ia.php": {
+    "sha256_original": "ca0e57382f076ecfc6d2ae977af3c646c3bfeefee145d1285252c4082c741eb3",
+    "bytes_original": 4412,
+    "sha256_sanitized": "ca0e57382f076ecfc6d2ae977af3c646c3bfeefee145d1285252c4082c741eb3",
+    "plain_secret_remaining": false
+  },
+  "shared/bootstrap.php": {
+    "sha256_original": "c497a6d65d2e879cff13b4411d24f437f86dde8d51eb25724418499a190d1d28",
+    "bytes_original": 3810,
+    "sha256_sanitized": "c497a6d65d2e879cff13b4411d24f437f86dde8d51eb25724418499a190d1d28",
+    "plain_secret_remaining": false
+  },
+  "shared/dash/Helpers.php": {
+    "sha256_original": "bf29a0067a19cd42142fd991751940a144abc62781181919f96871ff90e0de26",
+    "bytes_original": 3570,
+    "sha256_sanitized": "bf29a0067a19cd42142fd991751940a144abc62781181919f96871ff90e0de26",
+    "plain_secret_remaining": false
+  },
+  "admin/inc/rss-filter.php": {
+    "sha256_sanitized": "cb61d8d9ed44196c1c1aa6b16724f62e4ec24f0dc23c18cb79844b23f54fe59d",
+    "bytes": 6049,
+    "note": "fetched separately"
+  },
+  "admin/refresh_rss.php": {
+    "sha256_original": "0bb10ad29c93607371d72bf9ce84ffa83e891904fdb8a8b7382b7de5a128e8e0",
+    "bytes_original": 3765,
+    "sha256_sanitized": "0bb10ad29c93607371d72bf9ce84ffa83e891904fdb8a8b7382b7de5a128e8e0",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/cron.php": {
+    "sha256_original": "1639b11034380fe82e8e9ec8c7d5d81a06d84ebe125233f949db375fff2eb046",
+    "bytes_original": 3806,
+    "sha256_sanitized": "1639b11034380fe82e8e9ec8c7d5d81a06d84ebe125233f949db375fff2eb046",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/rss_refresh_engine.php": {
+    "sha256_original": "5c09bd07d71b484a814a0f10ff0ce02569892b47e0b8d375c03c2aea86eedb10",
+    "bytes_original": 11597,
+    "sha256_sanitized": "5c09bd07d71b484a814a0f10ff0ce02569892b47e0b8d375c03c2aea86eedb10",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/check_rss.php": {
+    "sha256_original": "00bb92e1dc0b32e97d063b6584b2c01cbc0133d3d4d2a68119d2dbf974834b9b",
+    "bytes_original": 5529,
+    "sha256_sanitized": "00bb92e1dc0b32e97d063b6584b2c01cbc0133d3d4d2a68119d2dbf974834b9b",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/verif_rss.php": {
+    "sha256_original": "09eb64c826e92979d9da8c12f49c7750784d73ae1148656382154d4de613e6f5",
+    "bytes_original": 2344,
+    "sha256_sanitized": "09eb64c826e92979d9da8c12f49c7750784d73ae1148656382154d4de613e6f5",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/inc/rss-refresh.php": {
+    "sha256_original": "700afd266e0e15c34abde0e49dd1a07abf4ae023c2a4db0539a15b8d6fc8a6e1",
+    "bytes_original": 8370,
+    "sha256_sanitized": "700afd266e0e15c34abde0e49dd1a07abf4ae023c2a4db0539a15b8d6fc8a6e1",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  },
+  "admin/inc/rss-feed.php": {
+    "sha256_original": "82242fb0aae3fa1870ec24da00ef97676a9edb2f6ee91ad4e8b15c1cfc8b02a8",
+    "bytes_original": 2704,
+    "sha256_sanitized": "82242fb0aae3fa1870ec24da00ef97676a9edb2f6ee91ad4e8b15c1cfc8b02a8",
+    "plain_secret_remaining": false,
+    "note": "Copied read-only from rag-server-EL /var/www/dash.electronlibre.info/admin; no literal secrets found; optional local overrides (refresh_rss_*.local.php) not copied"
+  }
+}

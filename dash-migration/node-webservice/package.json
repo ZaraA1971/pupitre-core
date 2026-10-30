@@ -1,0 +1,14 @@
+{
+  "name": "dash-webservice-node",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Isolated Node parity of Le Dash webservice/. Not deployed. No production credentials.",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "start": "node src/server.mjs"
+  }
+}

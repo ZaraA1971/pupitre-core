@@ -1,0 +1,36 @@
+{
+  "note": "Sous-ensemble public de flux pour qualif shadow Node (pas le catalogue prod complet). Pas de secrets.",
+  "capturedAt": "2026-10-25T12:00:00+02:00",
+  "feeds": [
+    {
+      "name": "International · Guardian",
+      "audience": "editorial",
+      "theme": null,
+      "url": "https://www.theguardian.com/world/rss"
+    },
+    {
+      "name": "International · RFI",
+      "audience": "editorial",
+      "theme": null,
+      "url": "https://www.rfi.fr/fr/rss"
+    },
+    {
+      "name": "BBC - Technology News",
+      "audience": "editorial",
+      "theme": null,
+      "url": "http://feeds.bbci.co.uk/news/technology/rss.xml"
+    },
+    {
+      "name": "Arcom",
+      "audience": "editorial",
+      "theme": null,
+      "url": "https://www.arcom.fr/rss/actualites"
+    },
+    {
+      "name": "01Net",
+      "audience": "editorial",
+      "theme": null,
+      "url": "http://www.01net.com/rss/actus.xml"
+    }
+  ]
+}

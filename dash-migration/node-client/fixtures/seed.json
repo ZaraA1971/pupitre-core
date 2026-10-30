@@ -1,0 +1,148 @@
+{
+  "users": [
+    {
+      "id_user": 1,
+      "login_user": "alice",
+      "pass_user": "3b7e4d8b8a8a5b3a7c6e0f1d2a9b8c7d",
+      "pass_plain_note": "md5 of 'alice' — test only; replaced at load if needed",
+      "active_user": 1,
+      "admin_user": "0",
+      "help": "1",
+      "last_connexion": "2026-10-19 08:00:00",
+      "mail_user": "alice@example.test",
+      "message_notification": "0"
+    },
+    {
+      "id_user": 2,
+      "login_user": "bobby",
+      "pass_user": "9f9d51bc70ef21ca5c14f307980a29d8",
+      "active_user": 0,
+      "admin_user": "0",
+      "help": "1",
+      "last_connexion": "2026-10-01 00:00:00",
+      "mail_user": "bobby@example.test",
+      "message_notification": "0"
+    },
+    {
+      "id_user": 3,
+      "login_user": "carol",
+      "pass_user": "placeholder",
+      "active_user": 1,
+      "admin_user": "0",
+      "help": "1",
+      "last_connexion": "2026-10-18 12:00:00",
+      "mail_user": "carol@example.test",
+      "message_notification": "1"
+    }
+  ],
+  "messages": [
+    {
+      "id": 1,
+      "from_user": 3,
+      "to_user": 1,
+      "id_post": 0,
+      "text": "Salut Alice, as-tu vu l article IA ?",
+      "date": "2026-10-20 09:00:00",
+      "has_been_read": 0
+    },
+    {
+      "id": 2,
+      "from_user": 1,
+      "to_user": 3,
+      "id_post": 1,
+      "text": "Oui, je regarde ça.",
+      "date": "2026-10-20 09:15:00",
+      "has_been_read": 1
+    }
+  ],
+  "ios_devices": [
+    {
+      "id_user": 3,
+      "token": "aabbccddeeff00112233445566778899aabbccdd",
+      "push_message": 1,
+      "push_alert": 0
+    }
+  ],
+  "config_themes": [5, 7],
+  "user_keyword": [{ "id_user": 1, "id_keyword": 1 }],
+  "favorites": [],
+  "theme": [
+    { "id": 5, "name": "Tech", "img": "" },
+    { "id": 7, "name": "Droit", "img": "" }
+  ],
+  "keyword": [
+    { "id_keyword": 1, "name_keyword": "ia" },
+    { "id_keyword": 2, "name_keyword": "rgpd" }
+  ],
+  "post_keyword": [
+    { "hash_post": "h1", "id_keyword": 1 },
+    { "hash_post": "h4", "id_keyword": 1 },
+    { "hash_post": "h5", "id_keyword": 2 }
+  ],
+  "rss_post": [
+    {
+      "id": 1,
+      "title": "Article utile sur l'IA",
+      "text": "Corps long sur l'intelligence artificielle et la régulation européenne.",
+      "source": "Le Monde",
+      "link": "https://example.test/a",
+      "author": "Alice",
+      "date": "2026-10-20 10:00:00",
+      "date_add_theme": "2026-10-20 10:05:00",
+      "hash": "h1",
+      "id_theme": 5,
+      "alert": 0,
+      "sent": 1,
+      "new": 0,
+      "deleted": 0
+    },
+    {
+      "id": 4,
+      "title": "Déjà thématisé",
+      "text": "article avec thème Tech",
+      "source": "Ars Technica",
+      "link": "https://example.test/d",
+      "author": "",
+      "date": "2026-10-18 09:00:00",
+      "date_add_theme": "2026-10-18 09:10:00",
+      "hash": "h4",
+      "id_theme": 5,
+      "alert": 0,
+      "sent": 1,
+      "new": 0,
+      "deleted": 0
+    },
+    {
+      "id": 5,
+      "title": "RGPD et cookies",
+      "text": "mise à jour juridique",
+      "source": "Le Monde",
+      "link": "https://example.test/e",
+      "author": "",
+      "date": "2026-10-20 15:30:00",
+      "date_add_theme": "2026-10-20 15:35:00",
+      "hash": "h5",
+      "id_theme": 7,
+      "alert": 0,
+      "sent": 1,
+      "new": 0,
+      "deleted": 0
+    },
+    {
+      "id": 9,
+      "title": "Hors thèmes user",
+      "text": "ne doit pas apparaître",
+      "source": "Other",
+      "link": "https://example.test/x",
+      "author": "",
+      "date": "2026-10-20 12:00:00",
+      "date_add_theme": "2026-10-20 12:00:00",
+      "hash": "h9",
+      "id_theme": 99,
+      "alert": 0,
+      "sent": 1,
+      "new": 0,
+      "deleted": 0
+    }
+  ]
+}

@@ -1,0 +1,166 @@
+{
+  "rss_url": [
+    { "name": "Le Monde", "audience": "editorial" },
+    { "name": "Ars Technica", "audience": "editorial" },
+    { "name": "Vigie Source", "audience": "vigie" }
+  ],
+  "theme": [
+    { "id": 5, "name": "Tech" },
+    { "id": 7, "name": "Droit" },
+    { "id": 9, "name": "Économie" }
+  ],
+  "keyword": [
+    { "id_keyword": 1, "name_keyword": "ia" },
+    { "id_keyword": 2, "name_keyword": "rgpd" }
+  ],
+  "post_keyword": [
+    { "hash_post": "h1", "id_keyword": 1 },
+    { "hash_post": "h1", "id_keyword": 2 },
+    { "hash_post": "h4", "id_keyword": 1 },
+    { "hash_post": "h5", "id_keyword": 1 },
+    { "hash_post": "h5", "id_keyword": 2 }
+  ],
+  "rss_post": [
+    {
+      "id": 1,
+      "title": "Article utile sur l'IA",
+      "text": "Corps long sur l'intelligence artificielle et la régulation européenne.",
+      "source": "Le Monde",
+      "link": "https://example.test/a",
+      "author": "Alice",
+      "date": "2026-10-20 10:00:00",
+      "hash": "h1",
+      "bin": 0,
+      "new": 1,
+      "sent": 0,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 0,
+      "breve_spip": 0
+    },
+    {
+      "id": 2,
+      "title": "Bon plan smartphone",
+      "text": "code promo XYZ pour une offre",
+      "source": "Le Monde",
+      "link": "https://example.test/b",
+      "author": "",
+      "date": "2026-10-20 11:00:00",
+      "hash": "h2",
+      "bin": 0,
+      "new": 1,
+      "sent": 0,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 0,
+      "breve_spip": 0
+    },
+    {
+      "id": 3,
+      "title": "Info Vigie",
+      "text": "contenu vigie",
+      "source": "Vigie Source",
+      "link": "https://example.test/c",
+      "author": "",
+      "date": "2026-10-20 12:00:00",
+      "hash": "h3",
+      "bin": 0,
+      "new": 1,
+      "sent": 0,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 0,
+      "breve_spip": 0
+    },
+    {
+      "id": 4,
+      "title": "Déjà thématisé",
+      "text": "article avec thème Tech",
+      "source": "Ars Technica",
+      "link": "https://example.test/d",
+      "author": "Alice",
+      "date": "2026-10-19 09:00:00",
+      "hash": "h4",
+      "bin": 0,
+      "new": 1,
+      "sent": 0,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 5,
+      "breve_spip": 0
+    },
+    {
+      "id": 5,
+      "title": "Tendance IA forte",
+      "text": "plusieurs mots-clés",
+      "source": "Ars Technica",
+      "link": "https://example.test/e",
+      "author": "Bob",
+      "date": "2026-10-18 08:00:00",
+      "hash": "h5",
+      "bin": 0,
+      "new": 1,
+      "sent": 0,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 0,
+      "breve_spip": 0
+    },
+    {
+      "id": 6,
+      "title": "Déjà envoyé",
+      "text": "historique",
+      "source": "Le Monde",
+      "link": "https://example.test/f",
+      "author": "",
+      "date": "2026-10-17 07:00:00",
+      "hash": "h6",
+      "bin": 0,
+      "new": 0,
+      "sent": 1,
+      "deleted": 0,
+      "alert": 0,
+      "id_theme": 7,
+      "breve_spip": 0
+    },
+    {
+      "id": 7,
+      "title": "Article supprimé",
+      "text": "dans la corbeille éditoriale",
+      "source": "Le Monde",
+      "link": "https://example.test/g",
+      "author": "Alice",
+      "date": "2026-10-16 06:00:00",
+      "hash": "h7",
+      "bin": 0,
+      "new": 0,
+      "sent": 0,
+      "deleted": 1,
+      "alert": 0,
+      "id_theme": 5,
+      "breve_spip": 0
+    }
+  ],
+  "users": [
+    {
+      "id": 10,
+      "mail": "u@example.test",
+      "dash": "demo",
+      "themes": "5",
+      "active": 1,
+      "notif": 1
+    }
+  ],
+  "authors": [
+    { "id": 1, "name": "Alice" },
+    { "id": 2, "name": "Bob" }
+  ],
+  "authors_posts": [],
+  "dash_keys": [{ "dash_id": "demo", "expired": 0 }],
+  "sectionDbs": {
+    "dash_demo": {
+      "config": [{ "id_config": 1, "id_theme": 5 }],
+      "push_devices": [{ "token": "tok-1", "alert": 1 }]
+    }
+  }
+}

@@ -1,0 +1,28 @@
+# Admin Dash — PHP coupé ; bascule vers Pupitre Astro (host canonique auth).
+# Session el_session = host-only sur electronlibre.info → ne pas servir l’UI sur dash.
+# Rollback: restore *.php-cut-backup-* / *.auth-fix-backup-* / *.basic-auth-backup-*
+
+# Entrées admin historiques → UI Astro (session Desk valide)
+location = /admin {
+    return 301 https://electronlibre.info/admin/rss/;
+}
+location = /admin/ {
+    return 302 https://electronlibre.info/admin/rss/;
+}
+location = /admin/index.php {
+    return 302 https://electronlibre.info/admin/rss/;
+}
+location = /admin/rss {
+    return 302 https://electronlibre.info/admin/rss/;
+}
+location = /admin/rss/ {
+    return 302 https://electronlibre.info/admin/rss/;
+}
+
+# Autres PHP admin → mort (410) ; chemins non-PHP → même UI
+location ~ ^/admin/.*\.php$ {
+    return 410;
+}
+location ^~ /admin/ {
+    return 302 https://electronlibre.info/admin/rss/;
+}

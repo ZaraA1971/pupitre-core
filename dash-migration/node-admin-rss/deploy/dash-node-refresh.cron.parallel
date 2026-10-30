@@ -1,0 +1,6 @@
+# Dash RSS — Node refresh in parallel with PHP (PHP at :00/:30 via dash-cron).
+# Staggered to :15/:45; both share refresh_rss row lock.
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+15,45 * * * * www-data /srv/ops/dash-node-refresh/deploy/run-cron.sh

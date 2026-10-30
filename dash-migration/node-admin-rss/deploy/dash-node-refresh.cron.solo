@@ -1,0 +1,5 @@
+# Dash RSS — Node-only refresh (PHP dash-cron disabled).
+SHELL=/bin/sh
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+*/30 * * * * www-data /srv/ops/dash-node-refresh/deploy/run-cron.sh
