@@ -6,7 +6,7 @@ Date : 30 octobre 2026.
 
 **https://galerie-vittet-preview.pages.dev/**
 
-Déploiement Pages : `4c5d1fe9` (puis front CSS mobile) (projet `galerie-vittet-preview`).  
+Déploiement Pages : `4c5d1fe9` (projet `galerie-vittet-preview`).  
 Sources : `/tmp/galerie-vittet-pages/` (+ miroirs `site` / `atelier-cf` front).  
 Scaleway / DNS / atelier données : non touchés.
 
