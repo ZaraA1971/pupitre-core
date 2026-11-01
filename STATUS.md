@@ -11,9 +11,16 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Recherche instantanée (2026-11-01)
+- Debounce 200 ms sur le champ header → `#recherche?q=` (replaceState)
+- Soft-fold conservé ; `brue` / `bruegel` → 3 hits
+- Cache-bust `?v=20261101-instant`
+- Prod `15526b15` · preview atelier `02ff4d80`
+- Détail : `compte-rendu-recherche-instant-galerie-vittet.md`
+
 ## Recherche Bruegel soft-fold (2026-11-01)
 - `bruegel` manquait `BRUEGHEL` (gh) — softFold gh→g + ue↔eu
-- Cache-bust `?v=20261101-bruegel`
+- Cache-bust `?v=20261101-bruegel` (remplacé par instant)
 - Prod `965760b7` · preview atelier `adff276b`
 - Détail : `compte-rendu-recherche-bruegel-galerie-vittet.md`
 
