@@ -11,9 +11,15 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Crédit footer (2026-11-01)
+- « Site réalisé par Emmanuel Torregano » + mailto `emmanueltorregano@mac.com`
+- Cache-bust `?v=20261101-credit`
+- Prod `6591ed92` · preview atelier `21432cc1`
+- Détail : `compte-rendu-credit-footer-galerie-vittet.md`
+
 ## Cleanup 3 recherche (2026-11-01)
 - Unification route / soft-fold / debounce / bindSiteSearch ; pas de régression bruegel
-- Cache-bust `?v=20261101-cleanup3`
+- Cache-bust `?v=20261101-cleanup3` (remplacé par credit)
 - Prod `914f35ba` · preview atelier `6ee9e695`
 - Détail : `compte-rendu-cleanup3-galerie-vittet.md`
 
