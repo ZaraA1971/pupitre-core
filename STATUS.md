@@ -11,6 +11,12 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Recherche catalogue (2026-11-01)
+- Champ header + vue `#recherche` / `#recherche?q=` (filtre client `/api/oeuvres`)
+- Cache-bust `?v=20261101-recherche`
+- Prod `504c609a` · preview atelier `88c7459e`
+- Détail : `compte-rendu-recherche-galerie-vittet.md`
+
 ## Retrait CTA collection (2026-11-01)
 - Retrait « Demander une œuvre » sous `#collection` (lien déjà en lightbox + Contact nav/footer)
 - Cache-bust `?v=20261101-nocollectcta`
