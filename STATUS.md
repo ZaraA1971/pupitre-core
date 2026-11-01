@@ -11,9 +11,15 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Recherche Bruegel soft-fold (2026-11-01)
+- `bruegel` manquait `BRUEGHEL` (gh) — softFold gh→g + ue↔eu
+- Cache-bust `?v=20261101-bruegel`
+- Prod `965760b7` · preview atelier `adff276b`
+- Détail : `compte-rendu-recherche-bruegel-galerie-vittet.md`
+
 ## Recherche catalogue (2026-11-01)
 - Champ header + vue `#recherche` / `#recherche?q=` (filtre client `/api/oeuvres`)
-- Cache-bust `?v=20261101-recherche`
+- Cache-bust `?v=20261101-recherche` (remplacé par bruegel)
 - Prod `504c609a` · preview atelier `88c7459e`
 - Détail : `compte-rendu-recherche-galerie-vittet.md`
 
