@@ -11,10 +11,16 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Cleanup 3 recherche (2026-11-01)
+- Unification route / soft-fold / debounce / bindSiteSearch ; pas de régression bruegel
+- Cache-bust `?v=20261101-cleanup3`
+- Prod `914f35ba` · preview atelier `6ee9e695`
+- Détail : `compte-rendu-cleanup3-galerie-vittet.md`
+
 ## Recherche instantanée (2026-11-01)
 - Debounce 200 ms sur le champ header → `#recherche?q=` (replaceState)
 - Soft-fold conservé ; `brue` / `bruegel` → 3 hits
-- Cache-bust `?v=20261101-instant`
+- Cache-bust `?v=20261101-instant` (remplacé par cleanup3)
 - Prod `15526b15` · preview atelier `02ff4d80`
 - Détail : `compte-rendu-recherche-instant-galerie-vittet.md`
 
