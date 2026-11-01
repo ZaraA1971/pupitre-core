@@ -40,3 +40,5 @@ Cache-bust : `?v=20261101-dedupe`.
 ## Preuve
 
 Artefacts : `/opt/cursor/artifacts/dup-before-*.png`, `dup-after-*.png`, `dup-before-after-hero-side.png`, `dup-verify.json`.
+
+> Suite (2026-11-01) : le CTA fin de collection « Demander une œuvre » a été retiré — voir `compte-rendu-nocollectcta-galerie-vittet.md`.

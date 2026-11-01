@@ -11,6 +11,12 @@
 - `CLOUDFLARE_API_TOKEN` / `CLOUDFLARE_VITTET_API_TOKEN` : absents
 - Wrangler OAuth actif = Compte Emmanuel seulement (`69008766…`) — ne pas l’utiliser pour provisionner Vittet
 
+## Retrait CTA collection (2026-11-01)
+- Retrait « Demander une œuvre » sous `#collection` (lien déjà en lightbox + Contact nav/footer)
+- Cache-bust `?v=20261101-nocollectcta`
+- Prod `6bf64466` · preview atelier `9117b690`
+- Détail : `compte-rendu-nocollectcta-galerie-vittet.md`
+
 ## Dédoublonnage home (2026-11-01)
 - Retrait CTAs / footer doublons (`#collection`, `#contact`, OSM, tel, mailto, retour haut)
 - Densification chrome + sections home
