@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie espace vs collection (2026-11-02)
+- Collection pb 80px · about pt 96px (+40 px au total)
+- Cache-bust `?v=20261102-gutter`
+- Prod `f2b3e952` · atelier `e668b5b2`
+- Détail : `compte-rendu-gutter-galerie-vittet.md`
+
 ## #galerie typo colonne (2026-11-02)
 - H2 plus grand ; retrait 1ʳᵉ ligne ; colonne 220px ; triptyque inchangé
 - Cache-bust `?v=20261102-copytune`
