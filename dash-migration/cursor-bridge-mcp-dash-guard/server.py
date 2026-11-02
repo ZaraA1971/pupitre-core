@@ -66,11 +66,13 @@ if os.getenv("CURSOR_BRIDGE_ALLOW_EXECUTION") == "1":
     @mcp.tool(
         description=(
             "Send a mission to Code Vigie scoped to the isolated dash-migration/ "
-            "workspace inside https://github.com/ZaraA1971/pupitre-core. "
+            "workspace inside https://github.com/ZaraA1971/pupitre-core, "
+            "or to the allowlisted https://github.com/ZaraA1971/Desinfo repository. "
             "Parameter target must be the literal 'dash-migration'. "
             "Requires confirm_write=true. Refuses other repositories, absolute paths, "
             "SSH/sudo, and /var/www/dash.electronlibre.info writes. "
-            "Post-checks reported modified files under dash-migration/ only; "
+            "Post-checks reported modified files under dash-migration/ "
+            "(pupitre-core) or safe relative paths (Desinfo); "
             "this is not an OS sandbox."
         ),
         annotations={

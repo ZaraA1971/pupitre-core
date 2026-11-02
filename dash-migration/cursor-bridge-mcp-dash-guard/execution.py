@@ -1,4 +1,5 @@
-"""Opt-in execution scoped to the dash-migration workspace inside pupitre-core.
+"""Opt-in execution scoped to the dash-migration workspace inside pupitre-core,
+or to the allowlisted Desinfo repository.
 
 Post-condition only: modified_files() inspects paths reported after a run.
 It is not an OS sandbox and cannot undo or prevent out-of-tree writes the
@@ -16,7 +17,11 @@ import urllib.request
 from cloud_reader import AGENT_ID, BASE_URL, MAX_RESPONSE_BYTES, CloudReadError, CloudReader, load_api_key
 
 ALLOWED_REPOSITORY = "https://github.com/ZaraA1971/pupitre-core"
+DESINFO_REPOSITORY = "https://github.com/ZaraA1971/Desinfo"
+ALLOWED_REPOSITORIES = (ALLOWED_REPOSITORY, DESINFO_REPOSITORY)
 ALLOWED_KEY = "github.com/zaraa1971/pupitre-core"
+DESINFO_KEY = "github.com/zaraa1971/desinfo"
+ALLOWED_KEYS = frozenset({ALLOWED_KEY, DESINFO_KEY})
 ALLOWED_TARGET = "dash-migration"
 PATH_PREFIX = "dash-migration/"
 GITHUB_CONTENTS_URL = (
@@ -50,6 +55,17 @@ PREFIX = (
     "Ce message est une consigne, pas une sandbox système.\n\n"
     "Mission :\n"
 )
+DESINFO_PREFIX = (
+    "Exécution autorisée uniquement dans le dépôt "
+    "https://github.com/ZaraA1971/Desinfo. "
+    "Tu peux lire et modifier ce dépôt. "
+    "N'ouvre aucun autre dépôt. "
+    "N'exécute aucune commande en dehors de ce workspace. "
+    "N'utilise pas SSH et n'accède à aucun autre service. "
+    "N'utilise pas sudo, ni de shell root. "
+    "Ce message est une consigne, pas une sandbox système.\n\n"
+    "Mission :\n"
+)
 
 
 def normalize_repository(value):
@@ -65,6 +81,20 @@ def normalize_repository(value):
     if len(parts) < 3 or parts[0] != "github.com" or not parts[1] or not parts[2]:
         return None
     return "github.com/" + parts[1] + "/" + parts[2]
+
+
+def is_allowed_repository(value):
+    """True when value normalizes to pupitre-core or Desinfo."""
+    key = normalize_repository(value)
+    return key is not None and key in ALLOWED_KEYS
+
+
+def canonical_repository_url(key):
+    if key == DESINFO_KEY:
+        return DESINFO_REPOSITORY
+    if key == ALLOWED_KEY:
+        return ALLOWED_REPOSITORY
+    return None
 
 
 def assert_target_allowed(target):
@@ -103,25 +133,40 @@ def assert_instruction_allowed(instruction, confirm_write):
         raise CloudReadError("Instruction must contain 1 to 8000 characters")
     if OUTSIDE_WORKSPACE.search(instruction):
         raise CloudReadError("Instruction leaves the authorized workspace")
+    named_keys = []
     for match in REPO_IN_TEXT.findall(instruction):
-        if normalize_repository(match) != ALLOWED_KEY:
+        key = normalize_repository(match)
+        if key not in ALLOWED_KEYS:
             raise CloudReadError("Instruction names an unauthorized repository")
+        named_keys.append(key)
+    # Default (pupitre-core / dash-migration): relative paths must stay under prefix.
+    # Desinfo-only instructions may name safe relative paths anywhere in that repo.
+    desinfo_scoped = bool(named_keys) and all(key == DESINFO_KEY for key in named_keys)
     for match in RELATIVE_PATH_IN_TEXT.findall(instruction):
         # Ignore URLs already handled; require file-like relative paths under prefix.
         if "://" in match:
             continue
-        if not path_is_under_dash_migration(match):
+        if desinfo_scoped:
+            if normalize_workspace_path(match) is None:
+                raise CloudReadError("Instruction names an unsafe path")
+        elif not path_is_under_dash_migration(match):
             raise CloudReadError("Instruction names a path outside dash-migration")
+
+
+def agent_repository_key(agent):
+    repos = agent.get("repos")
+    if not isinstance(repos, list) or len(repos) != 1 or not isinstance(repos[0], dict):
+        raise CloudReadError("Unauthorized repository scope")
+    key = normalize_repository(repos[0].get("url"))
+    if key not in ALLOWED_KEYS:
+        raise CloudReadError("Unauthorized repository scope")
+    return key
 
 
 def assert_agent_repository(agent):
     if agent.get("id") != AGENT_ID:
         raise CloudReadError("Unexpected Cursor agent identity")
-    repos = agent.get("repos")
-    if not isinstance(repos, list) or len(repos) != 1 or not isinstance(repos[0], dict):
-        raise CloudReadError("Unauthorized repository scope")
-    if normalize_repository(repos[0].get("url")) != ALLOWED_KEY:
-        raise CloudReadError("Unauthorized repository scope")
+    agent_repository_key(agent)
 
 
 def agent_branch(agent):
@@ -143,8 +188,10 @@ def agent_branch(agent):
 
 
 def assert_dash_migration_on_branch(agent, opener):
-    """Verify via public GitHub contents API that ref contains dash-migration/."""
+    """Verify dash-migration/ on pupitre-core; no-op workspace check for Desinfo agents."""
     assert_agent_repository(agent)
+    if agent_repository_key(agent) == DESINFO_KEY:
+        return
     branch = agent_branch(agent)
     query = urllib.parse.urlencode({"ref": branch})
     request = urllib.request.Request(
@@ -177,13 +224,35 @@ def assert_dash_migration_on_branch(agent, opener):
         raise CloudReadError("Agent branch does not contain dash-migration")
 
 
+def _path_allowed_for_repos(value, repo_keys):
+    normalized = normalize_workspace_path(value)
+    if normalized is None:
+        return False
+    if repo_keys == {DESINFO_KEY}:
+        return True
+    return path_is_under_dash_migration(value)
+
+
 def modified_files(run):
     """Post-run path check only — not a sandbox (see module docstring)."""
     files = []
+    branches = run.get("git", {}).get("branches", []) if isinstance(run.get("git"), dict) else []
+    if not isinstance(branches, list):
+        raise CloudReadError("Invalid Cursor git metadata")
+
+    repo_keys = set()
+    for branch in branches:
+        if not isinstance(branch, dict):
+            raise CloudReadError("Invalid Cursor git metadata")
+        repo = normalize_repository(branch.get("repoUrl", ""))
+        if repo is not None:
+            if repo not in ALLOWED_KEYS:
+                raise CloudReadError("Run touched an unauthorized repository")
+            repo_keys.add(repo)
 
     def add(value):
         if isinstance(value, str) and value.strip() and value not in files:
-            if not path_is_under_dash_migration(value):
+            if not _path_allowed_for_repos(value, repo_keys):
                 raise CloudReadError("Modified path is outside the authorized workspace")
             files.append(normalize_workspace_path(value))
         elif isinstance(value, dict) and isinstance(value.get("path"), str):
@@ -194,15 +263,7 @@ def modified_files(run):
         if isinstance(listed, list):
             for item in listed:
                 add(item)
-    branches = run.get("git", {}).get("branches", []) if isinstance(run.get("git"), dict) else []
-    if not isinstance(branches, list):
-        raise CloudReadError("Invalid Cursor git metadata")
     for branch in branches:
-        if not isinstance(branch, dict):
-            raise CloudReadError("Invalid Cursor git metadata")
-        repo = normalize_repository(branch.get("repoUrl", ""))
-        if repo is not None and repo != ALLOWED_KEY:
-            raise CloudReadError("Run touched an unauthorized repository")
         for key in ("files", "modifiedFiles", "changedFiles"):
             listed = branch.get(key)
             if isinstance(listed, list):
@@ -220,8 +281,10 @@ class ExecutionSender(CloudReader):
         assert_dash_migration_on_branch(agent, self.opener)
         if agent.get("status") != "IDLE":
             raise CloudReadError("Agent is not idle; no instruction sent")
+        repo_key = agent_repository_key(agent)
+        prefix = DESINFO_PREFIX if repo_key == DESINFO_KEY else PREFIX
         payload = {
-            "prompt": {"text": PREFIX + instruction.strip()},
+            "prompt": {"text": prefix + instruction.strip()},
             "mode": "agent",
             "mcpServers": [],
         }
@@ -235,7 +298,11 @@ class ExecutionSender(CloudReader):
                 raise ValueError("Response too large")
             data = json.loads(raw)
             run = data["run"]
-            return self._checked_result(run, agent_id=agent["id"])
+            return self._checked_result(
+                run,
+                agent_id=agent["id"],
+                repository=canonical_repository_url(repo_key),
+            )
         except CloudReadError:
             raise
         except Exception as error:
@@ -253,7 +320,7 @@ class ExecutionSender(CloudReader):
             },
         )
 
-    def _checked_result(self, run, agent_id):
+    def _checked_result(self, run, agent_id, repository=ALLOWED_REPOSITORY):
         run_id = run.get("id")
         if not isinstance(run_id, str) or not re.fullmatch(r"run-[A-Za-z0-9-]{1,100}", run_id):
             raise CloudReadError("Invalid run identifier")
@@ -268,7 +335,7 @@ class ExecutionSender(CloudReader):
             "status": run.get("status"),
             "result": result,
             "files": modified_files(run),
-            "repository": ALLOWED_REPOSITORY,
+            "repository": repository,
             "target": ALLOWED_TARGET,
             "path_prefix": PATH_PREFIX,
             "mode": "agent",

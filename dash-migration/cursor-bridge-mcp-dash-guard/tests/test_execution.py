@@ -8,10 +8,13 @@ from cloud_reader import AGENT_ID, BASE_URL, CloudReadError
 from execution import (
     ALLOWED_REPOSITORY,
     ALLOWED_TARGET,
+    DESINFO_REPOSITORY,
     GITHUB_CONTENTS_URL,
     ExecutionSender,
+    assert_agent_repository,
     assert_instruction_allowed,
     assert_target_allowed,
+    is_allowed_repository,
     modified_files,
     normalize_repository,
     normalize_workspace_path,
@@ -64,6 +67,39 @@ def test_repository_forms_match_only_the_authorized_repo():
     assert normalize_repository("https://github.com/ZaraA1971/other") != normalize_repository(
         ALLOWED_REPOSITORY
     )
+
+
+def test_desinfo_repository_is_accepted_and_arbitrary_is_refused():
+    """Allowlist: pupitre-core + Desinfo only; random GitHub repos stay rejected."""
+    assert is_allowed_repository(ALLOWED_REPOSITORY) is True
+    assert is_allowed_repository(DESINFO_REPOSITORY) is True
+    assert is_allowed_repository("git@github.com:ZaraA1971/Desinfo.git") is True
+    assert is_allowed_repository("https://www.github.com/ZaraA1971/Desinfo/") is True
+    assert is_allowed_repository("https://github.com/ZaraA1971/not-desinfo") is False
+    assert is_allowed_repository("https://github.com/ZaraA1971/pupitre-core-evil") is False
+    assert is_allowed_repository("https://github.com/evil/Desinfo") is False
+    assert is_allowed_repository("") is False
+
+    assert_instruction_allowed(
+        "Corrige le SEO de https://github.com/ZaraA1971/Desinfo",
+        True,
+    )
+    assert_instruction_allowed(
+        "Mets à jour src/app/page.tsx sur https://github.com/ZaraA1971/Desinfo",
+        True,
+    )
+    with pytest.raises(CloudReadError, match="repository"):
+        assert_instruction_allowed(
+            "Corrige https://github.com/ZaraA1971/arbitrary-repo",
+            True,
+        )
+
+    assert_agent_repository(agent(url=DESINFO_REPOSITORY, branch="main"))
+    assert_agent_repository(agent(url=ALLOWED_REPOSITORY, branch=BRANCH_WITH_DASH))
+    with pytest.raises(CloudReadError, match="repository"):
+        assert_agent_repository(
+            agent(url="https://github.com/ZaraA1971/arbitrary-repo", branch="main")
+        )
 
 
 def test_only_literal_dash_migration_target_is_allowed():
