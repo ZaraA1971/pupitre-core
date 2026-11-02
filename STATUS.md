@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie typo colonne (2026-11-02)
+- H2 plus grand ; retrait 1ʳᵉ ligne ; colonne 220px ; triptyque inchangé
+- Cache-bust `?v=20261102-copytune`
+- Prod `f54b7525` · atelier `68c4739d`
+- Détail : `compte-rendu-copytune-galerie-vittet.md`
+
 ## #galerie titre simple (2026-11-02)
 - H2 « La galerie » + eyebrow « Depuis 1988 » ; triptyque hauteurs inchangées
 - Cache-bust `?v=20261102-titre`
