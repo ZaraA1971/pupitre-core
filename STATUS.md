@@ -2,9 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Séparation sections (2026-11-02)
+- Padding / overflow:clip / spy 38vh — Galerie ne se mélange plus avec Contact
+- Cache-bust `?v=20261102-sections`
+- Prod `9bd42b34` · atelier `12f0d4a7`
+- Détail : `compte-rendu-sections-separation-galerie-vittet.md`
+
 ## Photo salle #galerie (2026-11-02)
 - Diptyque couple + intérieur (`images/galerie-salle.webp`, 1024×530, ~69 Ko)
-- Cache-bust `?v=20261102-salle`
+- Cache-bust `?v=20261102-salle` (remplacé par sections)
 - Prod `ea41db80` · preview atelier `7ee3f392`
 - Détail : `compte-rendu-salle-galerie-vittet.md`
 
