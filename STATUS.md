@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Tri atelier défaut récent (2026-11-02)
+- Défaut : « Plus récente téléchargée ou modifiée » (`updated_at` / max avec `created_at`)
+- D1 `updated_at` + bump PATCH/import ; front public inchangé
+- Atelier `246911bc` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-atelier-tri-recent-galerie-vittet.md`
+
 ## Séparation sections (2026-11-02)
 - Padding / overflow:clip / spy 38vh — Galerie ne se mélange plus avec Contact
 - Cache-bust `?v=20261102-sections`
