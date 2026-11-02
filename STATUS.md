@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie sans cadre + couple 2/3 (2026-11-02)
+- Cadre lieux retiré ; portrait = 2/3 hauteur diptyque ; tops alignés ; texte justifié
+- Cache-bust `?v=20261102-nofrm23`
+- Prod `723122e1` · atelier `e1a7673f`
+- Détail : `compte-rendu-nofrm23-galerie-vittet.md`
+
 ## #galerie tops alignés + sans H2 (2026-11-02)
 - Hauts façade / salle / portrait alignés ; retrait « Le goût des œuvres rares. » ; texte justifié sous portrait
 - Cache-bust `?v=20261102-galigntops`
