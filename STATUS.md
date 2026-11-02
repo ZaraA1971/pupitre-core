@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie triptyque + texte droite (2026-11-02)
+- 3 photos même hauteur (gap 14px) ; texte colonne droite pleine hauteur ; mobile pile puis texte
+- Cache-bust `?v=20261102-triptych`
+- Prod `ddf1f3a7` · atelier `9ffe3823`
+- Détail : `compte-rendu-triptych-galerie-vittet.md`
+
 ## #galerie nettoyage code (2026-11-02)
 - HTML/CSS #galerie simplifiés ; design nofrm23 inchangé (parité ≤0,1 px)
 - Cache-bust `?v=20261102-galclean`
