@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Photo salle #galerie (2026-11-02)
+- Diptyque couple + intérieur (`images/galerie-salle.webp`, 1024×530, ~69 Ko)
+- Cache-bust `?v=20261102-salle`
+- Prod `ea41db80` · preview atelier `7ee3f392`
+- Détail : `compte-rendu-salle-galerie-vittet.md`
+
 ## Cible
 - Email: vittet.claude@yahoo.fr
 - Account ID: `485af5da677b9be3c881813bc01b9ee8`
