@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie nettoyage code (2026-11-02)
+- HTML/CSS #galerie simplifiés ; design nofrm23 inchangé (parité ≤0,1 px)
+- Cache-bust `?v=20261102-galclean`
+- Prod `8c3d5c4e` · atelier `f0fe2ab1`
+- Détail : `compte-rendu-galclean-galerie-vittet.md`
+
 ## #galerie sans cadre + couple 2/3 (2026-11-02)
 - Cadre lieux retiré ; portrait = 2/3 hauteur diptyque ; tops alignés ; texte justifié
 - Cache-bust `?v=20261102-nofrm23`
