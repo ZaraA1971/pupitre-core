@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie titre simple (2026-11-02)
+- H2 « La galerie » + eyebrow « Depuis 1988 » ; triptyque hauteurs inchangées
+- Cache-bust `?v=20261102-titre`
+- Prod `ba5d3e5a` · atelier `7cf0cb1e`
+- Détail : `compte-rendu-titre-galerie-vittet.md`
+
 ## #galerie triptyque + texte droite (2026-11-02)
 - 3 photos même hauteur (gap 14px) ; texte colonne droite pleine hauteur ; mobile pile puis texte
 - Cache-bust `?v=20261102-triptych`
