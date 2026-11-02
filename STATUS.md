@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Carousel hero départ aléatoire (2026-11-02)
+- `syncHeroFromWorks` : index de départ random si ≥2 œuvres carousel ; ordre CMS + wrap next/prev inchangés
+- Cache-bust `?v=20261102-herorand`
+- Prod `c25435cc` · atelier `6ece3b38`
+- Détail : `compte-rendu-herorand-galerie-vittet.md`
+
 ## Tri atelier défaut récent (2026-11-02)
 - Défaut : « Plus récente téléchargée ou modifiée » (`updated_at` / max avec `created_at`)
 - D1 `updated_at` + bump PATCH/import ; front public inchangé
