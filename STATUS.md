@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie tops alignés + sans H2 (2026-11-02)
+- Hauts façade / salle / portrait alignés ; retrait « Le goût des œuvres rares. » ; texte justifié sous portrait
+- Cache-bust `?v=20261102-galigntops`
+- Prod `ad977e25` · atelier `595af358`
+- Détail : `compte-rendu-galigntops-galerie-vittet.md`
+
 ## Carousel hero départ aléatoire (2026-11-02)
 - `syncHeroFromWorks` : index de départ random si ≥2 œuvres carousel ; ordre CMS + wrap next/prev inchangés
 - Cache-bust `?v=20261102-herorand`
