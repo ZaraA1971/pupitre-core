@@ -3,3 +3,6 @@ node_modules/
 *.log
 .env
 .env.*
+galerie-vittet/.wrangler/
+galerie-vittet/images/ajouts/**
+!galerie-vittet/images/ajouts/README.txt

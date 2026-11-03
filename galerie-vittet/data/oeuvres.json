@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "deprecated": true,
+  "message": "Retired static catalog. Public data plane is same-origin GET /api/oeuvres (D1).",
+  "oeuvres": [],
+  "carousel": [],
+  "sections": ["peinture", "miniature", "nicolle"],
+  "pageSize": 15
+}
