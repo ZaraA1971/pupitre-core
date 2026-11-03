@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Centrage « MAÎTRES ANCIENS » sous VITTET (2026-11-03)
+
+- Sous-titre exact : `MAÎTRES ANCIENS` ; `text-align: center` dans la largeur du wordmark VITTET (pas l’adresse)
+- Cache-bust `?v=20261103-wmcenter`
+- Prod `9c523c56` · atelier `0c57864f` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-wmcenter-galerie-vittet.md`
+
 ## Cleanup code post-itérations UI (2026-11-03)
 
 - Mort : `.text-link`, `--dusk`, `setMenu` no-op, `galeristes.webp`, commentaires d’historique
