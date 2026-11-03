@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup code post-itérations UI (2026-11-03)
+
+- Mort : `.text-link`, `--dusk`, `setMenu` no-op, `galeristes.webp`, commentaires d’historique
+- Unifié : `.section-heading h2` ; stub `data/oeuvres.json` ; prune sync orphans
+- Comportement conservé (API images, search, NICOLLE, loupe 130 %, 15/page, hero, paper, header…)
+- Cache-bust `?v=20261103-cleanup`
+- Prod `ac31dfc1` · atelier `d9fe513f` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-cleanup-galerie-vittet.md`
+
 ## Retrait lede collection (2026-11-03)
 
 - Paragraphe sous `#collection` retiré (« Un ensemble personnel… »)
