@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Hero sans « Une histoire de regard » (2026-11-03)
+- Retrait `.hero-copy` (eyebrow + H1 + intro) ; hero = carrousel seule
+- `#galerie` conserve « La galerie » + triptyque (seul récit about)
+- Cache-bust `?v=20261103-herotext`
+- Prod `45f76860` · atelier `2eaf1a27`
+- Détail : `compte-rendu-herotext-galerie-vittet.md`
+
 ## Téléphones contact +33 (2026-11-03)
 - Affichage `01…` / `06…` → `+33 1…` / `+33 6…` ; police 12px → 22px
 - Cache-bust `?v=20261103-phone`
