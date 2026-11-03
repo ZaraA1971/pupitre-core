@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Carousel hero +20 % (2ᵉ passe) (2026-11-03)
+
+- `.hero-viewport` `min(74vh,768px)` → `min(89vh,922px)` ; `67vh`→`80vh` ; `58vh`→`70vh`
+- Mesure @1440×900 : **666 → 801 px (+20,3 %)** ; header OK
+- Package cohérent functions ; cache-bust `?v=20261103-hero20b`
+- Prod `37ff48b0` · atelier `27ea4273` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-hero20b-galerie-vittet.md`
+
 ## Onglet Victor-Jean NICOLLE + retrait Aquarelles (2026-11-03)
 
 - Tabs publics : Peintures / Miniatures / **Victor-Jean NICOLLE** (plus Aquarelles)
