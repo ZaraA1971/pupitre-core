@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Chaleur images + loupe idle (2026-11-03)
+
+- `--img-enhance` : contrast 1.06 + brightness 1.015 + sepia 0.10 + saturate 1.12
+- Loupe : plus de résolution fichier ; bouton masqué après 3 s idle, réveil à l’action
+- Cache-bust `?v=20261103-warmloupe`
+- Prod `655e8cbd` · preview `5111d71b` · atelier `553f6413` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-warmloupe-galerie-vittet.md`
+
 ## Cleanup4 + source git `galerie-vittet/` (2026-11-03)
 
 - Mort : `visibleCards()` ; plus de défaut mot de passe dans `apply-artlogic-metadata.py`

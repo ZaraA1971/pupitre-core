@@ -16,10 +16,17 @@
   --page-pad: 2.5vw;
   --page-pad-sm: 2vw;
   --page-pad-lg: 3vw;
-  /* Léger rehaussement écran des images */
+  /* Léger rehaussement + chaleur discrète (évite un rendu trop froid) */
   --img-contrast: 1.06;
-  --img-saturate: 1.03;
-  --img-enhance: contrast(var(--img-contrast)) saturate(var(--img-saturate));
+  --img-brightness: 1.015;
+  --img-sepia: 0.10;
+  --img-saturate: 1.12;
+  /* Ordre : contraste → luminosité → sepia (chaleur) → saturate (compense le sépia) */
+  --img-enhance:
+    contrast(var(--img-contrast))
+    brightness(var(--img-brightness))
+    sepia(var(--img-sepia))
+    saturate(var(--img-saturate));
 }
 
 * { box-sizing: border-box; }
@@ -1037,6 +1044,18 @@ footer {
   text-transform: uppercase;
   font: 500 var(--type-xs) / 1 var(--sans);
   backdrop-filter: blur(6px);
+  opacity: 1;
+  transition:
+    opacity .35s ease,
+    background .2s ease,
+    border-color .2s ease,
+    color .2s ease;
+}
+
+/* Idle 3 s : bouton loupe masqué ; réapparaît à l’action utilisateur. */
+.lightbox-loupe.is-idle-hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 .lightbox-loupe:hover {

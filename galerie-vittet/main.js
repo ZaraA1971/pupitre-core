@@ -73,6 +73,8 @@ let lightboxSource = "grid";
 
 /** Lightbox loupe — web par défaut ; original lazy au zoom. */
 const LOUPE_DISPLAY_SCALE = 1.3;
+/** Bouton loupe : masqué après idle, réaffiché à l’action. */
+const LOUPE_CHROME_IDLE_MS = 3000;
 let lightboxDisplaySrc = "";
 let lightboxOriginalSrc = "";
 let lightboxZoomed = false;
@@ -84,6 +86,7 @@ let zoomPan = { x: 0, y: 0 };
 let zoomScale = 1;
 let zoomDrag = null;
 let zoomMoved = false;
+let loupeChromeTimer = null;
 
 function pad(value) {
   return String(value).padStart(2, "0");
@@ -937,6 +940,26 @@ function setZoomStatus(text) {
   dialogZoomStatus.hidden = !text;
 }
 
+function clearLoupeChromeIdle() {
+  if (loupeChromeTimer) {
+    clearTimeout(loupeChromeTimer);
+    loupeChromeTimer = null;
+  }
+}
+
+/** Affiche le bouton loupe, puis le masque après 3 s sans action. */
+function pokeLoupeChrome() {
+  if (!dialogLoupe) return;
+  clearLoupeChromeIdle();
+  dialogLoupe.classList.remove("is-idle-hidden");
+  if (dialogLoupe.hidden) return;
+  loupeChromeTimer = setTimeout(() => {
+    loupeChromeTimer = null;
+    if (!dialog.open || dialogLoupe.hidden) return;
+    dialogLoupe.classList.add("is-idle-hidden");
+  }, LOUPE_CHROME_IDLE_MS);
+}
+
 function applyZoomTransform() {
   dialogImage.style.transform = lightboxZoomed
     ? `translate(${zoomPan.x}px, ${zoomPan.y}px) scale(${zoomScale})`
@@ -999,6 +1022,7 @@ function resetZoomChrome() {
     if (label) label.textContent = "Loupe";
   }
   setZoomStatus("");
+  pokeLoupeChrome();
 }
 
 function exitZoom({ restoreWeb = true } = {}) {
@@ -1021,6 +1045,11 @@ function syncLoupeAvailability() {
   const canZoom = Boolean(lightboxOriginalSrc);
   dialogLoupe.hidden = !canZoom;
   dialogPhoto.classList.toggle("has-loupe", canZoom);
+  if (canZoom) pokeLoupeChrome();
+  else {
+    clearLoupeChromeIdle();
+    dialogLoupe.classList.remove("is-idle-hidden");
+  }
 }
 
 function preloadOriginal(url) {
@@ -1082,8 +1111,9 @@ async function enterZoom() {
     const label = dialogLoupe.querySelector(".lightbox-loupe-label");
     if (label) label.textContent = "Quitter";
   }
+  pokeLoupeChrome();
   try {
-    const probe = await preloadOriginal(lightboxOriginalSrc);
+    await preloadOriginal(lightboxOriginalSrc);
     if (token !== lightboxZoomToken) return;
     dialogImage.src = lightboxOriginalSrc;
     const reveal = () => {
@@ -1100,12 +1130,9 @@ async function enterZoom() {
           fitZoomScale();
         });
       });
-      const pct = Math.round(LOUPE_DISPLAY_SCALE * 100);
-      setZoomStatus(
-        probe.naturalWidth
-          ? `Original · ${probe.naturalWidth}×${probe.naturalHeight} · ${pct}%`
-          : `Original · ${pct}%`
-      );
+      // Pas de résolution fichier / dpi en mode loupe.
+      setZoomStatus("");
+      pokeLoupeChrome();
     };
     if (dialogImage.complete && dialogImage.naturalWidth > 0) reveal();
     else {
@@ -1230,9 +1257,21 @@ dialogNext.addEventListener("click", () => stepDialog(1));
 if (dialogLoupe) {
   dialogLoupe.addEventListener("click", (event) => {
     event.stopPropagation();
+    pokeLoupeChrome();
     toggleZoom();
   });
 }
+
+function onLoupeChromeActivity() {
+  if (!dialog.open || !dialogLoupe || dialogLoupe.hidden) return;
+  pokeLoupeChrome();
+}
+
+dialog.addEventListener("pointermove", onLoupeChromeActivity);
+dialog.addEventListener("mousemove", onLoupeChromeActivity);
+dialog.addEventListener("click", onLoupeChromeActivity);
+dialog.addEventListener("touchstart", onLoupeChromeActivity, { passive: true });
+dialog.addEventListener("keydown", onLoupeChromeActivity);
 
 dialogPhoto.addEventListener("pointerdown", (event) => {
   if (!lightboxZoomed) return;
@@ -1300,6 +1339,8 @@ dialog.addEventListener("close", () => {
   dialogImage.removeAttribute("src");
   dialogImage.alt = "";
   dialogImage.classList.remove("is-entering");
+  clearLoupeChromeIdle();
+  if (dialogLoupe) dialogLoupe.classList.remove("is-idle-hidden");
   syncLoupeAvailability();
   lightboxSource = "grid";
   if (opener) opener.focus();
