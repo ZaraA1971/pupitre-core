@@ -22,9 +22,9 @@ Source `/tmp/galerie-vittet-atelier-cf/` → sync `galerie-vittet-pages` (avec F
 
 | Cible | Id / URL |
 |---|---|
-| Prod | `a7c2e81e` · https://galerie-vittet-preview.pages.dev/ |
-| Hash | https://a7c2e81e.galerie-vittet-preview.pages.dev/ |
-| Preview | `282a9b24` · https://282a9b24.galerie-vittet-preview.pages.dev/ |
+| Prod | `2924cb80` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://2924cb80.galerie-vittet-preview.pages.dev/ |
+| Preview | `93016c84` · https://93016c84.galerie-vittet-preview.pages.dev/ |
 
 ## Vérif
 
