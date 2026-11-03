@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Chaleur WB sans sépia (2026-11-03)
+
+- Retrait `sepia` ; SVG `feColorMatrix` `#img-warm-wb` (R 1.03 / G 1.012 / B 0.975) + contrast 1.06 + brightness 1.01 + saturate 1.03
+- Cache-bust `?v=20261103-imgwb`
+- Prod `5df69f7f` · preview `9a166a8b` · atelier `6a93773f` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-imgwb-galerie-vittet.md`
+
 ## Chaleur images + loupe idle (2026-11-03)
 
 - `--img-enhance` : contrast 1.06 + brightness 1.015 + sepia 0.10 + saturate 1.12

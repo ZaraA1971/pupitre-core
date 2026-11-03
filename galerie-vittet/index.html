@@ -17,9 +17,23 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261103-hdrbott">
+  <link rel="stylesheet" href="style.css?v=20261103-imgwb">
 </head>
 <body>
+  <!-- Balance des blancs douce pour --img-enhance (pas de teinte brune / sépia). -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <filter id="img-warm-wb" color-interpolation-filters="sRGB">
+        <!-- R↑ G↑ léger, B↓ : réchauffe sans colorer -->
+        <feColorMatrix type="matrix" values="
+          1.03  0     0     0  0
+          0     1.012 0     0  0
+          0     0     0.975 0  0
+          0     0     0     1  0
+        "/>
+      </filter>
+    </defs>
+  </svg>
   <div class="site-chrome" id="site-header">
     <header class="header">
       <div class="header-brand">
@@ -222,6 +236,6 @@
       </div>
     </div>
   </dialog>
-  <script src="main.js?v=20261103-hdrbott" defer></script>
+  <script src="main.js?v=20261103-imgwb" defer></script>
 </body>
 </html>

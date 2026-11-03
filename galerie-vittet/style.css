@@ -16,16 +16,15 @@
   --page-pad: 2.5vw;
   --page-pad-sm: 2vw;
   --page-pad-lg: 3vw;
-  /* Léger rehaussement + chaleur discrète (évite un rendu trop froid) */
+  /* Léger rehaussement + balance des blancs chaude (sans teinte sépia) */
   --img-contrast: 1.06;
-  --img-brightness: 1.015;
-  --img-sepia: 0.10;
-  --img-saturate: 1.12;
-  /* Ordre : contraste → luminosité → sepia (chaleur) → saturate (compense le sépia) */
+  --img-brightness: 1.01;
+  --img-saturate: 1.03;
+  /* SVG #img-warm-wb = feColorMatrix WB (↑R/G, ↓B) ; pas de sepia */
   --img-enhance:
+    url("#img-warm-wb")
     contrast(var(--img-contrast))
     brightness(var(--img-brightness))
-    sepia(var(--img-sepia))
     saturate(var(--img-saturate));
 }
 
