@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Images restaurées + merge bgdens / carousel (2026-11-03)
+
+- Cause : deploy sans Functions (`978fd987`) → `/images/ajouts/*` et `/api` en HTML ; race bgdens vs carousel
+- Fix : package cohérent functions+KV ; `#e8e2da` + hero `74vh`/`768px` ; `?v=20261103-imgfix`
+- Prod `4907be72` · atelier `dc5fda73` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-imgfix-galerie-vittet.md`
+
 ## Fond papier densifié ~15% (2026-11-03)
 
 - `--paper` `#ebe6df` → `#e8e2da` ; wall/line + gradients assortis
