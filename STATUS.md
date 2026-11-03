@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie sans couple + écart (2026-11-03)
+
+- Retrait `galeristes.webp` dans `#galerie` (pas le footer) ; façade + salle inchangées (Δ0 px)
+- Gap 14 → ≈210 px (track couple absorbé) ; `?v=20261103-nocouple`
+- Prod `f69eebd0` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-nocouple-gap-galerie-vittet.md`
+
 ## Wordmark VITTET plus haut (2026-11-03)
 - font-size 56→72px ; line-height 1→1.2 ; pas de scaleY
 - Cache-bust `?v=20261103-wmheight2`
