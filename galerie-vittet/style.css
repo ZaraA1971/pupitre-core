@@ -82,11 +82,11 @@ section { scroll-margin-top: 148px; }
   padding: 18px var(--page-pad) 16px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  /* Two rows: wordmark | (empty) ; address | contact — tops of address & contact share a baseline. */
+  /* Two rows: wordmark ; address — contact spans both, bottom-aligned with address. */
   grid-template-rows: auto auto;
   align-items: start;
   column-gap: 28px;
-  /* Slightly more air between MAÎTRES ANCIENS and the address / contact row. */
+  /* Slightly more air between MAÎTRES ANCIENS and the address. */
   row-gap: 16px;
   position: relative;
   background: transparent;
@@ -144,8 +144,9 @@ section { scroll-margin-top: 148px; }
 .header-contact {
   display: grid;
   gap: 6px;
-  grid-row: 2;
-  align-self: start;
+  /* Span wordmark + address rows; sit on the address baseline (bottoms align). */
+  grid-row: 1 / -1;
+  align-self: end;
   justify-self: end;
   justify-items: end;
   text-align: right;
@@ -1322,6 +1323,7 @@ footer {
   }
   .header-contact {
     grid-row: 3;
+    align-self: start;
     justify-self: stretch;
     justify-items: start;
     text-align: left;
