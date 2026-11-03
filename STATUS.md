@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Collection 5×3 (15/page) + recherche rétablie (2026-11-03)
+
+- `PAGE_SIZE` 15 ; grille 3 colonnes ; API `pageSize: 15`
+- Cause recherche : `setMenu` manquant après retrait nav → `ReferenceError` avant résultats
+- Fix : no-op `setMenu` + `refreshSearchDom` ; cache-bust `?v=20261103-coll15`
+- Prod `e313c7c6` · atelier `82889d52` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-coll15-search-galerie-vittet.md`
+
 ## Images restaurées + merge bgdens / carousel (2026-11-03)
 
 - Cause : deploy sans Functions (`978fd987`) → `/images/ajouts/*` et `/api` en HTML ; race bgdens vs carousel
