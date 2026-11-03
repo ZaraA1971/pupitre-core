@@ -75,17 +75,22 @@ section { scroll-margin-top: 148px; }
   padding: 18px var(--page-pad) 16px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-  align-items: center;
+  /* Two rows: wordmark | (empty) ; address | contact — tops of address & contact share a baseline. */
+  grid-template-rows: auto auto;
+  align-items: start;
   column-gap: 28px;
+  /* Slightly more air between MAÎTRES ANCIENS and the address / contact row. */
+  row-gap: 16px;
   position: relative;
   background: transparent;
 }
 
 .header-brand {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 8px;
+  display: grid;
+  grid-template-rows: subgrid;
+  grid-row: 1 / -1;
+  align-items: start;
+  justify-items: start;
   min-width: 0;
   justify-self: start;
   position: relative;
@@ -108,7 +113,7 @@ section { scroll-margin-top: 148px; }
 }
 
 .header-brand .header-place {
-  margin: 2px 0 0;
+  margin: 0;
   display: block;
   font: 600 calc(var(--type-meta) * 2) / 1.35 var(--serif);
   letter-spacing: .02em;
@@ -132,6 +137,8 @@ section { scroll-margin-top: 148px; }
 .header-contact {
   display: grid;
   gap: 6px;
+  grid-row: 2;
+  align-self: start;
   justify-self: end;
   justify-items: end;
   text-align: right;
@@ -1270,14 +1277,17 @@ footer {
 @media (max-width: 700px) {
   .header {
     grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    /* Keep a bit more air under MAÎTRES; tighter before the contact stack. */
     row-gap: 12px;
     padding: 12px var(--page-pad) 14px;
   }
   .header-brand {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 6px;
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: 1 / 3;
+    align-items: start;
+    justify-items: start;
     width: 100%;
   }
   .header-brand .wordmark {
@@ -1292,6 +1302,7 @@ footer {
     font-size: calc(var(--type-sm) * 2);
   }
   .header-contact {
+    grid-row: 3;
     justify-self: stretch;
     justify-items: start;
     text-align: left;
