@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Retrait lede collection (2026-11-03)
+
+- Paragraphe sous `#collection` retiré (« Un ensemble personnel… »)
+- Cache-bust `?v=20261103-nolede`
+- Prod `9d29bdd7` · atelier `6920b656` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-nolede-galerie-vittet.md`
+
 ## Carousel hero +20 % (2ᵉ passe) (2026-11-03)
 
 - `.hero-viewport` `min(74vh,768px)` → `min(89vh,922px)` ; `67vh`→`80vh` ; `58vh`→`70vh`
