@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header empilé marque / recherche / contact (2026-11-03)
+- VITTET ~56px ; nav 15px ; recherche centrée ; contact empilé à droite
+- Cache-bust `?v=20261103-hdrstack`
+- Prod `897852ae` · atelier `f29bed8f`
+- Détail : `compte-rendu-header-stack-galerie-vittet.md`
+
 ## Header contact + footer minimal (2026-11-03)
 - Bande contact sticky : téléphones +33, mailto, adresse, horaires ; nav sans Contact
 - Section `.visit` et footer adresse retirés ; crédit Emmanuel conservé
