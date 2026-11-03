@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Textes petits / muted agrandis + noircis (2026-11-03)
+- `--muted` `#6f6b64` → `#3f3a33` ; tokens `--type-xs/sm/meta` 12/13/14px
+- Cache-bust `?v=20261103-typeink`
+- Prod `5984d827`
+- Détail : `compte-rendu-typeink-galerie-vittet.md`
+
 ## Header empilé marque / recherche / contact (2026-11-03)
 - VITTET ~56px ; nav 15px ; recherche centrée ; contact empilé à droite
 - Cache-bust `?v=20261103-hdrstack`
