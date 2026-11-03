@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header adresse sous Vittet + nav/recherche centrés (2026-11-03)
+- Adresse sous wordmark ; centre = Collection/Galerie + recherche ; droite phones/mailto/horaires
+- Playfair 600–700 sur chrome ; tokens typeink conservés
+- Cache-bust `?v=20261103-hdrplace`
+- Prod `53863478` · atelier `1c89e120`
+- Détail : `compte-rendu-header-place-galerie-vittet.md`
+
 ## Textes petits / muted agrandis + noircis (2026-11-03)
 - `--muted` `#6f6b64` → `#3f3a33` ; tokens `--type-xs/sm/meta` 12/13/14px
 - Cache-bust `?v=20261103-typeink`
