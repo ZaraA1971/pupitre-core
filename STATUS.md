@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lightbox plus grande + loupe sans fiche (2026-11-03)
+- Dialog quasi plein viewport (−8 px) ; loupe masque la colonne infos
+- Cap native `min(100%, naturalW/H)` — pas d’upscale
+- Cache-bust `?v=20261103-lbloupe`
+- Prod `1bdef92d`
+- Détail : `compte-rendu-lightbox-loupe-galerie-vittet.md`
+
 ## Header adresse sous Vittet + nav/recherche centrés (2026-11-03)
 - Adresse sous wordmark ; centre = Collection/Galerie + recherche ; droite phones/mailto/horaires
 - Playfair 600–700 sur chrome ; tokens typeink conservés
