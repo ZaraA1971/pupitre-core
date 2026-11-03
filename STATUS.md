@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Densité d’encre typo 95 % hors logo (2026-11-03)
+
+- `--ink` `#2c261f` → `#37312a` (95 % mix white) ; `--ink-full` `#2c261f` pour `.wordmark`
+- Cache-bust `?v=20261103-ink95`
+- Prod `b9d31fe4` · atelier `2924550f` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-ink95-galerie-vittet.md`
+
 ## Centrage « MAÎTRES ANCIENS » sous VITTET (2026-11-03)
 
 - Sous-titre exact : `MAÎTRES ANCIENS` ; `text-align: center` dans la largeur du wordmark VITTET (pas l’adresse)
