@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Onglet Victor-Jean NICOLLE + retrait Aquarelles (2026-11-03)
+
+- Tabs publics : Peintures / Miniatures / **Victor-Jean NICOLLE** (plus Aquarelles)
+- NICOLLE = filtre `artist` (fold + `nicolle` ∧ `victor`) ; 35 œuvres
+- Peintures/Miniatures = tags catégorie ; `PAGE_SIZE` 15 ; recherche/loupe OK
+- Cache-bust `?v=20261103-nicolle`
+- Prod `2dee1a03` · atelier `01ca715f` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-nicolle-tab-galerie-vittet.md`
+
 ## Loupe lightbox ×130 % (original) (2026-11-03)
 
 - Affichage loupe = 1,3 × fit lightbox normal, clamp `naturalWidth/Height` (pas d’upscale)
