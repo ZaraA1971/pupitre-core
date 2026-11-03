@@ -2,6 +2,21 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup4 + source git `galerie-vittet/` (2026-11-03)
+
+- Mort : `visibleCards()` ; plus de défaut mot de passe dans `apply-artlogic-metadata.py`
+- Snapshot durable : `galerie-vittet/` (front + atelier + functions, sans secrets / sans KV blobs)
+- Cache-bust `?v=20261103-clean4`
+- Prod `f47f3012` · atelier `20416734` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-clean4-galerie-vittet.md`
+
+## « La galerie » entre les 2 photos (2026-11-03)
+
+- Desktop : façade \| texte \| salle ; mobile : pile façade → texte → salle
+- Cache-bust `?v=20261103-galmid`
+- Prod `d034173f` · https://galerie-vittet-preview.pages.dev/#galerie
+- Détail : `compte-rendu-galmid-galerie-vittet.md`
+
 ## Croix recherche → sortie `#recherche` (2026-11-03)
 
 - Vider (X / input vide / submit vide) quitte `view-recherche` → `#collection` (catalogue visible)
