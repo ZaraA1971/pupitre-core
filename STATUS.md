@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Loupe lightbox ×130 % (original) (2026-11-03)
+
+- Affichage loupe = 1,3 × fit lightbox normal, clamp `naturalWidth/Height` (pas d’upscale)
+- Source loupe = fichier **original** (hors `web/`) ; fiche masquée inchangée
+- Cache-bust `?v=20261103-loupe130`
+- Prod `44653fe2` · atelier `97494dd4` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-loupe130-galerie-vittet.md`
+
 ## Collection 5×3 (15/page) + recherche rétablie (2026-11-03)
 
 - `PAGE_SIZE` 15 ; grille 3 colonnes ; API `pageSize: 15`
