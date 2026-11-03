@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Wordmark VITTET plus haut (2026-11-03)
+- font-size 56→72px ; line-height 1→1.2 ; pas de scaleY
+- Cache-bust `?v=20261103-wmheight2`
+- Prod `d8c2ebb2` · atelier `a07711dd`
+- Détail : `compte-rendu-wordmark-height-galerie-vittet.md`
+
 ## Header adresse ×2 + sans menus Collection/Galerie (2026-11-03)
 - Adresse 14px → 28px ; nav header retirée ; recherche centrée conservée
 - Cache-bust `?v=20261103-hdrnonav`
