@@ -2,10 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup ordre front (2026-11-03)
+- PATCH delta + debounce 280 ms ; optimistic UI ; `compareByFrontOrder` unifié
+- Prod `e777cebb` · atelier `42f3ccdb` · cache-bust `orderclean`
+- Détail : `compte-rendu-orderclean-galerie-vittet.md`
+
 ## Ordre d’affichage front atelier (2026-11-03)
 - Tri « Ordre d’affichage front » : drag + ↑↓ → D1 `sort_order` (PATCH bulk)
 - Nouveaux imports append (`MAX+10`) ; densify initial 10…1120
-- Prod `c8ee9922` · atelier `6d0ee0b3`
+- Prod `c8ee9922` · atelier `6d0ee0b3` (remplacé par orderclean)
 - Détail : `compte-rendu-ordre-front-atelier-galerie-vittet.md`
 
 ## #galerie espace vs collection (2026-11-02)
