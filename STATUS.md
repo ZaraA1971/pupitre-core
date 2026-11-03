@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Ordre d’affichage front atelier (2026-11-03)
+- Tri « Ordre d’affichage front » : drag + ↑↓ → D1 `sort_order` (PATCH bulk)
+- Nouveaux imports append (`MAX+10`) ; densify initial 10…1120
+- Prod `c8ee9922` · atelier `6d0ee0b3`
+- Détail : `compte-rendu-ordre-front-atelier-galerie-vittet.md`
+
 ## #galerie espace vs collection (2026-11-02)
 - Collection pb 80px · about pt 96px (+40 px au total)
 - Cache-bust `?v=20261102-gutter`
