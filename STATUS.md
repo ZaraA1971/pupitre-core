@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header adresse ×2 + sans menus Collection/Galerie (2026-11-03)
+- Adresse 14px → 28px ; nav header retirée ; recherche centrée conservée
+- Cache-bust `?v=20261103-hdrnonav`
+- Prod `b06101f2` · atelier `48fab794`
+- Détail : `compte-rendu-header-nonav-galerie-vittet.md`
+
 ## Lightbox plus grande + loupe sans fiche (2026-11-03)
 - Dialog quasi plein viewport (−8 px) ; loupe masque la colonne infos
 - Cap native `min(100%, naturalW/H)` — pas d’upscale
