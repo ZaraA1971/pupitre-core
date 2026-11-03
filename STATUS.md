@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header contact + footer minimal (2026-11-03)
+- Bande contact sticky : téléphones +33, mailto, adresse, horaires ; nav sans Contact
+- Section `.visit` et footer adresse retirés ; crédit Emmanuel conservé
+- Cache-bust `?v=20261103-hdrcontact`
+- Prod `bcdea24f` · atelier `a6d8a6cf`
+- Détail : `compte-rendu-header-contact-galerie-vittet.md`
+
 ## Téléphones contact +33 (2026-11-03)
 - Affichage `01…` / `06…` → `+33 1…` / `+33 6…` ; police 12px → 22px
 - Cache-bust `?v=20261103-phone`
