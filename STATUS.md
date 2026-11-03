@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Croix recherche → sortie `#recherche` (2026-11-03)
+
+- Vider (X / input vide / submit vide) quitte `view-recherche` → `#collection` (catalogue visible)
+- Plus de page « Saisissez un titre… » / sans résultats
+- Cache-bust `?v=20261103-srchx`
+- Prod `5cf2548f` · atelier `2aa093ab` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-srchx-clear-galerie-vittet.md`
+
 ## Densité d’encre typo 95 % hors logo (2026-11-03)
 
 - `--ink` `#2c261f` → `#37312a` (95 % mix white) ; `--ink-full` `#2c261f` pour `.wordmark`
