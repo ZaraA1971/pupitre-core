@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261103-galsize80">
+  <link rel="stylesheet" href="style.css?v=20261103-srchtabs">
 </head>
 <body>
   <div class="site-chrome" id="site-header">
@@ -27,27 +27,6 @@
         <p class="header-place">
           <a href="https://www.openstreetmap.org/search?query=21%20quai%20Voltaire%2C%2075007%20Paris" rel="noopener noreferrer">21 quai Voltaire · 75007 Paris</a>
         </p>
-      </div>
-      <div class="header-center">
-        <form class="site-search" id="site-search" role="search" action="#recherche" method="get">
-          <label class="visually-hidden" for="site-search-input">Rechercher une œuvre</label>
-          <input
-            id="site-search-input"
-            class="site-search-input"
-            type="search"
-            name="q"
-            placeholder="Rechercher…"
-            autocomplete="off"
-            enterkeyhint="search"
-            maxlength="120"
-          >
-          <button class="site-search-submit" type="submit" aria-label="Lancer la recherche">
-            <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
-              <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke="currentColor" stroke-width="1.6"/>
-              <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
-            </svg>
-          </button>
-        </form>
       </div>
       <div class="header-contact" id="contact" aria-label="Coordonnées de la galerie">
         <div class="header-phones">
@@ -66,7 +45,10 @@
           <p class="eyebrow">Catalogue</p>
           <h2 id="search-heading">Recherche</h2>
         </div>
-        <p id="search-lede">Parcourir les œuvres exposées par titre, artiste ou technique.</p>
+        <div class="search-page-tools">
+          <p id="search-lede">Parcourir les œuvres exposées par titre, artiste ou technique.</p>
+          <div class="site-search-slot" id="recherche-search-slot" data-search-home="0"></div>
+        </div>
       </div>
       <p class="search-status" id="search-status" aria-live="polite"></p>
       <div class="art-grid" id="search-grid"></div>
@@ -113,10 +95,33 @@
           <h2>La collection</h2>
         </div>
       </div>
-      <div class="filters" role="tablist" aria-label="Sections de la collection">
-        <button class="filter active" type="button" role="tab" id="tab-peinture" data-filter="peinture" aria-selected="true" aria-controls="collection-panel">Peintures <span class="filter-count">(0)</span></button>
-        <button class="filter" type="button" role="tab" id="tab-miniature" data-filter="miniature" aria-selected="false" aria-controls="collection-panel">Miniatures <span class="filter-count">(0)</span></button>
-        <button class="filter" type="button" role="tab" id="tab-nicolle" data-filter="nicolle" aria-selected="false" aria-controls="collection-panel">Victor-Jean NICOLLE <span class="filter-count">(0)</span></button>
+      <div class="collection-toolbar">
+        <div class="filters" role="tablist" aria-label="Sections de la collection">
+          <button class="filter active" type="button" role="tab" id="tab-peinture" data-filter="peinture" aria-selected="true" aria-controls="collection-panel">Peintures <span class="filter-count">(0)</span></button>
+          <button class="filter" type="button" role="tab" id="tab-miniature" data-filter="miniature" aria-selected="false" aria-controls="collection-panel">Miniatures <span class="filter-count">(0)</span></button>
+          <button class="filter" type="button" role="tab" id="tab-nicolle" data-filter="nicolle" aria-selected="false" aria-controls="collection-panel">Victor-Jean NICOLLE <span class="filter-count">(0)</span></button>
+        </div>
+        <div class="site-search-slot" id="collection-search-slot" data-search-home="1">
+          <form class="site-search" id="site-search" role="search" action="#recherche" method="get">
+            <label class="visually-hidden" for="site-search-input">Rechercher une œuvre</label>
+            <input
+              id="site-search-input"
+              class="site-search-input"
+              type="search"
+              name="q"
+              placeholder="Rechercher…"
+              autocomplete="off"
+              enterkeyhint="search"
+              maxlength="120"
+            >
+            <button class="site-search-submit" type="submit" aria-label="Lancer la recherche">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </form>
+        </div>
       </div>
       <div id="collection-panel" role="tabpanel" aria-labelledby="tab-peinture">
         <p class="collection-status" id="collection-status" aria-live="polite">Chargement de la collection…</p>
@@ -217,6 +222,6 @@
       </div>
     </div>
   </dialog>
-  <script src="main.js?v=20261103-galsize80" defer></script>
+  <script src="main.js?v=20261103-srchtabs" defer></script>
 </body>
 </html>

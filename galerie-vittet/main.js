@@ -533,12 +533,36 @@ function searchHashFor(query) {
   return q ? `#recherche?q=${encodeURIComponent(q)}` : SEARCH_EXIT_HASH;
 }
 
+function mountSiteSearch(inSearchMode) {
+  refreshSearchDom();
+  if (!siteSearch) return;
+  const home = document.getElementById("collection-search-slot");
+  const searchSlot = document.getElementById("recherche-search-slot");
+  const target = inSearchMode && searchSlot ? searchSlot : home;
+  if (target && siteSearch.parentElement !== target) {
+    const focused = document.activeElement === siteSearchInput;
+    const caret = focused && siteSearchInput
+      ? siteSearchInput.selectionStart
+      : null;
+    target.appendChild(siteSearch);
+    if (focused && siteSearchInput) {
+      siteSearchInput.focus({ preventScroll: true });
+      if (caret != null) {
+        try {
+          siteSearchInput.setSelectionRange(caret, caret);
+        } catch (_) {}
+      }
+    }
+  }
+}
+
 function setSearchMode(on) {
   searchMode = Boolean(on);
   document.body.classList.toggle("view-recherche", searchMode);
   if (!searchPage) return;
   if (searchMode) searchPage.removeAttribute("hidden");
   else searchPage.setAttribute("hidden", "");
+  mountSiteSearch(searchMode);
 }
 
 function leaveSearchView({ replaceHash = false, scroll = false } = {}) {
@@ -583,6 +607,10 @@ function refreshSearchDom() {
   searchStatus = document.getElementById("search-status");
   searchLede = document.getElementById("search-lede");
   searchGrid = document.getElementById("search-grid");
+  if (siteSearch && !siteSearch.parentElement?.classList.contains("site-search-slot")) {
+    const home = document.getElementById("collection-search-slot");
+    if (home && !home.contains(siteSearch)) home.appendChild(siteSearch);
+  }
 }
 
 function syncSearchInput(query, { force = false } = {}) {
