@@ -750,11 +750,21 @@ footer a {
 .about-photo {
   margin: 0;
   min-width: 0;
+  display: flex;
+}
+
+/* ~20 % smaller display; hug the centre copy */
+.about-photo--facade {
+  justify-content: flex-end;
+}
+
+.about-photo--salle {
+  justify-content: flex-start;
 }
 
 .about-photo img {
   display: block;
-  width: 100%;
+  width: 80%;
   height: auto;
   object-fit: contain;
 }
