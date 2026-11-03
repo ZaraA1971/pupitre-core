@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Fond papier densifié ~15% (2026-11-03)
+
+- `--paper` `#ebe6df` → `#e8e2da` ; wall/line + gradients assortis
+- Cache-bust `?v=20261103-bgdens`
+- Prod `8448149a` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-bgdens-galerie-vittet.md`
+
 ## Marges ÷2 + images collection (2026-11-03)
 
 - Gutters 5vw → 2.5vw (`--page-pad`) ; grille gap 22→14 px ; inset preview 10→6 px
