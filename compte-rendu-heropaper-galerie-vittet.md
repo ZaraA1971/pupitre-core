@@ -25,8 +25,8 @@ Cache-bust `?v=20261104-heropaper2`.
 
 | Cible | Id / URL |
 |---|---|
-| Preview | `bcb241b8` · https://bcb241b8.galerie-vittet-preview.pages.dev/ |
-| Prod (main) | `e04e392d` · https://galerie-vittet-preview.pages.dev/ |
+| Preview | `6f3e2ebe` · https://6f3e2ebe.galerie-vittet-preview.pages.dev/ |
+| Prod (main) | `5c64b855` · https://galerie-vittet-preview.pages.dev/ |
 | Alias preview | https://preview.galerie-vittet-preview.pages.dev/ |
 
 ## Vérif @1440
