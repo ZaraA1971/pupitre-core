@@ -352,6 +352,7 @@ footer a {
 .hero {
   padding: 22px var(--page-pad-sm) 18px var(--page-pad);
   display: block;
+  background: var(--paper);
 }
 
 .eyebrow {
