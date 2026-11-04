@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header dress (sans cadres) (2026-11-04)
+
+- Cadres retirés ; padding chrome serré conservé
+- Ornement central : filet vertical `--line` + `·` ; horizontal en mobile
+- Cache-bust `?v=20261104-hdrdress`
+- Prod `f9ef3397` · preview `9ff78973` · https://galerie-vittet-preview.pages.dev/
+- CDP bottoms Δ0 · ornament @720 · API 200 · 99
+- Détail : `compte-rendu-hdrdress-galerie-vittet.md`
+
 ## Header frames + padding serré (2026-11-04)
 
 - Outer `.header` padding `22/30` → `10/12` (mobile `8/10`) ; `min-height` retiré
