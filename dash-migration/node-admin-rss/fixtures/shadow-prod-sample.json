@@ -1,0 +1,19 @@
+{
+  "note": "Échantillon lecture seule de rss_post prod (hash/link/title) pour comparer le shadow Node. Pas de credentials.",
+  "capturedAt": "2026-10-25T12:50:00+02:00",
+  "source": "rag-server-EL refresh_rss / rss_post (SELECT hash, source, title, link)",
+  "items": [
+    {
+      "hash": "79bdd33dadf4fefc3d3b7c2428533798",
+      "source": "International · Guardian",
+      "title": "Demand for UK government action 10 months after British man’s death in Grenada",
+      "link": "https://www.theguardian.com/world/2026/oct/25/demand-uk-government-action-after-british-man-death-grenada"
+    },
+    {
+      "hash": "c79d0be623d7e8b534cb07146f77db0f",
+      "source": "International · Guardian",
+      "title": "Trump administration has pushed off 13% of Americans enrolled in food stamps",
+      "link": "https://www.theguardian.com/us-news/2026/oct/25/trump-food-stamp-cuts"
+    }
+  ]
+}

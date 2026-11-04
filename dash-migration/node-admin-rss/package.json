@@ -1,0 +1,31 @@
+{
+  "name": "dash-admin-rss-node",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "description": "Le Dash admin RSS Node — banc local + worker refresh prod (gates explicites).",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "test": "node --test --test-concurrency=1 test/*.test.mjs",
+    "test:mysql": "node --test --test-concurrency=1 test/mysql-inbox-journey.test.mjs",
+    "test:mysql-refresh": "node --test --test-concurrency=1 test/mysql-rss-refresh.test.mjs",
+    "test:refresh": "node --test test/rss-refresh.test.mjs",
+    "test:feed-http": "node --test test/simplepie-hash.test.mjs test/http-feed.test.mjs",
+    "test:desk": "node --test --test-concurrency=1 test/desk-local.test.mjs",
+    "seed:mysql": "node scripts/seed-mysql.mjs",
+    "refresh:once": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node scripts/refresh-once.mjs",
+    "refresh:http-local": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 DASH_ALLOW_FEED_HTTP=1 node scripts/refresh-http-local.mjs",
+    "refresh:shadow": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 DASH_ALLOW_FEED_HTTP=1 DASH_DB_ALLOW_SCHEMA_INIT=1 node scripts/refresh-shadow.mjs",
+    "refresh:prod": "node scripts/refresh-prod.mjs",
+    "test:shadow": "node --test test/shadow-refresh.test.mjs",
+    "test:prod-config": "node --test test/prod-refresh-config.test.mjs",
+    "start": "node src/server.mjs",
+    "start:fixtures": "DASH_DB_MODE=fixtures DASH_DISABLE_EXTERNAL=1 node src/server.mjs",
+    "start:mysql": "DASH_DB_MODE=mysql DASH_DISABLE_EXTERNAL=1 node src/server.mjs"
+  },
+  "optionalDependencies": {
+    "mysql2": "^3.14.0"
+  }
+}

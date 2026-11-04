@@ -1,0 +1,19 @@
+# Admin — exposé après bascule refresh Node (plus de Basic Auth nginx).
+# Auth applicative Dash (session PHP) reste en place.
+# Appels depuis le Dash lecture : refus silencieux, sans boîte mot de passe.
+# Rollback: restore dash-admin-auth.conf.basic-auth-backup-*
+
+location ~ ^/admin/.*\.php$ {
+    if ($http_referer ~* /client/|/dash_electron/) {
+        return 403;
+    }
+    include snippets/fastcgi-php.conf;
+    fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+}
+
+location /admin/ {
+    if ($http_referer ~* /client/|/dash_electron/) {
+        return 403;
+    }
+    try_files $uri $uri/ =404;
+}

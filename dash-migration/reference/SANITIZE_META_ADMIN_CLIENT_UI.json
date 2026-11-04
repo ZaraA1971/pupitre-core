@@ -1,0 +1,90 @@
+{
+  "admin/sent.php": {
+    "sha256_original": "482896f64db898057d24aaadd402afb553cf0e8cd87ba1c363b1112b4c1eb2f3",
+    "bytes_original": 11082,
+    "sha256_sanitized": "482896f64db898057d24aaadd402afb553cf0e8cd87ba1c363b1112b4c1eb2f3",
+    "bytes_sanitized": 11082,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "admin/deleted.php": {
+    "sha256_original": "02f10e1ca10203a4dba4384baa5a75c73a135641f32f62342449030ca6135c25",
+    "bytes_original": 5986,
+    "sha256_sanitized": "02f10e1ca10203a4dba4384baa5a75c73a135641f32f62342449030ca6135c25",
+    "bytes_sanitized": 5986,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "admin/config_theme.php": {
+    "sha256_original": "6fc7000d30e0935cbd71083802f9ba3bd4c3f2754a0741dd287156a71f61296d",
+    "bytes_original": 5493,
+    "sha256_sanitized": "6fc7000d30e0935cbd71083802f9ba3bd4c3f2754a0741dd287156a71f61296d",
+    "bytes_sanitized": 5493,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "admin/config_keyword.php": {
+    "sha256_original": "7e11c66b1bfea1cc4e2642897f2ec98ef97d7d0d22bae372660e584b8f8d92f3",
+    "bytes_original": 8888,
+    "sha256_sanitized": "7e11c66b1bfea1cc4e2642897f2ec98ef97d7d0d22bae372660e584b8f8d92f3",
+    "bytes_sanitized": 8888,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "admin/config_author.php": {
+    "sha256_original": "3ad42b9b10e7fc4972a82d4eed5c83f79039e16738297056062566377b84f8a0",
+    "bytes_original": 15913,
+    "sha256_sanitized": "3ad42b9b10e7fc4972a82d4eed5c83f79039e16738297056062566377b84f8a0",
+    "bytes_sanitized": 15913,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/notifications.php": {
+    "sha256_original": "d2adb50b268fc67d2a1245966dc9c7f36b9cc1711ba0a3ff28aee3fe37379b23",
+    "bytes_original": 2090,
+    "sha256_sanitized": "d2adb50b268fc67d2a1245966dc9c7f36b9cc1711ba0a3ff28aee3fe37379b23",
+    "bytes_sanitized": 2090,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/notification_center.php": {
+    "sha256_original": "418c498304468e043facef17920beb6754c75d1e492d25f862cb6495560affca",
+    "bytes_original": 3641,
+    "sha256_sanitized": "418c498304468e043facef17920beb6754c75d1e492d25f862cb6495560affca",
+    "bytes_sanitized": 3641,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/notification_messages.php": {
+    "sha256_original": "a43cda5bfc255bf55cd70e4d9517f07997128451747d8a400067256ef2a36a8c",
+    "bytes_original": 704,
+    "sha256_sanitized": "a43cda5bfc255bf55cd70e4d9517f07997128451747d8a400067256ef2a36a8c",
+    "bytes_sanitized": 704,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/notification_title.php": {
+    "sha256_original": "487c44cd056d267dc7dc2c5a240f93b7130f132e95374fea777f43ca4fcb577e",
+    "bytes_original": 969,
+    "sha256_sanitized": "487c44cd056d267dc7dc2c5a240f93b7130f132e95374fea777f43ca4fcb577e",
+    "bytes_sanitized": 969,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/inc/notifications.php": {
+    "sha256_original": "d2adb50b268fc67d2a1245966dc9c7f36b9cc1711ba0a3ff28aee3fe37379b23",
+    "bytes_original": 2090,
+    "sha256_sanitized": "d2adb50b268fc67d2a1245966dc9c7f36b9cc1711ba0a3ff28aee3fe37379b23",
+    "bytes_sanitized": 2090,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  },
+  "client/inc/notifications-ui.php": {
+    "sha256_original": "9faef018eb55a63f2b99caddf84c4dc363cdf7e8549ac1f9311226ec8787c619",
+    "bytes_original": 2950,
+    "sha256_sanitized": "9faef018eb55a63f2b99caddf84c4dc363cdf7e8549ac1f9311226ec8787c619",
+    "bytes_sanitized": 2950,
+    "plain_secret_remaining": false,
+    "note": "read-only import for admin sent/deleted/config + client notifications UI"
+  }
+}

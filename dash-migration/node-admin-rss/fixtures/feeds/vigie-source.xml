@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+  <channel>
+    <title>High-tech · Vigie Source</title>
+    <link>https://example.test/vigie</link>
+    <item>
+      <title>Point Vigie international</title>
+      <link>https://example.test/feeds/vigie-1</link>
+      <guid isPermaLink="false">guid-vigie-1</guid>
+      <description>Info vigie sans mots-clés éditoriaux requis.</description>
+      <pubDate>Mon, 20 Oct 2026 13:00:00 GMT</pubDate>
+      <author>Claire</author>
+    </item>
+  </channel>
+</rss>

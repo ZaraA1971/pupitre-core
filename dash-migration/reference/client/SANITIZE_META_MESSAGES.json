@@ -1,0 +1,26 @@
+{
+  "client/messages.php": {
+    "sha256_original": "87d7610d507f18587822521e3ec60c547702800d022993e00e3d55ce7d7bb159",
+    "bytes_original": 19353,
+    "sha256_sanitized": "87d7610d507f18587822521e3ec60c547702800d022993e00e3d55ce7d7bb159",
+    "bytes_sanitized": 19353,
+    "plain_secret_remaining": false,
+    "note": "messages only; sendPush library already sanitized under reference/webservice/"
+  },
+  "client/messages_post.php": {
+    "sha256_original": "949a5e95fe501a6a0c086abb9030c4d2e7a9c2c802c09af18faa4f8f5e08b3b2",
+    "bytes_original": 3603,
+    "sha256_sanitized": "949a5e95fe501a6a0c086abb9030c4d2e7a9c2c802c09af18faa4f8f5e08b3b2",
+    "bytes_sanitized": 3603,
+    "plain_secret_remaining": false,
+    "note": "messages only; sendPush library already sanitized under reference/webservice/"
+  },
+  "client/messages_loader.php": {
+    "sha256_original": "8a53745f1bfc02e564cbc46d458088efa8a7fa477387c51efefe229b9a48ab5d",
+    "bytes_original": 6527,
+    "sha256_sanitized": "8a53745f1bfc02e564cbc46d458088efa8a7fa477387c51efefe229b9a48ab5d",
+    "bytes_sanitized": 6527,
+    "plain_secret_remaining": false,
+    "note": "messages only; sendPush library already sanitized under reference/webservice/"
+  }
+}

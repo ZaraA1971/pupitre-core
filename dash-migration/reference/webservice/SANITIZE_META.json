@@ -1,0 +1,86 @@
+{
+  "auth.php": {
+    "sha256_original": "ff9bd8dc3411257433cb1f9fb97407bedce99bae101858efa9d67e5db7964b2c",
+    "bytes_original": 1718,
+    "sha256_sanitized": "b4207590a5ed52a7c7c444eeb7e99eb358427b740fa4e59f207dd16e90f31807",
+    "plain_secret_remaining": false
+  },
+  "connect.php": {
+    "sha256_original": "bfb60aea4fa9ac6e5226065947ea979cf0da097157e37951185ddec6ddac3ade",
+    "bytes_original": 166,
+    "sha256_sanitized": "bfb60aea4fa9ac6e5226065947ea979cf0da097157e37951185ddec6ddac3ade",
+    "plain_secret_remaining": false
+  },
+  "history_messages.php": {
+    "sha256_original": "980f37988e8f269975c23a4a3b35d08adca1634c622e09db94f54bce06a4f452",
+    "bytes_original": 976,
+    "sha256_sanitized": "980f37988e8f269975c23a4a3b35d08adca1634c622e09db94f54bce06a4f452",
+    "plain_secret_remaining": false
+  },
+  "list_contacts.php": {
+    "sha256_original": "f1b2da1f0582ddfcffc61964a704ed2b2fc3d643f5fcbbdfd5b54a34f8f6abaa",
+    "bytes_original": 374,
+    "sha256_sanitized": "f1b2da1f0582ddfcffc61964a704ed2b2fc3d643f5fcbbdfd5b54a34f8f6abaa",
+    "plain_secret_remaining": false
+  },
+  "list_messages.php": {
+    "sha256_original": "67446b928979717741b51dba0ca28b46b50622f00b0bb3135ec3f22b6e695ec3",
+    "bytes_original": 893,
+    "sha256_sanitized": "67446b928979717741b51dba0ca28b46b50622f00b0bb3135ec3f22b6e695ec3",
+    "plain_secret_remaining": false
+  },
+  "list_news.php": {
+    "sha256_original": "0ef6db49c77eb0f6ae947d0a3527fcb08aa6424eeb79a8b0558a8a65d8cda46c",
+    "bytes_original": 1844,
+    "sha256_sanitized": "9036d29ee63dadd2682b13080029530e2707fad41c9e5c5c4ba09d72116b79e9",
+    "plain_secret_remaining": false
+  },
+  "list_themes.php": {
+    "sha256_original": "116faaf2eeff9e7842e7c14286b6cfbdfc426d0229a13d9d882813dbf46cab35",
+    "bytes_original": 144,
+    "sha256_sanitized": "116faaf2eeff9e7842e7c14286b6cfbdfc426d0229a13d9d882813dbf46cab35",
+    "plain_secret_remaining": false
+  },
+  "new_message.php": {
+    "sha256_original": "cb6c55d01619d864fc17d23e7a1a5f0bd3a2ea73425b6069c6eaaadfea8627f4",
+    "bytes_original": 486,
+    "sha256_sanitized": "cb6c55d01619d864fc17d23e7a1a5f0bd3a2ea73425b6069c6eaaadfea8627f4",
+    "plain_secret_remaining": false
+  },
+  "read_contact.php": {
+    "sha256_original": "8ee063edc5d90d910c94930403b412b3986097f9c00306e2dbea3ef54d97127e",
+    "bytes_original": 403,
+    "sha256_sanitized": "8ee063edc5d90d910c94930403b412b3986097f9c00306e2dbea3ef54d97127e",
+    "plain_secret_remaining": false
+  },
+  "read_news.php": {
+    "sha256_original": "bd2d402116b180af49168113e8a7ace8f0cb41e733e6f54d10fbb1bf2100b0a5",
+    "bytes_original": 792,
+    "sha256_sanitized": "c22e756b19a6b172f79a88ccb3ab6fa36a2764ad79806a755457977da8768866",
+    "plain_secret_remaining": false
+  },
+  "read_settings.php": {
+    "sha256_original": "3fa556049187eecf7900e9ee797081d9093bd03522d497c7187b51c48ada3b74",
+    "bytes_original": 637,
+    "sha256_sanitized": "9f5850c966d62f57aabf7eac4cdcfce42a0ae4f28643b9e851b87eed98d8f37e",
+    "plain_secret_remaining": false
+  },
+  "register_push.php": {
+    "sha256_original": "9dc4283568d0fcd694654213d8cb4691b02d7c91a4367879fef55e3714d37528",
+    "bytes_original": 465,
+    "sha256_sanitized": "c8530de8c8e5acb62f58ba582e8ba2a16567455e48e4d2c06828a1aecf5f7313",
+    "plain_secret_remaining": false
+  },
+  "save_settings.php": {
+    "sha256_original": "f3414dcf92937b3b4ca050e7c630908605ab0abc485615da93316f3b667c0f2c",
+    "bytes_original": 1394,
+    "sha256_sanitized": "f4318ca6aa039043c23df76af34df231e310b2e2ffda8c0ddea8879a199b6d35",
+    "plain_secret_remaining": false
+  },
+  "send__push_.php": {
+    "sha256_original": "34761ed0e1ca339e463d33649424b513fcd0b38db5eb0e8ab144e9ed7c410f87",
+    "bytes_original": 1791,
+    "sha256_sanitized": "34761ed0e1ca339e463d33649424b513fcd0b38db5eb0e8ab144e9ed7c410f87",
+    "plain_secret_remaining": false
+  }
+}
