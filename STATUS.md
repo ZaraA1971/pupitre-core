@@ -5,9 +5,10 @@
 ## Section ornament mutualisé (2026-11-04)
 
 - `.ornament-rule` partagé : header + junction `#collection` → `#galerie`
-- Cache-bust `?v=20261104-secorn`
-- Prod `6e9ac419` · https://galerie-vittet-preview.pages.dev/
+- Cache-bust `?v=20261104-secorn2`
+- Prod `6d516929` · https://galerie-vittet-preview.pages.dev/
 - Détail : `compte-rendu-secorn-galerie-vittet.md`
+
 
 ## Header horizontal rule (2026-11-04)
 
