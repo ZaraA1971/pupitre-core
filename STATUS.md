@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header frames + padding serré (2026-11-04)
+
+- Outer `.header` padding `22/30` → `10/12` (mobile `8/10`) ; `min-height` retiré
+- Cadres filet `--line` sur `.header-brand` + `.header-contact` (padding interne `10px 14px 12px`)
+- Cache-bust `?v=20261104-hdrframe`
+- Prod `7a013604` · preview `826d0fa7` · https://galerie-vittet-preview.pages.dev/
+- CDP bottoms Δ0 · MAÎTRES Δ0 · API 200 · 99
+- Détail : `compte-rendu-hdrframe-galerie-vittet.md`
+
 ## CSS mutualisé (2026-11-04)
 
 - `:root` structuré (surfaces / ink / type / space / img) ; patterns type + surfaces partagés ; cascade sans couleurs concurrentes
