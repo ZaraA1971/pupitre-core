@@ -26,13 +26,13 @@ Cache-bust `?v=20261104-galctr`.
 
 | Cible | Id / URL |
 |---|---|
-| Prod | _(à remplir)_ · https://galerie-vittet-preview.pages.dev/ |
-| Hash | _(à remplir)_ |
-| Preview | _(à remplir)_ · https://preview.galerie-vittet-preview.pages.dev/ |
-| Atelier | _(à remplir)_ · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
+| Prod | `f33466a5` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://f33466a5.galerie-vittet-preview.pages.dev/#galerie |
+| Preview | `70c5711c` · https://preview.galerie-vittet-preview.pages.dev/ |
+| Atelier | `674397e7` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
 
 ## Vérif
 
-- Desktop @1440 : bloc centré, hauteurs photos égales, aspects naturels
-- `GET /api/oeuvres` → 200 JSON (functions OK)
-- Screenshots : `galctr-desktop.png`
+- Desktop @1440 : offset **0 px** · marges 142 / 142 · façade 366×252 · salle 487×252 · uncropped
+- `GET /api/oeuvres` → 200 · 99 œuvres (functions OK)
+- Screenshots : `galctr-desktop.png`, `galctr-desktop-viewport.png`, `galctr-mobile.png`
