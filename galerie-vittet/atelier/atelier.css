@@ -149,7 +149,7 @@
   min-height: 44px;
   padding: 0 14px;
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   font: inherit;
   cursor: pointer;
 }
@@ -161,7 +161,7 @@
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   color: var(--ink);
   font: 400 16px var(--sans);
   letter-spacing: 0;
@@ -249,7 +249,7 @@
   width: 88px;
   height: 66px;
   object-fit: contain;
-  background: var(--wall);
+  background: var(--paper);
 }
 
 .upload-fields {
@@ -311,7 +311,7 @@
   min-height: 44px;
   max-width: min(280px, 70vw);
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   color: var(--ink);
   font: 400 15px var(--sans);
   letter-spacing: 0;
@@ -412,7 +412,7 @@
 .catalog-pagination .page-prev,
 .catalog-pagination .page-next {
   border: 1px solid var(--line);
-  background: rgba(255, 252, 248, .55);
+  background: var(--paper-lift);
   min-height: 44px;
   padding: 0 16px;
   font: 11px var(--sans);
@@ -433,7 +433,7 @@
 .catalog-pagination .page-prev:focus-visible:not(:disabled),
 .catalog-pagination .page-next:focus-visible:not(:disabled) {
   border-color: var(--gold, #b8a078);
-  background: #f1ede6;
+  background: var(--paper-lift);
 }
 
 .catalog-pagination .page-indicator {
@@ -487,7 +487,7 @@
   width: 36px;
   height: 32px;
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   font-size: 14px;
   letter-spacing: 0.08em;
   color: #8a8478;
@@ -512,7 +512,7 @@
   width: 36px;
   height: 32px;
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   color: var(--ink);
   font: inherit;
   font-size: 14px;
@@ -557,7 +557,7 @@
   width: 220px;
   height: 164px;
   object-fit: contain;
-  background: var(--wall);
+  background: var(--paper);
 }
 
 .library-editor {
@@ -607,7 +607,7 @@
 .library-actions button {
   min-height: 44px;
   border: 1px solid var(--line);
-  background: #f1ede6;
+  background: var(--paper-lift);
   font: inherit;
   cursor: pointer;
   padding: 0 12px;

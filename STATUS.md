@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## CSS solide papier (2026-11-04)
+
+- Modèle unique `--paper` / `--paper-lift` / `--shade` (skeleton only) ; `--wall` retiré
+- Body sans bande `#dbd3ca` ; `#galerie` et letterbox hero/collection = papier
+- Cache-bust `?v=20261104-cssolid`
+- Prod `793cdbd1` · preview `89c0ad4d` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-cssolid-galerie-vittet.md`
+
 ## Cleanup5 + sync functions/images (2026-11-03)
 
 - Doublon media 1100px fusionné ; `mousemove` loupe retiré (pointermove) ; prune `ajouts/preview` vide
