@@ -1,40 +1,32 @@
-# Compte-rendu — Papier = encre éclaircie (renforcé)
+# Compte-rendu — Fond éclairci (pas la fonte)
 
 Date : 4 novembre 2026.
 
-## Verdict déploiement
+## Correction
 
-Oui, la 1ʳᵉ passe **était** déployée (`d7f51c90` / `4be06495`, `--paper` `#ede5db`, `?v=20261104-inkpaper`) — mais Δ RGB ≈ 6 vs l’ancien crème `#e8e2da` : **invisible**.
+« éclaircir la couleur de fond pas de font » — seules les surfaces papier changent ; **aucun** token d’encre texte modifié.
 
-## Renfort (cette passe)
-
-OKLCH sur `--ink-full` `#2c261f` : **H ≈ 71,4°**, **C ≈ 0,022**, **L ≈ 0,885** → fond encre éclaircie **visible**, toujours un papier de page clair.
-
-| Token | Avant (live) | Après |
+| Token | Rôle | Valeur |
 |---|---|---|
-| `--paper` | `#ede5db` (ex-`#e8e2da`) | `#e3d7ca` |
-| `--paper-lift` | `#f5eee6` | `#ede5db` |
-| `--shade` | `#d6cec5` | `#cdc2b6` |
-| `theme-color` | `#ede5db` | `#e3d7ca` |
+| `--paper` | fond page | `#e3d7ca` → **`#f5ede5`** (OKLCH H≈71.4°, C≈0.014, L≈0.95) |
+| `--paper-lift` | chrome wash | `#f9f4ee` |
+| `--shade` | skeleton only | `#ded6cc` |
+| `theme-color` | meta | `#f5ede5` |
+| `--ink-full` / `--ink-lg` / `--ink` / `--muted` | texte | **inchangés** `#2c261f` / `#413c35` / `#4c4741` / `#4c4741` |
 
-Cache-bust `?v=20261104-inkpaper-b`.
+Cache-bust `?v=20261104-paperlight`.
 
 ## Deploy (package + `functions/`)
 
 | Cible | Id / URL |
 |---|---|
-| Preview | `dd93f7be` · https://dd93f7be.galerie-vittet-preview.pages.dev/ |
-| Prod (main) | `936278d7` · https://galerie-vittet-preview.pages.dev/ |
+| Preview | `3741b1f5` · https://3741b1f5.galerie-vittet-preview.pages.dev/ |
+| Prod (main) | `7a37c0f9` · https://galerie-vittet-preview.pages.dev/ |
 
-## Preuve curl / CDP
+## Preuve
 
-```
-theme-color: #e3d7ca
-link: style.css?v=20261104-inkpaper-b
---paper: #e3d7ca
---ink-full: #2c261f
-CDP bodyBg: rgb(227, 215, 202)
-GET /api/oeuvres → 200 · 99
-```
+- Curl CSS : `--paper: #f5ede5` · `--ink-full: #2c261f`
+- CDP : `bodyBg rgb(245,237,229)` · ink tokens inchangés
+- API `/api/oeuvres` 200 · 99
 
-Artefacts : `inkpaper-b-desktop.png`, `inkpaper-b-curl.txt`, `inkpaper-b-cdp.json`, `inkpaper-b-verify.json`.
+Artefacts : `paperlight-desktop.png`, `paperlight-curl.txt`, `paperlight-cdp.json`.
