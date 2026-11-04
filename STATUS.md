@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie contenu centré (2026-11-04)
+
+- Triptyque façade \| texte \| salle : colonnes `auto` + `justify-content: center`
+- Hauteur photos égale `--gal-photo-h`, proportions naturelles, pas de crop
+- Cache-bust `?v=20261104-galctr`
+- Prod _(pending)_ · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galctr-galerie-vittet.md`
+
 ## Section ornament mutualisé (2026-11-04)
 
 - `.ornament-rule` partagé : header + junction `#collection` → `#galerie`
