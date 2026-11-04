@@ -209,9 +209,9 @@ section { scroll-margin-top: 132px; }
   z-index: 1;
 }
 
-/* Between #collection and #galerie */
+/* Between #collection and #galerie — sit up into collection pad, keep galerie below */
 .section-ornament {
-  margin: -36px auto;
+  margin: -40px auto 28px;
   position: relative;
   z-index: 1;
 }
@@ -1340,7 +1340,7 @@ footer {
   }
   .section-ornament {
     width: min(220px, 36vw);
-    margin: -28px auto;
+    margin: -28px auto 24px;
   }
   .collection-toolbar {
     align-items: stretch;
@@ -1402,7 +1402,7 @@ footer {
   }
   .section-ornament {
     width: min(148px, 56%);
-    margin: -20px auto;
+    margin: -16px auto 20px;
     gap: 10px;
   }
   .header-contact {
