@@ -7,7 +7,7 @@
 - Triptyque façade \| texte \| salle : colonnes `auto` + `justify-content: center`
 - Hauteur photos égale `--gal-photo-h`, proportions naturelles, pas de crop
 - Cache-bust `?v=20261104-galctr`
-- Prod _(pending)_ · https://galerie-vittet-preview.pages.dev/
+- Prod `f33466a5` · preview `70c5711c` · https://galerie-vittet-preview.pages.dev/
 - Détail : `compte-rendu-galctr-galerie-vittet.md`
 
 ## Section ornament mutualisé (2026-11-04)
