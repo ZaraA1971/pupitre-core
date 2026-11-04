@@ -4,10 +4,11 @@
 
 ## Papier = encre éclaircie (2026-11-04)
 
-- `--paper` `#e8e2da` → `#ede5db` (OKLCH ink `#2c261f` : H≈71.4°, C≈0.015, L≈0.925)
-- `--paper-lift` `#f5eee6` · `--shade` `#d6cec5` (skeleton) · theme-color assorti
-- Cache-bust `?v=20261104-inkpaper`
-- Prod `d7f51c90` · preview `4be06495` · https://galerie-vittet-preview.pages.dev/
+- 1ʳᵉ passe trop subtile (`#e8e2da`→`#ede5db` Δ≈6) ; renforcée → `--paper` `#e3d7ca` (OKLCH ink H≈71.4°, C≈0.022, L≈0.885)
+- `--paper-lift` `#ede5db` · `--shade` `#cdc2b6` · theme-color `#e3d7ca`
+- Cache-bust `?v=20261104-inkpaper-b`
+- Prod `936278d7` · preview `dd93f7be` · https://galerie-vittet-preview.pages.dev/
+- CDP body `rgb(227,215,202)` = `#e3d7ca` · API 200 · 99 œuvres
 - Détail : `compte-rendu-inkpaper-galerie-vittet.md`
 
 ## CSS solide papier (2026-11-04)
