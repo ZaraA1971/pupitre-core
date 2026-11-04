@@ -13,20 +13,20 @@ Date : 4 novembre 2026.
 |---|---|---|
 | `.hero` | (pas de fond) | `background: var(--paper)` |
 | `.hero-viewport` | radial + `var(--wall)` | `background: var(--paper)` |
-| `.header` | `padding 18/16`, `row-gap 16`, `min-height 112` | `padding 20/24`, `row-gap 18`, `min-height 120` |
-| `.header-brand .wordmark span` | `margin-top: 8px` | `10px` (mobile `8px`) |
-| Mobile `.header` | `padding 12/14`, `row-gap 12` | `padding 14/18`, `row-gap 14` |
+| `.header` | `padding 18/16`, `row-gap 16`, `min-height 112` | `padding 22/30`, `row-gap 20`, `min-height 128` |
+| `.header-brand .wordmark span` | `margin-top: 8px` | `12px` (mobile `8px`) |
+| Mobile `.header` | `padding 12/14`, `row-gap 12` | `padding 14/20`, `row-gap 14` |
 
 Conservé : marque à gauche, MAÎTRES centré sous VITTET, contact `grid-row: 1 / -1; align-self: end`, recherche hors header.
 
-Cache-bust `?v=20261104-heropaper`.
+Cache-bust `?v=20261104-heropaper2`.
 
 ## Deploy (package + `functions/`)
 
 | Cible | Id / URL |
 |---|---|
-| Preview | `77f43ba8` · https://77f43ba8.galerie-vittet-preview.pages.dev/ |
-| Prod (main) | `d99fb433` · https://galerie-vittet-preview.pages.dev/ |
+| Preview | `bcb241b8` · https://bcb241b8.galerie-vittet-preview.pages.dev/ |
+| Prod (main) | `e04e392d` · https://galerie-vittet-preview.pages.dev/ |
 | Alias preview | https://preview.galerie-vittet-preview.pages.dev/ |
 
 ## Vérif @1440
@@ -36,9 +36,9 @@ Cache-bust `?v=20261104-heropaper`.
 | `.hero-viewport` bg | `rgb(232, 226, 218)` = `--paper` (≠ `--wall` `#d3ccc3`) |
 | Letterbox pixels | paper (Δ 0 vs `#e8e2da`) |
 | `placeBottom` / `contactBottom` | **Δ 0 px** |
-| Gap MAÎTRES → adresse | **20.9 px** |
+| Gap MAÎTRES → adresse | **22.9 px** |
 | Centre VITTET / MAÎTRES | Δ 0 |
-| Air adresse → filet | **25 px** |
+| Air adresse → filet | **31 px** |
 | `GET /api/oeuvres` | 200 · **99** œuvres |
 
 Screenshots : `heropaper-desktop-header.png`, `heropaper-desktop-hero.png`, `heropaper-desktop-header-hero.png`, `heropaper-mobile-header.png`.
