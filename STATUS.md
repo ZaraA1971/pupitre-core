@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Papier = encre éclaircie (2026-11-04)
+
+- `--paper` `#e8e2da` → `#ede5db` (OKLCH ink `#2c261f` : H≈71.4°, C≈0.015, L≈0.925)
+- `--paper-lift` `#f5eee6` · `--shade` `#d6cec5` (skeleton) · theme-color assorti
+- Cache-bust `?v=20261104-inkpaper`
+- Prod `d7f51c90` · preview `4be06495` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-inkpaper-galerie-vittet.md`
+
 ## CSS solide papier (2026-11-04)
 
 - Modèle unique `--paper` / `--paper-lift` / `--shade` (skeleton only) ; `--wall` retiré
