@@ -149,32 +149,61 @@ section { scroll-margin-top: 132px; }
   position: sticky;
   top: 0;
   z-index: 20;
-  background: linear-gradient(180deg, var(--paper-lift) 0%, var(--paper) 72%);
+  /* Unified paper band — soft lift into paper, single hairline under. */
+  background: linear-gradient(180deg, var(--paper-lift) 0%, var(--paper) 78%);
   backdrop-filter: saturate(1.05);
   border-bottom: 1px solid var(--line);
 }
 
 .header {
   min-height: 0;
-  /* Tight chrome: frames carry the breathing room, not outer padding. */
-  padding: 10px var(--page-pad) 12px;
+  /* Keep tight vertical chrome; columns sit slightly inward for the center dress. */
+  padding: 12px max(var(--page-pad), 3.2vw) 14px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   /* Two rows: wordmark ; address — contact spans both, bottom-aligned with address. */
   grid-template-rows: auto auto;
   align-items: start;
-  column-gap: 28px;
+  column-gap: 48px;
   /* Clear vertical rhythm: MAÎTRES ANCIENS → address. */
   row-gap: 20px;
   position: relative;
   background: transparent;
 }
 
-.header-brand,
-.header-contact {
-  /* Light elegant frames — hairline only, site --line / ink language. */
-  border: 1px solid var(--line);
-  padding: 10px 14px 12px;
+/* Quiet center dress: vertical hairline interrupted by a typographic · */
+.header-ornament {
+  position: absolute;
+  left: 50%;
+  top: 18px;
+  bottom: 20px;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 1px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.header-ornament::before,
+.header-ornament::after {
+  content: "";
+  flex: 1 1 auto;
+  width: 1px;
+  min-height: 20px;
+  background: var(--line);
+}
+
+.header-ornament-mark {
+  flex: 0 0 auto;
+  font: 500 14px / 1 var(--serif);
+  color: var(--ink);
+  letter-spacing: 0;
+  line-height: 1;
+  margin-left: -0.5px; /* optical center on the 1px rule */
 }
 
 .header-brand {
@@ -1290,13 +1319,14 @@ footer {
 @media (max-width: 900px) {
   .header {
     grid-template-columns: minmax(0, 1fr) auto;
-    column-gap: 16px;
+    column-gap: 28px;
     min-height: 0;
-    padding: 8px var(--page-pad) 10px;
+    padding: 10px var(--page-pad) 12px;
   }
-  .header-brand,
-  .header-contact {
-    padding: 8px 12px 10px;
+  .header-ornament {
+    top: 14px;
+    bottom: 16px;
+    gap: 10px;
   }
   .collection-toolbar {
     align-items: stretch;
@@ -1316,14 +1346,10 @@ footer {
 @media (max-width: 700px) {
   .header {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto;
-    /* Keep a bit more air under MAÎTRES; breathing room before contact + hairline. */
-    row-gap: 14px;
-    padding: 8px var(--page-pad) 10px;
-  }
-  .header-brand,
-  .header-contact {
-    padding: 8px 12px 10px;
+    grid-template-rows: auto auto auto auto;
+    /* Keep a bit more air under MAÎTRES; ornament sits between brand and contact. */
+    row-gap: 12px;
+    padding: 10px var(--page-pad) 12px;
   }
   .header-brand {
     display: grid;
@@ -1344,8 +1370,35 @@ footer {
   .header-brand .header-place {
     font-size: calc(var(--type-sm) * 2);
   }
-  .header-contact {
+  /* Horizontal hairline + · between brand and contact when stacked. */
+  .header-ornament {
+    position: static;
+    transform: none;
     grid-row: 3;
+    grid-column: 1;
+    flex-direction: row;
+    width: min(148px, 56%);
+    height: auto;
+    top: auto;
+    bottom: auto;
+    gap: 10px;
+    justify-self: start;
+    margin: 2px 0;
+  }
+  .header-ornament::before,
+  .header-ornament::after {
+    width: auto;
+    height: 1px;
+    min-height: 0;
+    min-width: 28px;
+    flex: 1 1 auto;
+  }
+  .header-ornament-mark {
+    margin-left: 0;
+    font-size: 13px;
+  }
+  .header-contact {
+    grid-row: 4;
     align-self: start;
     justify-self: stretch;
     justify-items: start;
