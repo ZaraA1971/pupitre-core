@@ -1,6 +1,19 @@
+/*
+ * Atelier UI — sits on site tokens from ../style.css (:root).
+ * Shared: --paper, --paper-lift, --ink, --muted, --line, --gold, fonts.
+ * Local: --atelier-hint / ok / err (CMS secondary & status — not public reading ink).
+ */
+:root {
+  --atelier-pad: 5vw;
+  --atelier-hint: #625f58;
+  --atelier-ok: #4a5748;
+  --atelier-err: #6d3b32;
+  --atelier-max: 1180px;
+}
+
 .atelier-bar {
   min-height: 74px;
-  padding: 0 5vw;
+  padding: 0 var(--atelier-pad);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -18,7 +31,7 @@
 }
 
 .library {
-  width: min(1180px, calc(100% - 10vw));
+  width: min(var(--atelier-max), calc(100% - (var(--atelier-pad) * 2)));
   margin: 0 auto;
   padding: 36px 0 12px;
 }
@@ -34,12 +47,12 @@
 .atelier-lead,
 .preview-sizes,
 .atelier-hint {
-  color: #625f58;
+  color: var(--atelier-hint);
   line-height: 1.6;
 }
 
 .quick-import {
-  width: min(1180px, calc(100% - 10vw));
+  width: min(var(--atelier-max), calc(100% - (var(--atelier-pad) * 2)));
   margin: 0 auto;
   padding: 28px 0 8px;
   display: grid;
@@ -76,13 +89,13 @@
   width: 100%;
   max-width: 480px;
   height: 10px;
-  accent-color: #6d3b32;
+  accent-color: var(--atelier-err);
 }
 
 .quick-progress-text {
   margin: 0;
-  color: #625f58;
-  font-size: 14px;
+  color: var(--atelier-hint);
+  font-size: var(--type-meta, 14px);
 }
 
 .quick-results {
@@ -100,16 +113,16 @@
 .quick-results[hidden] { display: none; }
 
 .quick-results li {
-  font-size: 14px;
+  font-size: var(--type-meta, 14px);
   line-height: 1.4;
-  color: #625f58;
+  color: var(--atelier-hint);
 }
 
-.quick-results li.ok { color: #4a5748; }
-.quick-results li.err { color: #6d3b32; }
+.quick-results li.ok { color: var(--atelier-ok); }
+.quick-results li.err { color: var(--atelier-err); }
 
 .atelier {
-  width: min(1180px, calc(100% - 10vw));
+  width: min(var(--atelier-max), calc(100% - (var(--atelier-pad) * 2)));
   margin: 0 auto;
   padding: 24px 0 64px;
   display: grid;
@@ -205,7 +218,7 @@
 .expose-default {
   font-size: 13px;
   line-height: 1.4;
-  color: #625f58;
+  color: var(--atelier-hint);
 }
 
 .atelier-actions {
@@ -228,7 +241,7 @@
 
 .atelier-status {
   margin: 0;
-  color: #6d3b32;
+  color: var(--atelier-err);
 }
 
 .upload-queue {
@@ -358,7 +371,7 @@
 }
 
 .sort-btn:focus-visible {
-  outline: 2px solid #6d3b32;
+  outline: 2px solid var(--atelier-err);
   outline-offset: 2px;
 }
 
@@ -375,7 +388,7 @@
 .catalog-filter-hint {
   flex: 1 1 100%;
   margin: 0;
-  color: #625f58;
+  color: var(--atelier-hint);
   font-size: 13px;
   line-height: 1.35;
 }
@@ -392,7 +405,7 @@
 
 .catalog-count {
   margin: 0;
-  color: #625f58;
+  color: var(--atelier-hint);
   font-size: 14px;
 }
 
@@ -470,7 +483,7 @@
 }
 
 .library-list.is-front-order .library-item.is-drop-target {
-  border-top-color: #6d3b32;
+  border-top-color: var(--atelier-err);
   background: rgba(109, 59, 50, 0.04);
 }
 
@@ -503,7 +516,7 @@
 .order-badge {
   font: 11px/1.2 var(--sans, "DM Sans", sans-serif);
   letter-spacing: 0.04em;
-  color: #625f58;
+  color: var(--atelier-hint);
   min-width: 2.5em;
   text-align: center;
 }
@@ -522,7 +535,7 @@
 }
 
 .order-move:hover:not(:disabled) {
-  border-color: #6d3b32;
+  border-color: var(--atelier-err);
   background: #f7efe9;
 }
 
@@ -533,7 +546,7 @@
 
 .library-list .added-empty {
   grid-template-columns: 1fr;
-  color: #625f58;
+  color: var(--atelier-hint);
   list-style: none;
   padding-top: 12px;
   border-top: 1px solid var(--line);
@@ -582,18 +595,18 @@
 }
 
 .source-exposee {
-  color: #4a5748;
+  color: var(--atelier-ok);
   border-color: #b7c0b4;
 }
 
 .source-ajout {
-  color: #6d3b32;
+  color: var(--atelier-err);
   border-color: #d2b2aa;
 }
 
 .source-kind {
   font-size: 12px;
-  color: #625f58;
+  color: var(--atelier-hint);
 }
 
 .library-actions {
@@ -630,7 +643,7 @@
 
 .edit-status {
   font-size: 13px;
-  color: #4a5748;
+  color: var(--atelier-ok);
 }
 
 @media (max-width: 800px) {

@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## CSS mutualisé (2026-11-04)
+
+- `:root` structuré (surfaces / ink / type / space / img) ; patterns type + surfaces partagés ; cascade sans couleurs concurrentes
+- Atelier : `--atelier-hint/ok/err` aligné sur tokens site pour paper/ink/line
+- Cache-bust `?v=20261104-cssmut`
+- Prod `45702573` · preview `40c845f7` · https://galerie-vittet-preview.pages.dev/
+- CDP paper `#f5ede5` · ink unifié `#413c35` · API 200 · 99
+- Détail : `compte-rendu-cssmut-galerie-vittet.md`
+
 ## Papier = encre éclaircie (2026-11-04)
 
 - Correction « éclaircir le fond pas la fonte » : `--paper` `#e3d7ca` → `#f5ede5` (OKLCH L≈0.95, H encre) ; ink text tokens inchangés
