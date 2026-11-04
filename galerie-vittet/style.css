@@ -171,19 +171,19 @@ section { scroll-margin-top: 132px; }
   background: transparent;
 }
 
-/* Quiet center dress: vertical hairline interrupted by a typographic · */
+/* Quiet center dress: horizontal hairline + · in the middle band between columns */
 .header-ornament {
   position: absolute;
   left: 50%;
-  top: 18px;
-  bottom: 20px;
-  transform: translateX(-50%);
+  top: 50%;
+  transform: translate(-50%, -50%);
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
-  gap: 12px;
-  width: 1px;
+  gap: 14px;
+  width: min(300px, 26vw);
+  height: auto;
   pointer-events: none;
   z-index: 1;
 }
@@ -192,8 +192,8 @@ section { scroll-margin-top: 132px; }
 .header-ornament::after {
   content: "";
   flex: 1 1 auto;
-  width: 1px;
-  min-height: 20px;
+  height: 1px;
+  min-width: 36px;
   background: var(--line);
 }
 
@@ -203,7 +203,6 @@ section { scroll-margin-top: 132px; }
   color: var(--ink);
   letter-spacing: 0;
   line-height: 1;
-  margin-left: -0.5px; /* optical center on the 1px rule */
 }
 
 .header-brand {
@@ -1324,9 +1323,8 @@ footer {
     padding: 10px var(--page-pad) 12px;
   }
   .header-ornament {
-    top: 14px;
-    bottom: 16px;
-    gap: 10px;
+    width: min(200px, 22vw);
+    gap: 12px;
   }
   .collection-toolbar {
     align-items: stretch;
