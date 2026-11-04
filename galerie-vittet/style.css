@@ -2,16 +2,16 @@
   /*
    * Surfaces — one paper field for page, chrome, hero, collection, letterbox.
    *   --paper      sole surround for images (object-fit: contain)
-   *               = --ink-full lightened in OKLCH (H≈71.4°, C≈0.022, L≈0.885)
-   *                 visibly warm ink ground (not near-white cream)
+   *               = --ink-full lightened in OKLCH (H≈71.4°, C≈0.014, L≈0.95)
+   *                 light warm ground only — ink *text* tokens unchanged
    *   --paper-lift soft lift (chrome wash / control hover) — same hue, higher L
    *   --shade      skeleton placeholder ONLY — never image letterbox
    * Ink — full (wordmark) · lg ≈90% (titles) · ink/muted ≈85% (body/meta)
    * Images — SVG #img-warm-wb + contrast/brightness/saturate (no sepia)
    */
-  --paper: #e3d7ca;
-  --paper-lift: #ede5db;
-  --shade: #cdc2b6;
+  --paper: #f5ede5;
+  --paper-lift: #f9f4ee;
+  --shade: #ded6cc;
   --ink-full: #2c261f;
   --ink-lg: #413c35;
   --ink: #4c4741;
@@ -44,7 +44,7 @@ body {
   margin: 0;
   /* Paper field + light atmosphere — no gray wall band at the bottom. */
   background:
-    radial-gradient(980px 460px at 88% -8%, rgba(44, 38, 31, .09), transparent 58%),
+    radial-gradient(980px 460px at 88% -8%, rgba(44, 38, 31, .05), transparent 58%),
     var(--paper);
   color: var(--ink);
   font-family: var(--sans);
