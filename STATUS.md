@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header horizontal rule (2026-11-04)
+
+- Filet vertical retiré → filet horizontal + `·` dans le vide central
+- Pas de cadres ; padding serré conservé
+- Cache-bust `?v=20261104-hdrhoriz`
+- Prod `163717e6` · preview `292fc4c8` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-hdrhoriz-galerie-vittet.md`
+
 ## Header dress (sans cadres) (2026-11-04)
 
 - Cadres retirés ; padding chrome serré conservé
