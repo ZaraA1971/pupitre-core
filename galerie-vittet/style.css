@@ -855,7 +855,9 @@ footer a {
 .collection-end {
   margin-top: 28px;
   padding-top: 14px;
-  border-top: 1px solid var(--line);
+  /* No full-width rule between pagination and « Peintures · 1–15 sur 50 ».
+     Junction dress remains `.section-ornament` below this block. */
+  border-top: 0;
   display: flex;
   justify-content: flex-start;
   align-items: center;
