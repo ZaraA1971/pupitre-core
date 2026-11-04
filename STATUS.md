@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Section ornament mutualisé (2026-11-04)
+
+- `.ornament-rule` partagé : header + junction `#collection` → `#galerie`
+- Cache-bust `?v=20261104-secorn`
+- Prod `6e9ac419` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-secorn-galerie-vittet.md`
+
 ## Header horizontal rule (2026-11-04)
 
 - Filet vertical retiré → filet horizontal + `·` dans le vide central
