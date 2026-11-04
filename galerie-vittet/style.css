@@ -3,19 +3,20 @@
    * Surfaces — one paper field for page, chrome, hero, collection, letterbox.
    *   --paper      sole surround for images (object-fit: contain)
    *               = --ink-full lightened in OKLCH (H≈71.4°, C≈0.014, L≈0.95)
-   *                 light warm ground only — ink *text* tokens unchanged
    *   --paper-lift soft lift (chrome wash / control hover) — same hue, higher L
    *   --shade      skeleton placeholder ONLY — never image letterbox
-   * Ink — full (wordmark) · lg ≈90% (titles) · ink/muted ≈85% (body/meta)
+   * Ink — full (wordmark VITTET / MAÎTRES only)
+   *       · one shared reading gray ≈90% ink (titles, body, meta, chrome)
+   *       hierarchy = size / weight, not competing grays
    * Images — SVG #img-warm-wb + contrast/brightness/saturate (no sepia)
    */
   --paper: #f5ede5;
   --paper-lift: #f9f4ee;
   --shade: #ded6cc;
   --ink-full: #2c261f;
-  --ink-lg: #413c35;
-  --ink: #4c4741;
-  --muted: #4c4741;
+  --ink: #413c35;           /* mix(#2c261f 90%, white) — sole reading text */
+  --ink-lg: var(--ink);     /* alias — was 90% titles; now same rate */
+  --muted: var(--ink);      /* alias — was 85% body/meta; now same rate */
   --line: #c1bab0;
   --gold: #a68456;
   --serif: "Playfair Display", Georgia, serif;
