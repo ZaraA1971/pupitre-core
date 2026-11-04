@@ -65,7 +65,7 @@ body {
 
 img { max-width: 100%; }
 
-section { scroll-margin-top: 148px; }
+section { scroll-margin-top: 132px; }
 
 /* —— Shared surfaces (paper field; letterbox never uses --shade) —— */
 .hero,
@@ -155,9 +155,9 @@ section { scroll-margin-top: 148px; }
 }
 
 .header {
-  min-height: 128px;
-  /* Extra bottom air so address / contact are not cramped against the hairline. */
-  padding: 22px var(--page-pad) 30px;
+  min-height: 0;
+  /* Tight chrome: frames carry the breathing room, not outer padding. */
+  padding: 10px var(--page-pad) 12px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   /* Two rows: wordmark ; address — contact spans both, bottom-aligned with address. */
@@ -168,6 +168,13 @@ section { scroll-margin-top: 148px; }
   row-gap: 20px;
   position: relative;
   background: transparent;
+}
+
+.header-brand,
+.header-contact {
+  /* Light elegant frames — hairline only, site --line / ink language. */
+  border: 1px solid var(--line);
+  padding: 10px 14px 12px;
 }
 
 .header-brand {
@@ -1285,7 +1292,11 @@ footer {
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 16px;
     min-height: 0;
-    padding: 14px var(--page-pad) 14px;
+    padding: 8px var(--page-pad) 10px;
+  }
+  .header-brand,
+  .header-contact {
+    padding: 8px 12px 10px;
   }
   .collection-toolbar {
     align-items: stretch;
@@ -1308,7 +1319,11 @@ footer {
     grid-template-rows: auto auto auto;
     /* Keep a bit more air under MAÎTRES; breathing room before contact + hairline. */
     row-gap: 14px;
-    padding: 14px var(--page-pad) 20px;
+    padding: 8px var(--page-pad) 10px;
+  }
+  .header-brand,
+  .header-contact {
+    padding: 8px 12px 10px;
   }
   .header-brand {
     display: grid;
@@ -1349,7 +1364,7 @@ footer {
   }
   .header-mail { font-size: var(--type-xs); }
   .header-hours { font-size: var(--type-xs); }
-  section { scroll-margin-top: 180px; }
+  section { scroll-margin-top: 168px; }
   .collection-toolbar {
     flex-direction: column;
     align-items: stretch;
