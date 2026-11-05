@@ -871,6 +871,7 @@ footer a {
    the page midline. --gal-space still = outer pad = column gap. */
 .about {
   --side: 240px;
+  --gal-pad-block: 96px;
   --gal-photo-h: clamp(320px, 24.4vw, 352px);
   /* 2 pads + 1 gap between photo columns → /3 when pad = gap */
   --gal-space: clamp(
@@ -881,8 +882,8 @@ footer a {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--gal-space);
-  align-items: center;
-  padding: 96px var(--gal-space) 96px;
+  align-items: start;
+  padding: var(--gal-pad-block) var(--gal-space) var(--gal-pad-block);
   position: relative;
   z-index: 0;
   overflow: clip;
@@ -896,7 +897,7 @@ footer a {
   width: 100%;
   height: var(--gal-photo-h);
   display: flex;
-  align-items: center;
+  align-items: start;
   justify-content: center;
 }
 
@@ -924,17 +925,18 @@ footer a {
   grid-row: 1;
   position: absolute;
   left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  /* Grid area CB = content box → top:0 aligns with photo tops */
+  top: 0;
+  transform: translateX(-50%);
   z-index: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 14px;
   min-width: 0;
   width: var(--side);
   max-width: var(--side);
-  padding: 8px 12px;
+  padding: 0 12px 8px;
   background: var(--paper);
 }
 
