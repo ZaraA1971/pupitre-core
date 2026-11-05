@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie photos agrandies + recentrées (2026-11-04)
+
+- Hauteur 288 → 331 @1440 ; photos centrées dans les tracks, pad extérieur ~36 px
+- Texte toujours Δ 0 sur l’axe page (copy absolute + gouttière 48 px)
+- Cache-bust `?v=20261104-galgrow`
+- Prod `317cdb6d` · preview `d4d7188d` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galgrow-galerie-vittet.md`
+
 ## #galerie texte centré page (2026-11-04)
 
 - Grille `1fr · 240px · 1fr` : colonne texte sur l’axe page (Δ 0 px)
