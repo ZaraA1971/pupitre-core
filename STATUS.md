@@ -6,6 +6,7 @@
 
 - Jauge **100 → 150 %** (entrée 100 %, clamp natif, idle 3 s inchangés)
 - Cache-bust `?v=20261105-loupe150`
+- Prod `9c429341` · preview `d235ee00` · https://galerie-vittet-preview.pages.dev/
 
 ## Loupe jauge 100–130 % (2026-11-05)
 
