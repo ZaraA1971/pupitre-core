@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header top padding (2026-11-05)
+
+- Outer `.header` top pad **12 → 8** px (mobile **10 → 8**) ; bottom inchangé
+- Ornement horizontal · + bas contact = bas adresse conservés
+- Cache-bust `?v=20261105-hdrtop`
+- Prod `e8feb2a7` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-hdrtop-galerie-vittet.md`
+
 ## #galerie h2 top = photos (2026-11-05)
 
 - « La galerie » aligné au haut des photos · « Depuis 1988 » au-dessus

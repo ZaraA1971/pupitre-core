@@ -21,3 +21,24 @@ Conservé : ornement horizontal · ; bas contact = bas adresse ; structure heade
 ```
 
 Cache-bust `?v=20261105-hdrtop`.
+
+## Deploy (package + `functions/`)
+
+| Cible | Id / URL |
+|---|---|
+| Prod (main) | `e8feb2a7` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://e8feb2a7.galerie-vittet-preview.pages.dev/ |
+| Preview | `d2237344` · https://preview.galerie-vittet-preview.pages.dev/ |
+| Atelier | `c4684494` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
+
+## Vérif @1440
+
+| Mesure | Avant | Après |
+|---|---|---|
+| Outer pad top | **12** px | **8** px |
+| Outer pad bottom | 14 px | 14 px |
+| Mobile pad top (≤900/700) | 10 px | **8** px |
+| placeBottom / contactBottom | — | 189.56 / 189.56 · **Δ 0** |
+| `GET /api/oeuvres` | — | 200 · **99** · functions OK |
+
+Screenshots : `hdrtop-desktop-header.png`, `hdrtop-desktop-top.png`.
