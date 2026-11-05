@@ -7,7 +7,7 @@
 - Outer `.header` top pad **8 → 5** px (mobile idem) ; bottom inchangé
 - Ornement · + bas contact = bas adresse conservés
 - Cache-bust `?v=20261105-hdrtop2`
-- Prod · https://galerie-vittet-preview.pages.dev/
+- Prod `6f4f20ba` · https://galerie-vittet-preview.pages.dev/
 - Détail : `compte-rendu-hdrtop2-galerie-vittet.md`
 
 ## Header top padding (2026-11-05)

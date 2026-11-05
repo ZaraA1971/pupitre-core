@@ -17,3 +17,23 @@ Conservé : bottom pad, ornement ·, bas contact = bas adresse.
 ```
 
 Cache-bust `?v=20261105-hdrtop2`.
+
+## Deploy (package + `functions/`)
+
+| Cible | Id / URL |
+|---|---|
+| Prod (main) | `6f4f20ba` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://6f4f20ba.galerie-vittet-preview.pages.dev/ |
+| Preview | `30f04d08` · https://preview.galerie-vittet-preview.pages.dev/ |
+| Atelier | `bc4493e7` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
+
+## Vérif @1440
+
+| Mesure | Valeur |
+|---|---|
+| Outer pad top | **5** px (était 8) |
+| Outer pad bottom | 14 px |
+| placeBottom / contactBottom | 186.56 / 186.56 · **Δ 0** |
+| `GET /api/oeuvres` | 200 · **99** · functions OK |
+
+Screenshots : `hdrtop2-desktop-header.png`, `hdrtop2-desktop-top.png`.
