@@ -871,18 +871,15 @@ footer a {
    flow on the page midline (no absolute). Photos centered in side
    tracks, moderate equal height, object-fit contain. */
 .about {
-  /* Single spacing token: outer pad = column gaps (symmetric repères) */
-  --gal-space: clamp(24px, 2.2vw, 40px);
   --side: 240px;
-  /* Calm middle (~280px @1440): above small era, below 331px grow.
-     Cap by salle aspect so side tracks never force a crop. */
-  --gal-photo-h: clamp(
-    250px,
-    min(
-      19.8vw,
-      calc((100vw - 4 * var(--gal-space) - var(--side)) / 2 * 530 / 1024)
-    ),
-    295px
+  /* +10% vs balance (~278 → ~306); keep uncropped via space formula below */
+  --gal-photo-h: clamp(275px, 21.25vw, 306px);
+  /* Single spacing token: outer pad = column gaps. Sized so salle at
+     --gal-photo-h still fits each 1fr track (alignments unchanged). */
+  --gal-space: clamp(
+    4px,
+    calc((100vw - var(--side) - 2 * (var(--gal-photo-h) * 1024 / 530)) / 4),
+    40px
   );
   display: grid;
   grid-template-columns: 1fr minmax(200px, var(--side)) 1fr;
