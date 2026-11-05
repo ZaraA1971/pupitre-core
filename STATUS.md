@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Header top padding 3 — moitié (2026-11-05)
+
+- Outer `.header` top pad **5 → 2** px (mobile idem) ; bottom inchangé
+- Ornement · + bas contact = bas adresse conservés
+- Cache-bust `?v=20261105-hdrtop3`
+- Prod `7bf38fce` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-hdrtop3-galerie-vittet.md`
+
 ## Header top padding 2 (2026-11-05)
 
 - Outer `.header` top pad **8 → 5** px (mobile idem) ; bottom inchangé
