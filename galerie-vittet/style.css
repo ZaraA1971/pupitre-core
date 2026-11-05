@@ -1115,7 +1115,7 @@ footer {
   transition: none;
 }
 
-/* Loupe : scale JS (130 % fit, clamp natif). */
+/* Loupe : scale JS (100–130 % fit, clamp natif). */
 .lightbox-photo img.art-detail.is-zoomed {
   transition: none;
 }
@@ -1146,8 +1146,9 @@ footer {
     color .2s ease;
 }
 
-/* Idle 3 s : bouton loupe masqué ; réapparaît à l’action utilisateur. */
-.lightbox-loupe.is-idle-hidden {
+/* Idle 3 s : chrome loupe (bouton + jauge) masqué ; réveil à l’action. */
+.lightbox-loupe.is-idle-hidden,
+.lightbox-zoom-gauge.is-idle-hidden {
   opacity: 0;
   pointer-events: none;
 }
@@ -1166,6 +1167,93 @@ footer {
 .lightbox-loupe svg {
   display: block;
   flex: 0 0 auto;
+}
+
+.lightbox-zoom-gauge {
+  position: absolute;
+  left: 50%;
+  bottom: 16px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: min(280px, calc(100% - 28px));
+  max-width: min(360px, calc(100% - 28px));
+  padding: 10px 14px;
+  border: 1px solid rgba(231, 224, 215, .35);
+  background: rgba(27, 26, 23, .72);
+  color: var(--paper);
+  backdrop-filter: blur(6px);
+  transform: translateX(-50%);
+  opacity: 1;
+  transition: opacity .35s ease;
+}
+
+.lightbox-zoom-gauge[hidden] {
+  display: none;
+}
+
+.lightbox-zoom-gauge-label {
+  flex: 0 0 auto;
+  margin: 0;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  font: 500 var(--type-xs) / 1 var(--sans);
+  color: rgba(247, 243, 238, .78);
+}
+
+.lightbox-zoom-range {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  height: 28px;
+  margin: 0;
+  appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+
+.lightbox-zoom-range:focus-visible {
+  outline: 1px solid var(--gold);
+  outline-offset: 3px;
+}
+
+.lightbox-zoom-range::-webkit-slider-runnable-track {
+  height: 2px;
+  background: rgba(231, 224, 215, .35);
+}
+
+.lightbox-zoom-range::-moz-range-track {
+  height: 2px;
+  background: rgba(231, 224, 215, .35);
+  border: 0;
+}
+
+.lightbox-zoom-range::-webkit-slider-thumb {
+  appearance: none;
+  width: 14px;
+  height: 14px;
+  margin-top: -6px;
+  border: 1px solid rgba(231, 224, 215, .7);
+  border-radius: 0;
+  background: var(--gold);
+}
+
+.lightbox-zoom-range::-moz-range-thumb {
+  width: 14px;
+  height: 14px;
+  border: 1px solid rgba(231, 224, 215, .7);
+  border-radius: 0;
+  background: var(--gold);
+}
+
+.lightbox-zoom-gauge-value {
+  flex: 0 0 3.6em;
+  text-align: right;
+  font: 500 var(--type-sm) / 1 var(--sans);
+  letter-spacing: .04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--paper);
 }
 
 .lightbox-zoom-status {
@@ -1543,6 +1631,13 @@ footer {
     right: 10px;
     min-height: 44px;
   }
+  .lightbox-zoom-gauge {
+    bottom: 12px;
+    min-width: min(240px, calc(100% - 20px));
+    max-width: calc(100% - 20px);
+    padding: 10px 12px;
+    gap: 10px;
+  }
   .lightbox-fiche h2 { font-size: var(--type-meta); }
   .lightbox-artist { font-size: 24px; }
 }
@@ -1599,6 +1694,7 @@ html.motion [data-reveal].art-card.is-in .art-preview {
   .lightbox-close,
   .lightbox-nav button,
   .lightbox-loupe,
+  .lightbox-zoom-gauge,
   .lightbox-photo img.art-detail,
   .lightbox-photo img.art-detail.is-entering,
   .lightbox-photo img.art-detail.is-zoomed,

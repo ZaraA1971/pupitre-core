@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Loupe jauge 100–130 % (2026-11-05)
+
+- Entrée loupe = **100 %** du fit lightbox (original) ; jauge jusqu’à **130 %** (clamp natif)
+- Chrome (Quitter + jauge) idle 3 s comme avant
+- Cache-bust `?v=20261105-loupegauge`
+- Détail : `compte-rendu-loupegauge-galerie-vittet.md`
+
 ## Header top padding 3 — moitié (2026-11-05)
 
 - Outer `.header` top pad **5 → 2** px (mobile idem) ; bottom inchangé

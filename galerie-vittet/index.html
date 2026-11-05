@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261105-hdrtop3">
+  <link rel="stylesheet" href="style.css?v=20261105-loupegauge">
 </head>
 <body>
   <!-- Balance des blancs douce pour --img-enhance (pas de teinte brune / sépia). -->
@@ -210,6 +210,23 @@
           </svg>
           <span class="lightbox-loupe-label">Loupe</span>
         </button>
+        <div class="lightbox-zoom-gauge" hidden>
+          <label class="lightbox-zoom-gauge-label" for="lightbox-zoom-range">Zoom</label>
+          <input
+            class="lightbox-zoom-range"
+            id="lightbox-zoom-range"
+            type="range"
+            min="100"
+            max="130"
+            step="1"
+            value="100"
+            aria-valuemin="100"
+            aria-valuemax="130"
+            aria-valuenow="100"
+            aria-valuetext="100 %"
+          >
+          <span class="lightbox-zoom-gauge-value" aria-hidden="true">100 %</span>
+        </div>
         <p class="lightbox-zoom-status" aria-live="polite"></p>
       </div>
       <div class="lightbox-fiche">
@@ -243,6 +260,6 @@
       </div>
     </div>
   </dialog>
-  <script src="main.js?v=20261103-clean5" defer></script>
+  <script src="main.js?v=20261105-loupegauge" defer></script>
 </body>
 </html>
