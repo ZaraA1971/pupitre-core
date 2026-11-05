@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie photos +10 % (2026-11-05)
+
+- Hauteur 278 → **306** px · pad = gap conservé · texte Δ 0
+- Cache-bust `?v=20261104-gal10`
+- Prod `7b5b9ee8` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-gal10-galerie-vittet.md`
+
 ## #galerie équilibre repères (2026-11-05)
 
 - `1fr\|240\|1fr` + `--gal-space` (= pad = gap) · photos ~278 px · texte Δ 0
