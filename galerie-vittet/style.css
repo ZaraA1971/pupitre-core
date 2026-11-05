@@ -13,8 +13,7 @@
   /* —— Ink —— */
   --ink-full: #2c261f;    /* wordmark VITTET / MAÎTRES only */
   --ink: #413c35;         /* sole reading text ≈ mix(ink-full 90%, white) */
-  --ink-lg: var(--ink);   /* alias (titles) */
-  --muted: var(--ink);    /* alias (body / meta) */
+  --muted: var(--ink);    /* alias (body / meta) — atelier + shared */
   --line: #c1bab0;
   --gold: #a68456;
 

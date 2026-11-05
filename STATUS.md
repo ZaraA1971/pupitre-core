@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup6 + sync unify atelier (2026-11-05)
+
+- Mort : quick-import dual (package git) ; `categoryLabel()` ; `--ink-lg`
+- Sync : atelier unifié EXIF (FileList + dates) + front loupe 150 / layout / header / paper-ink
+- Cache-bust `?v=20261105-clean6`
+- Prod `09fe5448` · preview `46d8db33` · atelier `aec219ce` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-cleanup6-galerie-vittet.md`
+
 ## Loupe jauge max 150 % (2026-11-05)
 
 - Jauge **100 → 150 %** (entrée 100 %, clamp natif, idle 3 s inchangés)
