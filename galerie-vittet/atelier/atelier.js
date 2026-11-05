@@ -494,9 +494,10 @@ function selectionSummary(files) {
 async function setPendingFromFiles(fileList) {
   if (pickBusy) return;
   pickBusy = true;
+  // Copier avant clearPending() : FileList est live et se vide si l’input est reset.
+  const files = [...(fileList || [])].filter(isImageFile);
   clearPending();
   const defaults = defaultCategories();
-  const files = [...(fileList || [])].filter(isImageFile);
   fileName.textContent = selectionSummary(files);
   if (!files.length) {
     status.textContent = "Aucun fichier image (JPEG / PNG / WebP) dans la sélection.";
@@ -1966,6 +1967,7 @@ document.addEventListener("keydown", (event) => {
 });
 
 imageInput.addEventListener("change", () => {
+  if (pickBusy) return;
   if (imageFolderInput) imageFolderInput.value = "";
   if (imageInput.files && imageInput.files.length) {
     setPendingFromFiles(imageInput.files);
@@ -1978,6 +1980,7 @@ imageInput.addEventListener("change", () => {
 
 if (imageFolderInput) {
   imageFolderInput.addEventListener("change", () => {
+    if (pickBusy) return;
     if (imageInput) imageInput.value = "";
     if (imageFolderInput.files && imageFolderInput.files.length) {
       setPendingFromFiles(imageFolderInput.files);
