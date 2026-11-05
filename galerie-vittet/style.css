@@ -921,13 +921,18 @@ footer a {
 }
 
 .about-copy {
+  --copy-head-gap: 6px;
+  --eyebrow-lh: 1.2;
+  /* Eyebrow sits above the photo tops; h2 top meets photo tops */
+  --eyebrow-lift: calc(var(--type-xs) * var(--eyebrow-lh) + var(--copy-head-gap));
   grid-column: 1 / -1;
   grid-row: 1;
   position: absolute;
   left: 50%;
-  /* Grid area CB = content box → top:0 aligns with photo tops */
   top: 0;
   transform: translateX(-50%);
+  /* Pull whole column up so « La galerie » aligns with photo tops */
+  margin-top: calc(-1 * var(--eyebrow-lift));
   z-index: 1;
   display: flex;
   flex-direction: column;
@@ -942,11 +947,12 @@ footer a {
 
 .about-copy-head {
   display: grid;
-  gap: 6px;
+  gap: var(--copy-head-gap);
 }
 
 .about-copy .eyebrow {
   margin: 0;
+  line-height: var(--eyebrow-lh);
 }
 
 .about-copy-body {
