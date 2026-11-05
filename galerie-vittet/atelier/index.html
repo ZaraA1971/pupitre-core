@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css?v=20261104-secorn2">
-  <link rel="stylesheet" href="atelier.css?v=20261104-secorn2">
+  <link rel="stylesheet" href="../style.css?v=20261105-upload1">
+  <link rel="stylesheet" href="atelier.css?v=20261105-upload1">
 </head>
 <body>
   <header class="atelier-bar">
@@ -82,42 +82,22 @@
     </nav>
   </section>
 
-  <section class="quick-import" id="quick-import" aria-labelledby="quick-title">
-    <p class="eyebrow">Import rapide</p>
-    <h2 id="quick-title">Images + EXIF</h2>
-    <p class="atelier-lead">Multi-fichiers ou dossier. Les <strong>EXIF / IPTC</strong> sont lus à l’import (artiste, titre, description…). L’<strong>original</strong> est conservé (KV) quand il tient sous la limite, plus un dérivé <strong>web</strong> (max ~1800&nbsp;px) pour l’affichage public et une vignette. Nom de fichier stocké pour le matching Artlogic. Non exposées par défaut.</p>
-    <div class="file-field quick-file-field">
-      <span id="quick-image-label">Images</span>
-      <input id="quick-files" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" multiple aria-labelledby="quick-image-label">
-      <input id="quick-folder" type="file" class="visually-hidden" multiple webkitdirectory aria-label="Choisir un dossier d’images">
-      <div class="quick-picks">
-        <button class="file-pick" id="quick-pick-files" type="button">Choisir des images</button>
-        <button class="file-pick" id="quick-pick-folder" type="button">Choisir un dossier</button>
-      </div>
-      <span id="quick-file-name">Aucun fichier choisi</span>
-    </div>
-    <p class="atelier-hint">Source jusqu’à ~40&nbsp;Mo. Sous ~12&nbsp;Mo&nbsp;: fichier gardé tel quel (EXIF intacts). Au‑delà&nbsp;: EXIF lus puis image réencodée. Formats JPEG, PNG, WebP. Dossier&nbsp;: sélectionnez le dossier (sans l’ouvrir), puis Transférer.</p>
-    <div class="atelier-actions">
-      <button class="button" id="quick-upload" type="button" disabled>Importer maintenant</button>
-      <button class="button button-quiet" id="quick-clear" type="button" disabled>Vider la sélection</button>
-    </div>
-    <div class="quick-progress" id="quick-progress" hidden>
-      <progress id="quick-bar" max="100" value="0"></progress>
-      <p class="quick-progress-text" id="quick-progress-text" aria-live="polite"></p>
-    </div>
-    <ul class="quick-results" id="quick-results" hidden></ul>
-    <p class="atelier-status" id="quick-status" role="alert"></p>
-  </section>
-
   <main class="atelier">
     <form class="atelier-form" id="work-form">
-      <p class="eyebrow">Ajout classique</p>
-      <h2>Déposer avec légendes</h2>
-      <p class="atelier-lead">Plusieurs fichiers, puis les champs Artlogic en français pour chaque image (artiste, titre, note, signé et date, support, dimensions, éditions) et les coches. Aperçu → enregistrement KV + D1 (original + web + vignette).</p>
+      <p class="eyebrow">Ajout</p>
+      <h2>Déposer des œuvres</h2>
+      <p class="atelier-lead">Un seul choix&nbsp;: fichiers ou dossier. Les <strong>EXIF / IPTC</strong> remplissent les champs Artlogic (artiste, titre, note, signé et date, support, dimensions). Corrigez au besoin, puis aperçu → enregistrement&nbsp;: <strong>original</strong> + dérivé <strong>web</strong> (~1800&nbsp;px) + <strong>vignette</strong>. Non exposées par défaut.</p>
       <div class="file-field">
         <span id="image-label">Images</span>
         <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" multiple aria-labelledby="image-label">
-        <button class="file-pick" id="pick-image" type="button">Choisir des images</button>
+        <input id="image-folder" type="file" class="visually-hidden" multiple webkitdirectory aria-label="Choisir un dossier d’images">
+        <div class="pick-unified">
+          <button class="file-pick" id="pick-image" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="pick-menu">Choisir images ou dossier</button>
+          <div class="pick-menu" id="pick-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-pick="files">Fichiers images</button>
+            <button type="button" role="menuitem" data-pick="folder">Dossier</button>
+          </div>
+        </div>
         <span id="file-name">Aucun fichier choisi</span>
       </div>
       <div id="upload-queue" class="upload-queue" hidden></div>
@@ -139,7 +119,7 @@
         <button class="button" id="preview-button" type="submit">Aperçu <span>↘</span></button>
         <button class="button button-quiet" id="publish-button" type="button" disabled>Enregistrer</button>
       </div>
-      <p class="atelier-hint" id="form-hint">Regardez l’aperçu avant d’enregistrer.</p>
+      <p class="atelier-hint" id="form-hint">Source ≤ ~40&nbsp;Mo. Sous ~12&nbsp;Mo l’original est conservé (EXIF intacts). JPEG, PNG, WebP. Aperçu avant enregistrement.</p>
       <p class="atelier-status" id="form-status" role="alert"></p>
     </form>
     <section class="preview-panel" id="preview-panel" aria-labelledby="preview-title" hidden>
@@ -152,6 +132,6 @@
 
   <script src="vendor/jspdf.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js" defer></script>
-  <script src="atelier.js?v=20261103-coll15" defer></script>
+  <script src="atelier.js?v=20261105-upload1" defer></script>
 </body>
 </html>

@@ -1,5 +1,8 @@
 const form = document.getElementById("work-form");
 const imageInput = document.getElementById("image");
+const imageFolderInput = document.getElementById("image-folder");
+const pickImageButton = document.getElementById("pick-image");
+const pickMenu = document.getElementById("pick-menu");
 const fileName = document.getElementById("file-name");
 const defaultExposed = document.getElementById("default-exposed");
 const defaultCarousel = document.getElementById("default-carousel");
@@ -28,18 +31,6 @@ const catalogPagePrev = document.getElementById("catalog-page-prev");
 const catalogPageNext = document.getElementById("catalog-page-next");
 const catalogPageCurrent = document.getElementById("catalog-page-current");
 const catalogPageTotal = document.getElementById("catalog-page-total");
-const quickFilesInput = document.getElementById("quick-files");
-const quickFolderInput = document.getElementById("quick-folder");
-const quickPickFiles = document.getElementById("quick-pick-files");
-const quickPickFolder = document.getElementById("quick-pick-folder");
-const quickFileName = document.getElementById("quick-file-name");
-const quickUpload = document.getElementById("quick-upload");
-const quickClear = document.getElementById("quick-clear");
-const quickProgress = document.getElementById("quick-progress");
-const quickBar = document.getElementById("quick-bar");
-const quickProgressText = document.getElementById("quick-progress-text");
-const quickResults = document.getElementById("quick-results");
-const quickStatus = document.getElementById("quick-status");
 
 const MAX_BYTES = 12_000_000;
 /** Source avant réencodage : on accepte plus gros (scans print), puis on vérifie le blob encodé. */
@@ -50,7 +41,7 @@ const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
 const PREVIEW_MAX_EDGE = 720;
 const LIBRARY_PAGE_SIZE = 25;
-const QUICK_IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
+const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ID_PATTERN = /^ajout-[a-z0-9-]{1,80}$/;
 const EXPOSEE_ID_PATTERN = /^exposee-[a-z0-9-]{1,80}$/;
 const LIBRARY_ID_PATTERN = /^(ajout|exposee)-[a-z0-9-]{1,80}$/;
@@ -108,11 +99,10 @@ function emptyMeta() {
 }
 
 let previewReady = false;
-/** @type {Array<{file: File, artist: string, title: string, note: string, signed_dated: string, support: string, dimensions: string, editions: string, alt: string, categories: string[], detailBlob: Blob|null, webBlob: Blob|null, previewBlob: Blob|null, detailMeta: object|null, webMeta: object|null, previewMeta: object|null, objectUrl: string}>} */
+/** @type {Array<{file: File, artist: string, title: string, note: string, signed_dated: string, support: string, dimensions: string, editions: string, alt: string, categories: string[], detailBlob: Blob|null, webBlob: Blob|null, previewBlob: Blob|null, detailMeta: object|null, webMeta: object|null, previewMeta: object|null, objectUrl: string, exifFilled?: boolean}>} */
 let pendingItems = [];
-/** @type {File[]} */
-let quickFiles = [];
-let quickBusy = false;
+/** Empêche une sélection concurrente pendant la lecture EXIF. */
+let pickBusy = false;
 /** @type {Array<object>} */
 let libraryWorks = [];
 /** @type {Set<string>} */
@@ -174,12 +164,11 @@ function activityAt(work) {
   return updated > created ? updated : created;
 }
 
-document.getElementById("pick-image").addEventListener("click", () => imageInput.click());
 initCatalogSort();
 
-function isQuickImageFile(file) {
+function isImageFile(file) {
   if (!file) return false;
-  if (QUICK_IMAGE_TYPES.has(file.type)) return true;
+  if (IMAGE_TYPES.has(file.type)) return true;
   return /\.(jpe?g|png|webp)$/i.test(file.name || "");
 }
 
@@ -189,41 +178,10 @@ function formatBytes(n) {
   return `${(n / (1024 * 1024)).toFixed(1)} Mo`;
 }
 
-function setQuickSelection(fileList) {
-  const picked = [...(fileList || [])].filter(isQuickImageFile);
-  quickFiles = picked;
-  if (quickFileName) {
-    if (!picked.length) {
-      quickFileName.textContent = "Aucun fichier image (JPEG / PNG / WebP).";
-    } else {
-      const total = picked.reduce((sum, f) => sum + (f.size || 0), 0);
-      quickFileName.textContent =
-        `${picked.length} image${picked.length > 1 ? "s" : ""} · ${formatBytes(total)}`;
-    }
-  }
-  if (quickUpload) quickUpload.disabled = !picked.length || quickBusy;
-  if (quickClear) quickClear.disabled = !picked.length || quickBusy;
-  if (quickStatus) quickStatus.textContent = "";
-}
-
-function clearQuickSelection() {
-  quickFiles = [];
-  if (quickFilesInput) quickFilesInput.value = "";
-  if (quickFolderInput) quickFolderInput.value = "";
-  if (quickFileName) quickFileName.textContent = "Aucun fichier choisi";
-  if (quickUpload) quickUpload.disabled = true;
-  if (quickClear) quickClear.disabled = true;
-}
-
-function appendQuickResult(ok, name, detail) {
-  if (!quickResults) return;
-  quickResults.hidden = false;
-  const li = document.createElement("li");
-  li.className = ok ? "ok" : "err";
-  li.textContent = ok
-    ? `OK — ${name}${detail ? ` (${detail})` : ""}`
-    : `Erreur — ${name}${detail ? ` : ${detail}` : ""}`;
-  quickResults.append(li);
+function setPickMenuOpen(open) {
+  if (!pickMenu || !pickImageButton) return;
+  pickMenu.hidden = !open;
+  pickImageButton.setAttribute("aria-expanded", open ? "true" : "false");
 }
 
 function pickExifString(...values) {
@@ -243,6 +201,7 @@ async function readFileExif(file) {
     signed_dated: "",
     support: "",
     dimensions: "",
+    editions: "",
   };
   if (!file || typeof window.exifr?.parse !== "function") return empty;
   try {
@@ -269,34 +228,59 @@ async function readFileExif(file) {
       raw.creator,
       raw.Byline,
       raw.byline,
+      raw.Credit,
       raw.Copyright,
     );
-    const title = pickExifString(
+    const titlePrimary = pickExifString(
       raw.ObjectName,
       raw.Headline,
-      raw.ImageDescription,
       raw.title,
       raw.Title,
       raw["dc:title"],
     );
-    const note = pickExifString(
+    const description = pickExifString(
       raw.Caption,
       raw.CaptionAbstract,
       raw.Description,
       raw.description,
-      raw.ImageDescription,
       raw["dc:description"],
+      raw.ImageDescription,
     );
+    // Titre dédié si présent ; sinon description / ImageDescription.
+    const title = titlePrimary || description;
+    // Note = description seulement si distincte du titre déjà choisi.
+    const note =
+      description && description !== title ? description : "";
     const signed_dated = pickExifString(
       raw.DateTimeOriginal,
       raw.CreateDate,
       raw.DateCreated,
+      raw.DateTimeDigitized,
     );
-    const support = pickExifString(raw.Make, raw.Model, raw.Software);
+    // Support artistique (IPTC/XMP) avant infos appareil.
+    const support = pickExifString(
+      raw.Material,
+      raw.medium,
+      raw.Medium,
+      raw.Source,
+      raw.Make,
+      raw.Model,
+      raw.Software,
+    );
+    const dimText = pickExifString(
+      raw.Dimensions,
+      raw.dimensions,
+      raw["exif:ImageDescription"],
+    );
     const w = raw.ImageWidth || raw.ExifImageWidth || raw.PixelXDimension;
     const h = raw.ImageHeight || raw.ExifImageHeight || raw.PixelYDimension;
     const dimensions =
-      w && h ? `${w} × ${h} px` : "";
+      dimText || (w && h ? `${w} × ${h} px` : "");
+    const editions = pickExifString(
+      raw.Instructions,
+      raw.SpecialInstructions,
+      raw.editions,
+    );
     return {
       artist: artist.slice(0, 120),
       title: title.slice(0, 140),
@@ -304,178 +288,11 @@ async function readFileExif(file) {
       signed_dated: String(signed_dated).slice(0, 120),
       support: support.slice(0, 180),
       dimensions: dimensions.slice(0, 120),
+      editions: editions.slice(0, 180),
     };
   } catch (error) {
     return empty;
   }
-}
-
-async function prepareQuickBlobs(file) {
-  const loaded = await loadBitmap(file);
-  try {
-    const type = encodeType();
-    const webPart = await encodeFrom(
-      loaded.image,
-      WEB_MAX_EDGE,
-      WEB_MAX_EDGE,
-      type,
-      WEB_JPEG_QUALITY
-    );
-    const previewPart = await encodeFrom(
-      loaded.image,
-      PREVIEW_MAX_EDGE,
-      Number.POSITIVE_INFINITY,
-      type,
-      WEB_JPEG_QUALITY
-    );
-    // Garder le fichier original (EXIF intacts) s’il tient sous la limite stockage.
-    const canKeepOriginal =
-      file.size <= MAX_BYTES &&
-      /^(image\/jpeg|image\/png|image\/webp)$/i.test(file.type || "");
-    if (canKeepOriginal) {
-      return {
-        detailBlob: file,
-        webBlob: webPart.blob,
-        previewBlob: previewPart.blob,
-        keptOriginal: true,
-      };
-    }
-    // Hors limite : le « détail » devient le dérivé web (pas d’original KV).
-    return {
-      detailBlob: webPart.blob,
-      webBlob: webPart.blob,
-      previewBlob: previewPart.blob,
-      keptOriginal: false,
-    };
-  } finally {
-    URL.revokeObjectURL(loaded.url);
-  }
-}
-
-async function runQuickImport() {
-  if (quickBusy || !quickFiles.length) return;
-  quickBusy = true;
-  if (quickUpload) quickUpload.disabled = true;
-  if (quickClear) quickClear.disabled = true;
-  if (quickPickFiles) quickPickFiles.disabled = true;
-  if (quickPickFolder) quickPickFolder.disabled = true;
-  if (quickResults) {
-    quickResults.replaceChildren();
-    quickResults.hidden = true;
-  }
-  if (quickProgress) quickProgress.hidden = false;
-  if (quickBar) {
-    quickBar.max = quickFiles.length;
-    quickBar.value = 0;
-  }
-  if (quickStatus) quickStatus.textContent = "";
-
-  const batch = quickFiles.slice();
-  let ok = 0;
-  let fail = 0;
-  const failNames = [];
-
-  for (let i = 0; i < batch.length; i++) {
-    const file = batch[i];
-    const label = file.name || `fichier-${i + 1}`;
-    if (quickProgressText) {
-      quickProgressText.textContent = `Fichier ${i + 1} / ${batch.length} — ${label}`;
-    }
-    if (quickBar) quickBar.value = i;
-
-    if (file.size > MAX_SOURCE_BYTES) {
-      fail += 1;
-      failNames.push(label);
-      appendQuickResult(
-        false,
-        label,
-        `fichier source trop lourd (${formatBytes(file.size)}, max ${formatBytes(MAX_SOURCE_BYTES)})`,
-      );
-      continue;
-    }
-
-    try {
-      const exif = await readFileExif(file);
-      const { detailBlob, webBlob, previewBlob, keptOriginal } = await prepareQuickBlobs(file);
-      if (
-        detailBlob.size > MAX_BYTES ||
-        webBlob.size > MAX_BYTES ||
-        previewBlob.size > MAX_BYTES
-      ) {
-        fail += 1;
-        failNames.push(label);
-        appendQuickResult(false, label, `image trop lourde (limite ${formatBytes(MAX_BYTES)})`);
-        continue;
-      }
-      const fileTitle = titleFromFileName(file.name);
-      const title = exif.title || fileTitle;
-      const body = new FormData();
-      body.set("quick", "1");
-      body.set("artist", exif.artist || "");
-      body.set("title", title);
-      body.set("note", exif.note || "");
-      body.set("signed_dated", exif.signed_dated || "");
-      body.set("support", exif.support || "");
-      body.set("dimensions", exif.dimensions || "");
-      body.set("source_file", file.name || "");
-      body.set("alt", title);
-      body.set("categories", "peinture");
-      const detailName = keptOriginal
-        ? file.name || `detail.${extensionFor(detailBlob)}`
-        : `detail.${extensionFor(detailBlob)}`;
-      body.set("detail", detailBlob, detailName);
-      body.set("web", webBlob, `web.${extensionFor(webBlob)}`);
-      body.set("preview", previewBlob, `preview.${extensionFor(previewBlob)}`);
-      const response = await fetch("api/oeuvres", {
-        method: "POST",
-        body,
-        credentials: "same-origin",
-        headers: { "X-Atelier": "1" },
-      });
-      const payload = await response.json().catch(() => ({}));
-      if (!response.ok) {
-        fail += 1;
-        failNames.push(label);
-        appendQuickResult(false, label, payload.error || `HTTP ${response.status}`);
-      } else {
-        ok += 1;
-        const extras = [];
-        if (keptOriginal) extras.push("EXIF fichier");
-        else if (exif.artist || exif.title || exif.note) extras.push("EXIF lus");
-        appendQuickResult(true, label, extras.length ? extras.join(" · ") : "");
-      }
-    } catch (error) {
-      fail += 1;
-      failNames.push(label);
-      const detail =
-        error && typeof error.message === "string" && error.message
-          ? error.message.slice(0, 120)
-          : "préparation ou réseau impossible";
-      appendQuickResult(false, label, detail);
-    }
-  }
-
-  if (quickBar) quickBar.value = batch.length;
-  if (quickProgressText) {
-    quickProgressText.textContent = `Terminé — ${ok} OK, ${fail} erreur${fail > 1 ? "s" : ""}.`;
-  }
-  if (quickStatus) {
-    if (fail === 0) {
-      quickStatus.textContent = ok > 1
-        ? `${ok} images importées (EXIF lus / fichier conservé si ≤12 Mo).`
-        : "Image importée (EXIF lus / fichier conservé si ≤12 Mo).";
-    } else {
-      quickStatus.textContent =
-        `${ok} OK · ${fail} erreur${fail > 1 ? "s" : ""}` +
-        (failNames.length ? ` (${failNames.slice(0, 5).join(", ")}${failNames.length > 5 ? "…" : ""})` : "");
-    }
-  }
-
-  clearQuickSelection();
-  quickBusy = false;
-  if (quickPickFiles) quickPickFiles.disabled = false;
-  if (quickPickFolder) quickPickFolder.disabled = false;
-  await loadLibrary();
 }
 
 function defaultCategories() {
@@ -556,6 +373,8 @@ function clearPending() {
   previewBatch.replaceChildren();
   uploadQueue.hidden = true;
   uploadQueue.replaceChildren();
+  if (imageInput) imageInput.value = "";
+  if (imageFolderInput) imageFolderInput.value = "";
 }
 
 function markStale() {
@@ -652,10 +471,11 @@ function renderUploadQueue() {
       markStale();
       renderUploadQueue();
       fileName.textContent = pendingItems.length
-        ? `${pendingItems.length} fichier${pendingItems.length > 1 ? "s" : ""}`
+        ? `${pendingItems.length} image${pendingItems.length > 1 ? "s" : ""}`
         : "Aucun fichier choisi";
       if (!pendingItems.length) {
-        imageInput.value = "";
+        if (imageInput) imageInput.value = "";
+        if (imageFolderInput) imageFolderInput.value = "";
         panel.hidden = true;
       }
     });
@@ -665,15 +485,53 @@ function renderUploadQueue() {
   });
 }
 
-function setPendingFromFiles(fileList) {
+function selectionSummary(files) {
+  if (!files.length) return "Aucun fichier image (JPEG / PNG / WebP).";
+  const total = files.reduce((sum, f) => sum + (f.size || 0), 0);
+  return `${files.length} image${files.length > 1 ? "s" : ""} · ${formatBytes(total)}`;
+}
+
+async function setPendingFromFiles(fileList) {
+  if (pickBusy) return;
+  pickBusy = true;
   clearPending();
   const defaults = defaultCategories();
-  const files = [...fileList].filter(Boolean);
-  files.forEach((file) => {
+  const files = [...(fileList || [])].filter(isImageFile);
+  fileName.textContent = selectionSummary(files);
+  if (!files.length) {
+    status.textContent = "Aucun fichier image (JPEG / PNG / WebP) dans la sélection.";
+    pickBusy = false;
+    return;
+  }
+
+  status.textContent = `Lecture EXIF / IPTC… 0 / ${files.length}`;
+  let filled = 0;
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
+    status.textContent = `Lecture EXIF / IPTC… ${i + 1} / ${files.length}`;
+    const exif = await readFileExif(file);
+    const title = exif.title || titleFromFileName(file.name);
+    const hasMeta = Boolean(
+      exif.artist ||
+        exif.title ||
+        exif.note ||
+        exif.signed_dated ||
+        exif.support ||
+        exif.dimensions ||
+        exif.editions
+    );
+    if (hasMeta) filled += 1;
     pendingItems.push({
       file,
       ...emptyMeta(),
-      title: titleFromFileName(file.name),
+      artist: exif.artist || "",
+      title,
+      note: exif.note || "",
+      signed_dated: exif.signed_dated || "",
+      support: exif.support || "",
+      dimensions: exif.dimensions || "",
+      editions: exif.editions || "",
+      alt: title,
       categories: defaults.length ? defaults.slice() : ["peinture"],
       detailBlob: null,
       webBlob: null,
@@ -682,13 +540,15 @@ function setPendingFromFiles(fileList) {
       webMeta: null,
       previewMeta: null,
       objectUrl: URL.createObjectURL(file),
+      exifFilled: hasMeta,
     });
-  });
-  fileName.textContent = pendingItems.length
-    ? `${pendingItems.length} fichier${pendingItems.length > 1 ? "s" : ""}`
-    : "Aucun fichier choisi";
+  }
   renderUploadQueue();
   markStale();
+  status.textContent = filled
+    ? `${files.length} image${files.length > 1 ? "s" : ""} — EXIF / IPTC lus pour ${filled}. Corrigez si besoin, puis aperçu.`
+    : `${files.length} image${files.length > 1 ? "s" : ""} — pas de métadonnées EXIF / IPTC ; titre depuis le nom de fichier.`;
+  pickBusy = false;
 }
 
 function renderBatchPreview() {
@@ -875,7 +735,6 @@ async function publish() {
       ok += 1;
     }
     clearPending();
-    imageInput.value = "";
     fileName.textContent = "Aucun fichier choisi";
     document.querySelector('input[value="peinture"]').checked = true;
     form.querySelectorAll('input[name=category]').forEach((el) => {
@@ -2079,42 +1938,54 @@ form.querySelectorAll("input[name=category]").forEach((input) => {
     if (!previewReady) renderUploadQueue();
   });
 });
+if (pickImageButton) {
+  pickImageButton.addEventListener("click", (event) => {
+    event.preventDefault();
+    if (pickBusy) return;
+    setPickMenuOpen(pickMenu ? pickMenu.hidden : true);
+  });
+}
+if (pickMenu) {
+  pickMenu.addEventListener("click", (event) => {
+    const btn = event.target.closest("[data-pick]");
+    if (!btn || !pickMenu.contains(btn)) return;
+    const mode = btn.getAttribute("data-pick");
+    setPickMenuOpen(false);
+    if (mode === "folder" && imageFolderInput) imageFolderInput.click();
+    else if (imageInput) imageInput.click();
+  });
+}
+document.addEventListener("click", (event) => {
+  if (!pickMenu || pickMenu.hidden) return;
+  const root = pickImageButton && pickImageButton.closest(".pick-unified");
+  if (root && root.contains(event.target)) return;
+  setPickMenuOpen(false);
+});
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setPickMenuOpen(false);
+});
+
 imageInput.addEventListener("change", () => {
+  if (imageFolderInput) imageFolderInput.value = "";
   if (imageInput.files && imageInput.files.length) {
     setPendingFromFiles(imageInput.files);
   } else {
     clearPending();
     fileName.textContent = "Aucun fichier choisi";
+    status.textContent = "";
   }
 });
 
-if (quickPickFiles && quickFilesInput) {
-  quickPickFiles.addEventListener("click", () => quickFilesInput.click());
-  quickFilesInput.addEventListener("change", () => {
-    if (quickFilesInput.files && quickFilesInput.files.length) {
-      setQuickSelection(quickFilesInput.files);
+if (imageFolderInput) {
+  imageFolderInput.addEventListener("change", () => {
+    if (imageInput) imageInput.value = "";
+    if (imageFolderInput.files && imageFolderInput.files.length) {
+      setPendingFromFiles(imageFolderInput.files);
+    } else {
+      clearPending();
+      fileName.textContent = "Aucun fichier choisi";
+      status.textContent = "";
     }
-  });
-}
-if (quickPickFolder && quickFolderInput) {
-  quickPickFolder.addEventListener("click", () => quickFolderInput.click());
-  quickFolderInput.addEventListener("change", () => {
-    if (quickFolderInput.files && quickFolderInput.files.length) {
-      setQuickSelection(quickFolderInput.files);
-    }
-  });
-}
-if (quickUpload) quickUpload.addEventListener("click", () => runQuickImport());
-if (quickClear) {
-  quickClear.addEventListener("click", () => {
-    if (quickBusy) return;
-    clearQuickSelection();
-    if (quickResults) {
-      quickResults.replaceChildren();
-      quickResults.hidden = true;
-    }
-    if (quickProgress) quickProgress.hidden = true;
-    if (quickStatus) quickStatus.textContent = "";
   });
 }
 

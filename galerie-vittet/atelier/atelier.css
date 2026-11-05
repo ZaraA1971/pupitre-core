@@ -51,76 +51,6 @@
   line-height: 1.6;
 }
 
-.quick-import {
-  width: min(var(--atelier-max), calc(100% - (var(--atelier-pad) * 2)));
-  margin: 0 auto;
-  padding: 28px 0 8px;
-  display: grid;
-  gap: 14px;
-  border-top: 1px solid var(--line);
-}
-
-.quick-import h2 {
-  font: 400 clamp(28px, 3.6vw, 42px) / 1.05 var(--serif);
-  margin: 0 0 4px;
-}
-
-.quick-picks {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-}
-
-#quick-file-name {
-  color: var(--ink);
-  letter-spacing: 0;
-  text-transform: none;
-  font-size: 15px;
-}
-
-.quick-progress {
-  display: grid;
-  gap: 8px;
-}
-
-.quick-progress[hidden] { display: none; }
-
-.quick-progress progress {
-  width: 100%;
-  max-width: 480px;
-  height: 10px;
-  accent-color: var(--atelier-err);
-}
-
-.quick-progress-text {
-  margin: 0;
-  color: var(--atelier-hint);
-  font-size: var(--type-meta, 14px);
-}
-
-.quick-results {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: grid;
-  gap: 6px;
-  max-height: 220px;
-  overflow: auto;
-  border-top: 1px solid var(--line);
-  padding-top: 10px;
-}
-
-.quick-results[hidden] { display: none; }
-
-.quick-results li {
-  font-size: var(--type-meta, 14px);
-  line-height: 1.4;
-  color: var(--atelier-hint);
-}
-
-.quick-results li.ok { color: var(--atelier-ok); }
-.quick-results li.err { color: var(--atelier-err); }
-
 .atelier {
   width: min(var(--atelier-max), calc(100% - (var(--atelier-pad) * 2)));
   margin: 0 auto;
@@ -157,6 +87,10 @@
   text-transform: uppercase;
   color: var(--muted);
 }
+.pick-unified {
+  position: relative;
+  justify-self: start;
+}
 .file-pick {
   justify-self: start;
   min-height: 44px;
@@ -165,6 +99,35 @@
   background: var(--paper-lift);
   font: inherit;
   cursor: pointer;
+}
+.pick-menu {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  z-index: 5;
+  min-width: 100%;
+  display: grid;
+  border: 1px solid var(--line);
+  background: var(--paper-lift);
+  box-shadow: 0 8px 24px rgba(40, 34, 28, 0.08);
+}
+.pick-menu[hidden] { display: none; }
+.pick-menu button {
+  min-height: 44px;
+  padding: 0 14px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  color: var(--ink);
+}
+.pick-menu button:last-child { border-bottom: 0; }
+.pick-menu button:hover,
+.pick-menu button:focus-visible {
+  background: var(--paper);
+  outline: none;
 }
 #file-name { color: var(--ink); letter-spacing: 0; text-transform: none; font-size: 15px; }
 
