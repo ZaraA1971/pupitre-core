@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie texte top-aligné photos (2026-11-05)
+
+- Copy `top: 0` + `align-items: start` · top Δ **0** · photos/spacing inchangés
+- Cache-bust `?v=20261104-galtop`
+- Prod `ce67e74c` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galtop-galerie-vittet.md`
+
 ## #galerie photos +15 % (2026-11-05)
 
 - Hauteur 306 → **351 px** (≈352) · pad = gap 27,4 · texte Δ 0
