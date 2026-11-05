@@ -251,12 +251,29 @@ async function readFileExif(file) {
     // Note = description seulement si distincte du titre déjà choisi.
     const note =
       description && description !== title ? description : "";
-    const signed_dated = pickExifString(
+    const signedRaw = pickExifString(
       raw.DateTimeOriginal,
       raw.CreateDate,
       raw.DateCreated,
       raw.DateTimeDigitized,
     );
+    let signed_dated = signedRaw;
+    // exifr reviveValues peut renvoyer un Date — formater lisiblement.
+    if (signedRaw && /^\w{3} \w{3}/.test(signedRaw) && signedRaw.includes("GMT")) {
+      try {
+        const d = new Date(signedRaw);
+        if (!Number.isNaN(d.getTime())) {
+          const y = d.getUTCFullYear();
+          const m = String(d.getUTCMonth() + 1).padStart(2, "0");
+          const day = String(d.getUTCDate()).padStart(2, "0");
+          signed_dated = `${y}-${m}-${day}`;
+        }
+      } catch {
+        /* keep raw */
+      }
+    } else if (/^\d{4}:\d{2}:\d{2}/.test(signedRaw)) {
+      signed_dated = signedRaw.replace(/^(\d{4}):(\d{2}):(\d{2}).*$/, "$1-$2-$3");
+    }
     // Support artistique (IPTC/XMP) avant infos appareil.
     const support = pickExifString(
       raw.Material,
