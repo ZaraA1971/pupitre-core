@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie équilibre repères (2026-11-05)
+
+- `1fr\|240\|1fr` + `--gal-space` (= pad = gap) · photos ~278 px · texte Δ 0
+- Espaces figure 31,7 × 4 · plus d’absolute
+- Cache-bust `?v=20261104-galbal`
+- Prod `a13df133` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galbal-galerie-vittet.md`
+
 ## #galerie photos agrandies + recentrées (2026-11-04)
 
 - Hauteur 288 → 331 @1440 ; photos centrées dans les tracks, pad extérieur ~36 px
