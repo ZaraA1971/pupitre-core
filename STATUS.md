@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup7 après loupe max natif (2026-11-05)
+
+- Confirmé : plus de `LOUPE_ZOOM_MAX` / markup 150 ; jauge dynamique `loupeZoomMax` conservée
+- Mort : export inutilisé `activityAt` (functions) ; tri atelier inchangé
+- Cache-bust `?v=20261105-clean7`
+- Prod `0972b5eb` · preview `2413e619` · atelier `31a91e1c` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-cleanup7-galerie-vittet.md`
+
 ## Loupe jauge max natif (anti-pixelisation) (2026-11-05)
 
 - `maxZoom = min(naturalW/displayW, naturalH/displayH)` ; jauge max = ce coeff. (plus de 150 % fixe)

@@ -25,13 +25,6 @@ export function stampNow() {
   return new Date().toISOString().slice(0, 19).replace("T", " ");
 }
 
-/** Dernière activité : max(updated_at, created_at) pour tri atelier. */
-export function activityAt(work) {
-  const updated = (work && work.updated_at) || "";
-  const created = (work && work.created_at) || "";
-  return updated > created ? updated : created;
-}
-
 /** Légende publique / PDF : support · dimensions · note (champs séparés). */
 export function workCaption(work) {
   return [work.support, work.dimensions, work.note].filter(Boolean).join(" · ");
