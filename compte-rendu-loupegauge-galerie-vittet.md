@@ -20,3 +20,23 @@ Conservé : colonne infos masquée en loupe, fond quasi noir, filtre WB, source 
 Même timer que le bouton loupe (`LOUPE_CHROME_IDLE_MS = 3000`) : jauge + Quitter s’effacent, réapparaissent à l’action.
 
 Cache-bust `?v=20261105-loupegauge`.
+
+## Deploy (package + `functions/` via atelier-cf sync)
+
+| Cible | Id / URL |
+|---|---|
+| Prod (main) | `c5ae2967` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://c5ae2967.galerie-vittet-preview.pages.dev/ |
+| Preview | `8ddc6b17` · https://preview.galerie-vittet-preview.pages.dev/ |
+| Atelier | https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
+
+## Vérif
+
+| Check | Résultat |
+|---|---|
+| `GET /api/oeuvres` | 200 · JSON · **103** œuvres · functions OK |
+| Entrée loupe | 100 % + jauge visible |
+| Jauge | 100 → 130 % (scale CSS, clamp natif) |
+| Idle 3 s | Quitter + jauge opacity 0 |
+
+Screenshots : `loupegauge-100-with-gauge.png`, `loupegauge-130-zoomed.png`, `loupegauge-idle-hidden.png`.

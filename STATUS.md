@@ -7,6 +7,7 @@
 - Entrée loupe = **100 %** du fit lightbox (original) ; jauge jusqu’à **130 %** (clamp natif)
 - Chrome (Quitter + jauge) idle 3 s comme avant
 - Cache-bust `?v=20261105-loupegauge`
+- Prod `c5ae2967` · preview `8ddc6b17` · https://galerie-vittet-preview.pages.dev/
 - Détail : `compte-rendu-loupegauge-galerie-vittet.md`
 
 ## Header top padding 3 — moitié (2026-11-05)
