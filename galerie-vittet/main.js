@@ -76,7 +76,7 @@ let lightboxSource = "grid";
 
 /** Lightbox loupe — web par défaut ; original lazy au zoom. */
 const LOUPE_ZOOM_MIN = 1;
-const LOUPE_ZOOM_MAX = 1.3;
+const LOUPE_ZOOM_MAX = 1.5;
 /** Chrome loupe (Quitter + jauge) : masqué après idle, réaffiché à l’action. */
 const LOUPE_CHROME_IDLE_MS = 3000;
 let lightboxDisplaySrc = "";
@@ -84,12 +84,12 @@ let lightboxOriginalSrc = "";
 let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
-/** Taille affichée lightbox normale (avant loupe) — base 100 % → 130 %. */
+/** Taille affichée lightbox normale (avant loupe) — base 100 % → 150 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
 /** Facteur CSS relatif au contain loupe courant. */
 let zoomScale = 1;
-/** Niveau utilisateur : 1 = 100 % du fit lightbox, 1.3 = 130 % (clamp natif). */
+/** Niveau utilisateur : 1 = 100 % du fit lightbox, 1.5 = 150 % (clamp natif). */
 let zoomLevel = LOUPE_ZOOM_MIN;
 let zoomDrag = null;
 let zoomMoved = false;
@@ -1101,7 +1101,7 @@ function captureLightboxDefaultFit() {
 }
 
 /**
- * Loupe = zoomLevel × fit lightbox (100–130 %), fichier original,
+ * Loupe = zoomLevel × fit lightbox (100–150 %), fichier original,
  * sans jamais dépasser naturalWidth/Height (pas d’upscale).
  */
 function fitZoomScale({ resetPan = false } = {}) {
@@ -1171,7 +1171,7 @@ async function enterZoom() {
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (token !== lightboxZoomToken) return;
-          // Défaut 100 % = même taille visuelle que la lightbox ; jauge jusqu’à 130 %.
+          // Défaut 100 % = même taille visuelle que la lightbox ; jauge jusqu’à 150 %.
           fitZoomScale({ resetPan: true });
         });
       });

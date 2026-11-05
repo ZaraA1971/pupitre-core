@@ -2,6 +2,11 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Loupe jauge max 150 % (2026-11-05)
+
+- Jauge **100 → 150 %** (entrée 100 %, clamp natif, idle 3 s inchangés)
+- Cache-bust `?v=20261105-loupe150`
+
 ## Loupe jauge 100–130 % (2026-11-05)
 
 - Entrée loupe = **100 %** du fit lightbox (original) ; jauge jusqu’à **130 %** (clamp natif)

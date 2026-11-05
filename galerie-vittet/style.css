@@ -1115,7 +1115,7 @@ footer {
   transition: none;
 }
 
-/* Loupe : scale JS (100–130 % fit, clamp natif). */
+/* Loupe : scale JS (100–150 % fit, clamp natif). */
 .lightbox-photo img.art-detail.is-zoomed {
   transition: none;
 }
