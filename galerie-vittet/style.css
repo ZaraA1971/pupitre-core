@@ -866,23 +866,20 @@ footer a {
 }
 
 /* #galerie — façade | text | salle
-   Readable 1fr | copy | 1fr grid. One spacing token (--gal-space) for
-   outer pad AND column gaps → symmetric repères. Copy stays in normal
-   flow on the page midline (no absolute). Photos centered in side
-   tracks, moderate equal height, object-fit contain. */
+   +15% photo height (~306 → ~352) needs wider side tracks than a
+   1fr|240|1fr grid allows @1440. Photos in 1fr|1fr; copy absolute on
+   the page midline. --gal-space still = outer pad = column gap. */
 .about {
   --side: 240px;
-  /* +10% vs balance (~278 → ~306); keep uncropped via space formula below */
-  --gal-photo-h: clamp(275px, 21.25vw, 306px);
-  /* Single spacing token: outer pad = column gaps. Sized so salle at
-     --gal-photo-h still fits each 1fr track (alignments unchanged). */
+  --gal-photo-h: clamp(320px, 24.4vw, 352px);
+  /* 2 pads + 1 gap between photo columns → /3 when pad = gap */
   --gal-space: clamp(
     4px,
-    calc((100vw - var(--side) - 2 * (var(--gal-photo-h) * 1024 / 530)) / 4),
+    calc((100vw - 2 * (var(--gal-photo-h) * 1024 / 530)) / 3),
     40px
   );
   display: grid;
-  grid-template-columns: 1fr minmax(200px, var(--side)) 1fr;
+  grid-template-columns: 1fr 1fr;
   gap: var(--gal-space);
   align-items: center;
   padding: 96px var(--gal-space) 96px;
@@ -903,6 +900,16 @@ footer a {
   justify-content: center;
 }
 
+.about-photo--facade {
+  grid-column: 1;
+  grid-row: 1;
+}
+
+.about-photo--salle {
+  grid-column: 2;
+  grid-row: 1;
+}
+
 .about-photo img {
   display: block;
   max-height: 100%;
@@ -913,15 +920,22 @@ footer a {
 }
 
 .about-copy {
+  grid-column: 1 / -1;
+  grid-row: 1;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: center;
   gap: 14px;
   min-width: 0;
-  width: 100%;
+  width: var(--side);
   max-width: var(--side);
-  padding-block: 8px;
-  justify-self: center;
+  padding: 8px 12px;
+  background: var(--paper);
 }
 
 .about-copy-head {
@@ -1299,9 +1313,14 @@ footer {
     justify-items: center;
     padding: 72px var(--page-pad-lg) 72px;
   }
-  .about-photo {
+  .about-photo,
+  .about-photo--facade,
+  .about-photo--salle {
+    grid-column: auto;
+    grid-row: auto;
     max-width: 520px;
     width: 100%;
+    height: auto;
     justify-content: center;
   }
   .about-photo img {
@@ -1309,11 +1328,18 @@ footer {
     width: 100%;
   }
   .about-copy {
+    position: static;
+    left: auto;
+    top: auto;
+    transform: none;
+    grid-column: auto;
+    grid-row: auto;
     max-width: 340px;
     width: 100%;
     justify-content: flex-start;
     gap: 12px;
-    padding-block: 4px 8px;
+    padding: 4px 0 8px;
+    background: transparent;
   }
   .lightbox-layout {
     grid-template-columns: 1fr;
