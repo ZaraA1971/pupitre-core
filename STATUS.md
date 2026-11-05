@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## #galerie h2 top = photos (2026-11-05)
+
+- « La galerie » aligné au haut des photos · « Depuis 1988 » au-dessus
+- Cache-bust `?v=20261105-galh2`
+- Prod `a279bccb` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galh2-galerie-vittet.md`
+
 ## #galerie texte top-aligné photos (2026-11-05)
 
 - Copy `top: 0` + `align-items: start` · top Δ **0** · photos/spacing inchangés
