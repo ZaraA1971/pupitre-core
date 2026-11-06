@@ -922,11 +922,14 @@ heroStage.addEventListener("keydown", (event) => {
   }
 });
 
-function heroInteractionActive() {
-  return (
-    heroStage.matches(":hover") ||
-    (document.activeElement && heroStage.contains(document.activeElement))
-  );
+/**
+ * Full-bleed hero fills the viewport — the pointer almost always sits over
+ * `.hero-stage`, so pause-on-hover permanently killed autoplay. Pause only
+ * while keyboard focus is on carousel controls (prev / next / dots).
+ */
+function heroControlsFocused() {
+  const el = document.activeElement;
+  return !!(el && heroStage.contains(el) && el.matches("button"));
 }
 
 function pauseHeroAutoplay() {
@@ -935,7 +938,7 @@ function pauseHeroAutoplay() {
 }
 
 function resumeHeroAutoplayIfIdle() {
-  if (heroInteractionActive()) {
+  if (heroControlsFocused()) {
     heroAutoplayPaused = true;
     return;
   }
@@ -943,9 +946,11 @@ function resumeHeroAutoplayIfIdle() {
   scheduleHeroAutoplay();
 }
 
-heroStage.addEventListener("mouseenter", pauseHeroAutoplay);
-heroStage.addEventListener("mouseleave", resumeHeroAutoplayIfIdle);
-heroStage.addEventListener("focusin", pauseHeroAutoplay);
+heroStage.addEventListener("focusin", (event) => {
+  if (event.target && event.target.matches && event.target.matches("button")) {
+    pauseHeroAutoplay();
+  }
+});
 heroStage.addEventListener("focusout", (event) => {
   if (heroStage.contains(event.relatedTarget)) return;
   resumeHeroAutoplayIfIdle();
