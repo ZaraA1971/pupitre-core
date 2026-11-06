@@ -761,6 +761,13 @@ function bindSiteSearch() {
   }
 }
 
+/** Keep cover crop centered whenever a slide overflows the hero frame. */
+function centerHeroCrop(img) {
+  if (!img) return;
+  img.style.objectFit = "cover";
+  img.style.objectPosition = "center center";
+}
+
 function buildHeroSlide(work, index, startIndex = 0) {
   const isStart = index === startIndex;
   const figure = document.createElement("figure");
@@ -776,6 +783,7 @@ function buildHeroSlide(work, index, startIndex = 0) {
   img.src = assets.display || assets.preview;
   img.alt = work.alt || work.title || "";
   img.decoding = "async";
+  centerHeroCrop(img);
   if (isStart) img.fetchPriority = "high";
   else img.loading = "lazy";
   figure.append(img);
@@ -874,6 +882,7 @@ function showHero(index) {
     const active = slideIndex === heroIndex;
     slide.classList.toggle("is-active", active);
     slide.setAttribute("aria-hidden", active ? "false" : "true");
+    centerHeroCrop(slide.querySelector("img"));
   });
   const slide = slides[heroIndex];
   const applyText = () => {
