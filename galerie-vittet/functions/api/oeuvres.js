@@ -1,8 +1,8 @@
 /**
  * Endpoint public (sans Basic Auth) — œuvres marquées exposed=1 uniquement.
- * Champ `carousel` inclus (bool) ; le hero filtre carousel=1.
- * `oeuvres` = toutes les exposées (y compris carousel=1) — le carousel est
- * une surface mise en avant, pas une exclusion de #collection.
+ * Champ `carousel` inclus (bool). Payload : toutes les exposées (y compris
+ * carousel=1) + tableau `carousel` dérivé. Le front filtre :
+ * hero = carousel ; #collection = exposed && !carousel.
  * Ordre stable : sort_order ASC, created_at ASC, id ASC (via listWorks).
  * Sert le front preview ; les brouillons restent derrière /atelier/api.
  */

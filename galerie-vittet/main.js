@@ -148,10 +148,11 @@ function sectionOf(work) {
   return "peinture";
 }
 
-/** Collection grid: section only — carousel=1 works stay listed (hero is additive). */
+/** Collection grid: section only — carousel=1 stays in hero, excluded from #collection. */
 function worksFor(section) {
-  if (section === "nicolle") return works.filter(isNicolleArtist);
-  return works.filter((work) => sectionOf(work) === section);
+  const pool = works.filter((work) => !work.carousel);
+  if (section === "nicolle") return pool.filter(isNicolleArtist);
+  return pool.filter((work) => sectionOf(work) === section);
 }
 
 /** Same-origin relative path (CMS + front share host). No cross-host rewrite. */
@@ -434,8 +435,8 @@ function compareByFrontOrder(a, b) {
 }
 
 /**
- * Contract: GET /api/oeuvres → { oeuvres: exposed[] }.
- * Carousel-flagged works are included; hero filters `carousel`, collection does not.
+ * Contract: GET /api/oeuvres → { oeuvres: exposed[] } (carousel flag included).
+ * Hero = carousel; collection tabs = exposed && !carousel (front filter).
  */
 function normalizePayload(data) {
   const list = Array.isArray(data && data.oeuvres) ? data.oeuvres : [];
@@ -818,7 +819,14 @@ function syncHeroFromWorks(list) {
       (work.web || work.preview || work.image)
   );
 
-  const fallback = !chosen.length && list && list.length ? [list[0]] : [];
+  // Sans coche carousel : première œuvre de la collection (hors carousel).
+  const collectionPool = (list || []).filter((work) => work && !work.carousel);
+  const fallback =
+    !chosen.length && collectionPool.length
+      ? [collectionPool[0]]
+      : !chosen.length && list && list.length
+        ? [list[0]]
+        : [];
   const source = chosen.length ? chosen : fallback;
 
   // Ordre CMS conservé ; départ aléatoire pour ne pas toujours afficher la même première.
