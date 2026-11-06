@@ -23,20 +23,18 @@
   --ink-photo-faint: rgba(246, 241, 232, .62);
   --gold-photo: #e0c491;         /* accent readable on dark scrim */
   --line-photo: rgba(246, 241, 232, .38);
-  /* Soft edge scrims only — mid photo plane stays near collection brightness. */
+  /* Light edge washes for text only — letterbox mid stays --paper (no dark well). */
   --scrim-top: linear-gradient(
     180deg,
-    rgba(18, 14, 10, .46) 0%,
-    rgba(18, 14, 10, .18) 28%,
-    rgba(18, 14, 10, .04) 48%,
-    transparent 62%
+    rgba(18, 14, 10, .28) 0%,
+    rgba(18, 14, 10, .10) 18%,
+    transparent 36%
   );
   --scrim-bottom: linear-gradient(
     0deg,
-    rgba(18, 14, 10, .52) 0%,
-    rgba(18, 14, 10, .22) 32%,
-    rgba(18, 14, 10, .05) 52%,
-    transparent 68%
+    rgba(18, 14, 10, .30) 0%,
+    rgba(18, 14, 10, .11) 20%,
+    transparent 38%
   );
 
   /* —— Type —— */
@@ -593,6 +591,8 @@ footer a {
   /* Taller stage → less top/bottom crop under object-fit: cover for landscape works. */
   min-height: min(100dvh, 1280px);
   isolation: isolate;
+  /* Letterbox surround = paper (never --stage dark well). */
+  background: var(--paper);
 }
 
 .hero-viewport {
@@ -616,6 +616,21 @@ footer a {
   background:
     var(--scrim-top),
     var(--scrim-bottom);
+}
+
+/* Contain: empty bands must read as --paper; keep only thin text-edge washes. */
+.hero-stage:has(.hero-slide.is-active.is-contain) > .hero-scrim {
+  background:
+    linear-gradient(
+      180deg,
+      rgba(18, 14, 10, .18) 0%,
+      transparent 24%
+    ),
+    linear-gradient(
+      0deg,
+      rgba(18, 14, 10, .20) 0%,
+      transparent 26%
+    );
 }
 
 .hero-slide {
@@ -1716,17 +1731,29 @@ footer {
     font-size: var(--type-sm);
     letter-spacing: .03em;
   }
-  /* Taller stacked header needs a deeper top scrim for legibility. */
+  /* Stacked header: slightly deeper top wash for legibility — still not a dark well. */
   .hero-scrim {
     background:
       linear-gradient(
         180deg,
-        rgba(18, 14, 10, .58) 0%,
-        rgba(18, 14, 10, .28) 34%,
-        rgba(18, 14, 10, .06) 54%,
-        transparent 70%
+        rgba(18, 14, 10, .36) 0%,
+        rgba(18, 14, 10, .14) 22%,
+        transparent 40%
       ),
       var(--scrim-bottom);
+  }
+  .hero-stage:has(.hero-slide.is-active.is-contain) > .hero-scrim {
+    background:
+      linear-gradient(
+        180deg,
+        rgba(18, 14, 10, .22) 0%,
+        transparent 28%
+      ),
+      linear-gradient(
+        0deg,
+        rgba(18, 14, 10, .20) 0%,
+        transparent 26%
+      );
   }
   section { scroll-margin-top: 36px; }
   body.view-recherche section { scroll-margin-top: 168px; }
