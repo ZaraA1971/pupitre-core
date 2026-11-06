@@ -64,6 +64,14 @@
     contrast(var(--img-contrast))
     brightness(var(--img-brightness))
     saturate(var(--img-saturate));
+  /* Hero carousel: modest bump vs collection/lightbox */
+  --img-hero-contrast: 1.10;
+  --img-hero-brightness: 1.04;
+  --img-enhance-hero:
+    url("#img-warm-wb")
+    contrast(var(--img-hero-contrast))
+    brightness(var(--img-hero-brightness))
+    saturate(var(--img-saturate));
 }
 
 * { box-sizing: border-box; }
@@ -637,7 +645,7 @@ footer a {
   -webkit-user-drag: none;
   /* Prefer crisp downscale from web (~1800) over soft upscale from preview. */
   image-rendering: auto;
-  filter: var(--img-enhance);
+  filter: var(--img-enhance-hero);
 }
 
 .hero-title,
