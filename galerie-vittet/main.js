@@ -762,11 +762,50 @@ function bindSiteSearch() {
   }
 }
 
-/** Keep cover crop centered whenever a slide overflows the hero frame. */
-function centerHeroCrop(img) {
+/**
+ * Per-slide hero fit: minimize cropping while keeping the stage filled when
+ * aspect ratios are close. Always center (`object-position: center`).
+ *
+ * Rule — compare |log(imgAR / stageAR)| to HERO_FIT_LOG_THRESHOLD (~22 % AR):
+ * - below → `cover` (crop is small; fill the tall stage)
+ * - above → `contain` (portrait / mismatch; letterbox on --stage, no heavy crop)
+ */
+const HERO_FIT_LOG_THRESHOLD = 0.2;
+
+function fitHeroImage(img) {
   if (!img) return;
-  img.style.objectFit = "cover";
   img.style.objectPosition = "center center";
+
+  const apply = () => {
+    const nw = img.naturalWidth;
+    const nh = img.naturalHeight;
+    const stage = heroViewport || heroStage;
+    const sw = stage ? stage.clientWidth : 0;
+    const sh = stage ? stage.clientHeight : 0;
+    if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
+      img.style.objectFit = "cover";
+      img.dataset.heroFit = "cover";
+      img.closest(".hero-slide")?.classList.remove("is-contain");
+      return;
+    }
+    const imgAR = nw / nh;
+    const stageAR = sw / sh;
+    const delta = Math.abs(Math.log(imgAR / stageAR));
+    const fit = delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain";
+    img.style.objectFit = fit;
+    img.dataset.heroFit = fit;
+    img.closest(".hero-slide")?.classList.toggle("is-contain", fit === "contain");
+  };
+
+  if (img.complete && img.naturalWidth > 0) {
+    apply();
+    return;
+  }
+  img.addEventListener("load", apply, { once: true });
+}
+
+function fitAllHeroImages() {
+  slides.forEach((slide) => fitHeroImage(slide.querySelector("img")));
 }
 
 function buildHeroSlide(work, index, startIndex = 0) {
@@ -784,7 +823,7 @@ function buildHeroSlide(work, index, startIndex = 0) {
   img.src = assets.display || assets.preview;
   img.alt = work.alt || work.title || "";
   img.decoding = "async";
-  centerHeroCrop(img);
+  fitHeroImage(img);
   if (isStart) img.fetchPriority = "high";
   else img.loading = "lazy";
   figure.append(img);
@@ -890,7 +929,7 @@ function showHero(index) {
     const active = slideIndex === heroIndex;
     slide.classList.toggle("is-active", active);
     slide.setAttribute("aria-hidden", active ? "false" : "true");
-    centerHeroCrop(slide.querySelector("img"));
+    fitHeroImage(slide.querySelector("img"));
   });
   const slide = slides[heroIndex];
   const applyText = () => {
@@ -929,6 +968,24 @@ heroStage.addEventListener("keydown", (event) => {
     showHero(heroIndex - 1);
   }
 });
+
+/* Re-fit when the tall stage resizes (viewport / orientation). */
+let heroFitResizeTimer = 0;
+window.addEventListener("resize", () => {
+  window.clearTimeout(heroFitResizeTimer);
+  heroFitResizeTimer = window.setTimeout(fitAllHeroImages, 120);
+});
+if (typeof ResizeObserver !== "undefined" && heroViewport) {
+  try {
+    const heroFitObserver = new ResizeObserver(() => {
+      window.clearTimeout(heroFitResizeTimer);
+      heroFitResizeTimer = window.setTimeout(fitAllHeroImages, 60);
+    });
+    heroFitObserver.observe(heroViewport);
+  } catch (_) {
+    /* ResizeObserver optionnel */
+  }
+}
 
 /**
  * Full-bleed hero fills the viewport — the pointer almost always sits over
