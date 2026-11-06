@@ -580,7 +580,8 @@ footer a {
   position: relative;
   min-width: 0;
   width: 100%;
-  min-height: min(92vh, 980px);
+  /* Taller stage → less top/bottom crop under object-fit: cover for landscape works. */
+  min-height: min(100dvh, 1280px);
   isolation: isolate;
 }
 
@@ -1521,7 +1522,7 @@ footer {
 }
 
 @media (max-width: 980px) {
-  .hero-stage { min-height: min(86vh, 860px); }
+  .hero-stage { min-height: min(100dvh, 1080px); }
   .collection { padding: 44px var(--page-pad) 64px; }
   .art-grid { grid-template-columns: 1fr 1fr; gap: 32px 12px; }
   .about {
@@ -1698,7 +1699,7 @@ footer {
     justify-content: stretch;
   }
   .search-status.is-empty { font-size: 22px; }
-  .hero-stage { min-height: min(88vh, 780px); }
+  .hero-stage { min-height: min(100dvh, 920px); }
   .hero-meta {
     align-items: stretch;
     flex-direction: column;
