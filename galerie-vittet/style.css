@@ -23,18 +23,20 @@
   --ink-photo-faint: rgba(246, 241, 232, .62);
   --gold-photo: #e0c491;         /* accent readable on dark scrim */
   --line-photo: rgba(246, 241, 232, .38);
+  /* Soft edge scrims only — mid photo plane stays near collection brightness. */
   --scrim-top: linear-gradient(
     180deg,
-    rgba(18, 14, 10, .72) 0%,
-    rgba(18, 14, 10, .38) 42%,
-    rgba(18, 14, 10, .08) 68%,
-    transparent 100%
+    rgba(18, 14, 10, .46) 0%,
+    rgba(18, 14, 10, .18) 28%,
+    rgba(18, 14, 10, .04) 48%,
+    transparent 62%
   );
   --scrim-bottom: linear-gradient(
     0deg,
-    rgba(18, 14, 10, .78) 0%,
-    rgba(18, 14, 10, .42) 48%,
-    transparent 100%
+    rgba(18, 14, 10, .52) 0%,
+    rgba(18, 14, 10, .22) 32%,
+    rgba(18, 14, 10, .05) 52%,
+    transparent 68%
   );
 
   /* —— Type —— */
