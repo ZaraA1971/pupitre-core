@@ -768,7 +768,7 @@ function bindSiteSearch() {
  *
  * Rule — compare |log(imgAR / stageAR)| to HERO_FIT_LOG_THRESHOLD (~22 % AR):
  * - below → `cover` (crop is small; fill the tall stage)
- * - above → `contain` (portrait / mismatch; letterbox on --paper, no heavy crop)
+ * - above → `contain` (portrait / mismatch; letterbox on --stage, no heavy crop)
  */
 const HERO_FIT_LOG_THRESHOLD = 0.2;
 
