@@ -644,7 +644,8 @@ footer a {
 
 .hero-slide.is-active { opacity: 1; }
 
-.hero-slide img {
+.hero-slide img,
+.hero-slide .art-hero {
   display: block;
   width: 100%;
   height: 100%;
@@ -655,6 +656,8 @@ footer a {
   margin: 0;
   user-select: none;
   -webkit-user-drag: none;
+  /* Prefer crisp downscale from web (~1800) over soft upscale from preview. */
+  image-rendering: auto;
   filter: var(--img-enhance);
 }
 

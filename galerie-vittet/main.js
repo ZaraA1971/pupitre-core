@@ -771,10 +771,13 @@ function buildHeroSlide(work, index, startIndex = 0) {
   if (!isStart) figure.setAttribute("aria-hidden", "true");
   const assets = workAssetPaths(work);
   const img = document.createElement("img");
-  img.className = "art-preview";
-  img.src = assets.preview;
+  // Full-bleed hero needs web (~1800px), not preview vignettes (~720px).
+  img.className = "art-hero";
+  img.src = assets.display || assets.preview;
   img.alt = work.alt || work.title || "";
+  img.decoding = "async";
   if (isStart) img.fetchPriority = "high";
+  else img.loading = "lazy";
   figure.append(img);
   return figure;
 }
@@ -801,7 +804,10 @@ function syncHeroFromWorks(list) {
   if (!heroViewport) return;
   // list déjà triée (normalizePayload) ; carousel conserve l’ordre relatif.
   const chosen = (list || []).filter(
-    (work) => work && work.carousel && (work.preview || work.image)
+    (work) =>
+      work &&
+      work.carousel &&
+      (work.web || work.preview || work.image)
   );
 
   const fallback = !chosen.length && list && list.length ? [list[0]] : [];
@@ -811,6 +817,7 @@ function syncHeroFromWorks(list) {
   const startIndex =
     source.length > 1 ? Math.floor(Math.random() * source.length) : 0;
 
+  stopHeroAutoplay();
   heroViewport.replaceChildren();
   heroWorks = source.slice();
   source.forEach((work, index) => {
@@ -827,9 +834,33 @@ function syncHeroFromWorks(list) {
 let heroReady = false;
 let captionTimer = 0;
 const heroMeta = document.querySelector(".hero-meta");
+const HERO_AUTOPLAY_MS = 10000;
+let heroAutoplayTimer = 0;
+let heroAutoplayPaused = false;
+
+function stopHeroAutoplay() {
+  window.clearTimeout(heroAutoplayTimer);
+  heroAutoplayTimer = 0;
+}
+
+function scheduleHeroAutoplay() {
+  stopHeroAutoplay();
+  if (
+    heroAutoplayPaused ||
+    prefersReduce() ||
+    slides.length < 2 ||
+    document.hidden
+  ) {
+    return;
+  }
+  heroAutoplayTimer = window.setTimeout(() => {
+    showHero(heroIndex + 1);
+  }, HERO_AUTOPLAY_MS);
+}
 
 function showHero(index) {
   if (!slides.length) {
+    stopHeroAutoplay();
     heroTitle.textContent = "";
     heroArtist.textContent = "";
     heroCurrent.textContent = "00";
@@ -853,6 +884,7 @@ function showHero(index) {
   heroTotal.textContent = pad(slides.length);
   heroLive.textContent = `Œuvre ${heroIndex + 1} sur ${slides.length}. ${slide.dataset.title}. ${slide.dataset.artist}.`;
   renderHeroDots();
+  scheduleHeroAutoplay();
   if (!heroReady || prefersReduce()) {
     window.clearTimeout(captionTimer);
     applyText();
@@ -879,6 +911,39 @@ heroStage.addEventListener("keydown", (event) => {
     event.preventDefault();
     showHero(heroIndex - 1);
   }
+});
+
+function heroInteractionActive() {
+  return (
+    heroStage.matches(":hover") ||
+    (document.activeElement && heroStage.contains(document.activeElement))
+  );
+}
+
+function pauseHeroAutoplay() {
+  heroAutoplayPaused = true;
+  stopHeroAutoplay();
+}
+
+function resumeHeroAutoplayIfIdle() {
+  if (heroInteractionActive()) {
+    heroAutoplayPaused = true;
+    return;
+  }
+  heroAutoplayPaused = false;
+  scheduleHeroAutoplay();
+}
+
+heroStage.addEventListener("mouseenter", pauseHeroAutoplay);
+heroStage.addEventListener("mouseleave", resumeHeroAutoplayIfIdle);
+heroStage.addEventListener("focusin", pauseHeroAutoplay);
+heroStage.addEventListener("focusout", (event) => {
+  if (heroStage.contains(event.relatedTarget)) return;
+  resumeHeroAutoplayIfIdle();
+});
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) stopHeroAutoplay();
+  else resumeHeroAutoplayIfIdle();
 });
 
 let swipe = null;
