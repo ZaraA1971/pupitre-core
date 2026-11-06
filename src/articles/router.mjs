@@ -384,6 +384,81 @@ async function handleDraft(req, res, ctx, existing, articleId) {
   return sendJson(res, 200, { article, contentGen });
 }
 
+function draftTextOf(row) {
+  if (!row) return null;
+  const title = row.draft_title;
+  const body = row.draft_body;
+  const savedAt = row.draft_saved_at;
+  if (title == null && body == null && savedAt == null) return null;
+  return {
+    title: title == null ? '' : String(title),
+    body: body == null ? '' : String(body),
+    savedAt: savedAt == null ? null : String(savedAt),
+  };
+}
+
+async function handleDraftText(req, res, ctx, existing, articleId) {
+  const { pool, sendJson, readBody, plugins, cleanHtml } = ctx;
+  const h = helpersOf(ctx);
+  const table = tableOf(ctx);
+
+  if (typeof h.ensureDraftTextColumns === 'function') {
+    await h.ensureDraftTextColumns(pool);
+  }
+
+  if (req.method === 'GET') {
+    return sendJson(res, 200, { draftText: draftTextOf(existing) });
+  }
+  if (req.method !== 'POST') {
+    return sendJson(res, 405, { error: 'Méthode non autorisée' });
+  }
+
+  const parsed = await parseJsonBody(req, readBody);
+  if (!parsed.ok) {
+    return sendJson(res, 400, { error: 'JSON invalide' });
+  }
+  const payload = parsed.value;
+  if (payload.title == null && payload.body == null) {
+    return sendJson(res, 400, { error: 'Texte de brouillon manquant' });
+  }
+
+  const title =
+    payload.title != null
+      ? String(payload.title)
+      : existing.draft_title == null
+        ? ''
+        : String(existing.draft_title);
+  const rawBody =
+    payload.body != null
+      ? String(payload.body)
+      : existing.draft_body == null
+        ? ''
+        : String(existing.draft_body);
+  const body =
+    typeof cleanHtml === 'function' ? cleanHtml(rawBody, 'store') : rawBody;
+  const savedAt = h.nowMysql();
+
+  await pool.query(
+    `UPDATE \`${table}\` SET draft_title = ?, draft_body = ?, draft_saved_at = ? WHERE article_id = ?`,
+    [title, body, savedAt, articleId]
+  );
+
+  const contentGen = await emitDeskLifecycle(
+    plugins,
+    'onDraft',
+    {
+      articleId,
+      backup: true,
+      draftText: { title, body, savedAt },
+    },
+    ctx
+  );
+  return sendJson(res, 200, {
+    draftText: { title, body, savedAt },
+    contentGen,
+  });
+}
+
 async function handleUpdate(req, res, ctx, existing, articleId) {
   const {
     pool,
@@ -698,8 +773,23 @@ export async function handleCoreArticles(req, res, parts, ctx) {
     await handleDraft(req, res, ctx, existing, articleId);
     return true;
   }
+  if (parts[4] === 'draft-text' && (req.method === 'GET' || req.method === 'POST')) {
+    await handleDraftText(req, res, ctx, existing, articleId);
+    return true;
+  }
   if (req.method === 'GET' && !parts[4]) {
-    sendJson(res, 200, { article: ctx.rowToArticle(existing) });
+    if (typeof h.ensureDraftTextColumns === 'function') {
+      await h.ensureDraftTextColumns(pool);
+    }
+    const [freshRows] = await pool.query(
+      `SELECT * FROM \`${table}\` WHERE article_id = ? LIMIT 1`,
+      [articleId]
+    );
+    const fresh = freshRows[0] || existing;
+    sendJson(res, 200, {
+      article: ctx.rowToArticle(fresh),
+      draftText: draftTextOf(fresh),
+    });
     return true;
   }
   if (req.method === 'PUT' && !parts[4]) {
