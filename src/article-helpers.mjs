@@ -65,6 +65,7 @@ export function createArticleHelpers({
   }
   const table = assertSafeTableName(tableName);
   let dateNullableEnsured = false;
+  let draftTextEnsured = false;
 
   function canEditArticle(session, row) {
     if (!session || !canAccessDesk(session.role)) return false;
@@ -84,6 +85,26 @@ export function createArticleHelpers({
       );
     }
     dateNullableEnsured = true;
+  }
+
+  async function ensureDraftTextColumns(pool) {
+    if (draftTextEnsured) return;
+    const columns = [
+      ['draft_title', 'TEXT NULL'],
+      ['draft_body', 'MEDIUMTEXT NULL'],
+      ['draft_saved_at', 'DATETIME NULL'],
+    ];
+    for (const [name, ddl] of columns) {
+      const [cols] = await pool.query(
+        `SHOW COLUMNS FROM \`${table}\` LIKE '${name}'`
+      );
+      if (!cols.length) {
+        await pool.query(
+          `ALTER TABLE \`${table}\` ADD COLUMN \`${name}\` ${ddl}`
+        );
+      }
+    }
+    draftTextEnsured = true;
   }
 
   async function nextArticleId(pool) {
@@ -129,6 +150,7 @@ export function createArticleHelpers({
     tableName: table,
     canEditArticle,
     ensureArticleDateNullable,
+    ensureDraftTextColumns,
     nextArticleId,
     uniqueSlug,
     resolveArticleSlug,
