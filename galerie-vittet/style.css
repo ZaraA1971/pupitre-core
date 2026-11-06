@@ -235,24 +235,6 @@ section { scroll-margin-top: 48px; }
   line-height: 1;
 }
 
-.header--overlay .ornament-rule::before,
-.header--overlay .ornament-rule::after {
-  background: var(--line-photo);
-}
-
-.header--overlay .ornament-rule-mark {
-  color: var(--ink-photo-faint);
-}
-
-/* Header: float in the empty middle band between brand and contact */
-.header-ornament {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 1;
-}
-
 /* Between #collection and #galerie — sit up into collection pad, keep galerie below */
 .section-ornament {
   margin: -40px auto 28px;
@@ -530,15 +512,6 @@ body.view-recherche .header-mail,
 body.view-recherche .header-hours {
   color: var(--ink);
   text-shadow: none;
-}
-
-body.view-recherche .header--overlay .ornament-rule::before,
-body.view-recherche .header--overlay .ornament-rule::after {
-  background: var(--line);
-}
-
-body.view-recherche .header--overlay .ornament-rule-mark {
-  color: var(--ink);
 }
 
 body.view-recherche .header-brand .header-place a:hover,
@@ -1624,10 +1597,6 @@ footer {
     min-height: 0;
     padding: 18px var(--page-pad) 14px;
   }
-  .header-ornament {
-    width: min(200px, 22vw);
-    gap: 12px;
-  }
   .section-ornament {
     width: min(220px, 36vw);
     margin: -28px auto 24px;
@@ -1650,8 +1619,7 @@ footer {
 @media (max-width: 700px) {
   .header {
     grid-template-columns: 1fr;
-    grid-template-rows: auto auto auto auto;
-    /* Keep a bit more air under MAÎTRES; ornament sits between brand and contact. */
+    grid-template-rows: auto auto auto;
     row-gap: 12px;
     padding: 16px var(--page-pad) 12px;
   }
@@ -1674,29 +1642,13 @@ footer {
   .header-brand .header-place {
     font-size: calc(var(--type-sm) * 2);
   }
-  /* Horizontal hairline + · between brand and contact when stacked. */
-  .header-ornament {
-    position: static;
-    transform: none;
-    grid-row: 3;
-    grid-column: 1;
-    width: min(148px, 56%);
-    top: auto;
-    bottom: auto;
-    gap: 10px;
-    justify-self: start;
-    margin: 2px 0;
-  }
-  .header-ornament .ornament-rule-mark {
-    font-size: 13px;
-  }
   .section-ornament {
     width: min(148px, 56%);
     margin: -16px auto 20px;
     gap: 10px;
   }
   .header-contact {
-    grid-row: 4;
+    grid-row: 3;
     align-self: start;
     justify-self: stretch;
     justify-items: start;
