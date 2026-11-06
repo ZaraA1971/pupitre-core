@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup8 après hero-stage / paper / carousel (2026-11-06)
+
+- Conservé : header-carousel, paper `#e3d1be`, letterbox `--stage`, carousel≠collection, hero filter, mobile 1-col, fit adaptatif
+- Mort : `--page-pad-sm` ; `dataset.heroFit` / `is-contain` (hooks morts) ; cache-bust atelier `paper` → `clean8`
+- Cache-bust `?v=20261106-clean8`
+- Prod `9810d4b1` · preview `bb8615b0` · atelier `3a5e8219` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-cleanup8-galerie-vittet.md`
+
 ## Cleanup7 après loupe max natif (2026-11-05)
 
 - Confirmé : plus de `LOUPE_ZOOM_MAX` / markup 150 ; jauge dynamique `loupeZoomMax` conservée

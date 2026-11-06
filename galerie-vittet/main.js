@@ -784,17 +784,13 @@ function fitHeroImage(img) {
     const sh = stage ? stage.clientHeight : 0;
     if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
       img.style.objectFit = "cover";
-      img.dataset.heroFit = "cover";
-      img.closest(".hero-slide")?.classList.remove("is-contain");
       return;
     }
     const imgAR = nw / nh;
     const stageAR = sw / sh;
     const delta = Math.abs(Math.log(imgAR / stageAR));
-    const fit = delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain";
-    img.style.objectFit = fit;
-    img.dataset.heroFit = fit;
-    img.closest(".hero-slide")?.classList.toggle("is-contain", fit === "contain");
+    img.style.objectFit =
+      delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain";
   };
 
   if (img.complete && img.naturalWidth > 0) {
