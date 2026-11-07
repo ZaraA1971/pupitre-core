@@ -1598,16 +1598,18 @@ footer {
     padding: 4px 0 8px;
     background: transparent;
   }
+  /* Photo row flexes; fiche sits on content height (not the reverse). */
   .lightbox-layout {
     grid-template-columns: 1fr;
-    grid-template-rows: auto minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr) auto;
   }
   .lightbox.is-loupe .lightbox-layout {
     grid-template-rows: minmax(0, 1fr);
   }
   .lightbox-photo {
-    max-height: min(62dvh, 580px);
-    height: auto;
+    max-height: none;
+    height: 100%;
+    min-height: min(58dvh, 520px);
     padding: 4px;
   }
   .lightbox-photo.is-zoomed,
@@ -1620,10 +1622,15 @@ footer {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: min(62dvh, 580px);
+    max-height: 100%;
   }
   .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;
+  }
+  .lightbox-fiche {
+    max-height: min(38dvh, 340px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }
 
@@ -1654,91 +1661,156 @@ footer {
 }
 
 @media (max-width: 700px) {
-  /* Stack brand then contact — same PC fields, readable type (not xs-only). */
+  /*
+   * Mobile strategy — amplify paintings (same web logic, stronger):
+   * 1. Hero = full viewport photo stage; chrome compact side-by-side.
+   * 2. Collection = one large painting per row, near edge-to-edge.
+   * 3. Lightbox = painting claims most of the screen; fiche below.
+   * Contact fields stay (same as PC), denser so they don't steal the stage.
+   */
+  :root {
+    --page-pad: 12px;
+    --page-pad-lg: 14px;
+    --type-artist: 26px;
+    --type-display: clamp(34px, 9vw, 42px);
+    --type-display-sm: clamp(28px, 7.5vw, 36px);
+  }
+
+  /* —— Hero: true full-bleed stage —— */
+  .hero-stage {
+    min-height: 100dvh;
+    min-height: 100svh;
+  }
   .header {
-    grid-template-columns: 1fr;
+    /* Brand | contact on one band — frees vertical room for the painting. */
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     grid-template-rows: auto auto;
-    row-gap: 14px;
-    padding: 18px var(--page-pad) 14px;
+    column-gap: 12px;
+    row-gap: 8px;
+    padding:
+      max(10px, env(safe-area-inset-top, 0px))
+      max(var(--page-pad), env(safe-area-inset-right, 0px))
+      10px
+      max(var(--page-pad), env(safe-area-inset-left, 0px));
   }
   .header-brand {
     display: grid;
-    grid-template-rows: auto auto;
-    grid-row: auto;
+    grid-template-rows: subgrid;
+    grid-row: 1 / -1;
     align-items: start;
     justify-items: start;
-    gap: 10px;
-    width: 100%;
+    gap: 6px;
+    width: auto;
   }
   .header-brand .wordmark {
-    font-size: clamp(44px, 11.5vw, 56px);
-    line-height: 1.2;
+    font-size: clamp(36px, 9.5vw, 48px);
+    line-height: 1.15;
+    letter-spacing: .1em;
   }
   .header-brand .wordmark span {
-    font-size: 12px;
-    letter-spacing: .28em;
-    margin-top: 10px;
+    font-size: 10px;
+    letter-spacing: .26em;
+    margin-top: 6px;
   }
   .header-brand .header-place {
-    font-size: clamp(18px, 5.2vw, 24px);
-    line-height: 1.35;
-  }
-  .section-ornament {
-    width: min(148px, 56%);
-    margin: -16px auto 20px;
-    gap: 10px;
+    font-size: clamp(13px, 3.4vw, 16px);
+    line-height: 1.3;
   }
   .header-contact {
-    grid-row: auto;
-    align-self: start;
-    justify-self: stretch;
-    justify-items: start;
-    text-align: left;
-    gap: 6px;
-    padding-top: 10px;
-    border-top: 1px solid var(--line-photo);
+    grid-row: 1 / -1;
+    align-self: end;
+    justify-self: end;
+    justify-items: end;
+    text-align: right;
+    gap: 3px;
+    padding-top: 0;
+    border-top: 0;
   }
   .header-phones {
-    justify-items: start;
-    gap: 2px;
+    justify-items: end;
+    gap: 0;
   }
   .header-phones a {
-    font-size: clamp(17px, 4.6vw, 19px);
-    min-height: 34px;
+    font-size: clamp(13px, 3.5vw, 15px);
+    min-height: 28px;
     display: inline-flex;
     align-items: center;
   }
   .header-mail {
-    font-size: var(--type-sm);
-    letter-spacing: .12em;
+    font-size: 11px;
+    letter-spacing: .1em;
     white-space: normal;
+    margin-top: 1px;
   }
   .header-hours {
-    font-size: var(--type-sm);
-    letter-spacing: .03em;
+    font-size: 11px;
+    letter-spacing: .02em;
+    margin-top: 2px;
   }
-  /* Taller stacked header needs a deeper top scrim for legibility. */
+  /* Scrim hugs text bands only — painting stays luminous in the middle. */
   .hero-scrim {
     background:
       linear-gradient(
         180deg,
-        rgba(18, 14, 10, .58) 0%,
-        rgba(18, 14, 10, .28) 34%,
-        rgba(18, 14, 10, .06) 54%,
-        transparent 70%
+        rgba(18, 14, 10, .52) 0%,
+        rgba(18, 14, 10, .22) 18%,
+        rgba(18, 14, 10, .04) 32%,
+        transparent 46%
       ),
-      var(--scrim-bottom);
+      linear-gradient(
+        0deg,
+        rgba(18, 14, 10, .58) 0%,
+        rgba(18, 14, 10, .26) 22%,
+        rgba(18, 14, 10, .05) 42%,
+        transparent 58%
+      );
   }
-  section { scroll-margin-top: 36px; }
-  body.view-recherche section { scroll-margin-top: 168px; }
+  .hero-meta {
+    align-items: stretch;
+    flex-direction: column;
+    gap: 12px;
+    padding:
+      0
+      max(var(--page-pad), env(safe-area-inset-right, 0px))
+      max(18px, env(safe-area-inset-bottom, 0px));
+  }
+  .hero-caption .eyebrow {
+    font-size: 10px;
+    letter-spacing: .18em;
+  }
+  .site-hero .hero-title {
+    font-size: clamp(13px, 3.6vw, 15px);
+  }
+  .site-hero .hero-artist {
+    font-size: clamp(22px, 6.2vw, 28px);
+    margin-top: 4px;
+  }
+  .hero-controls { justify-content: space-between; width: 100%; }
+
+  section { scroll-margin-top: 28px; }
+  body.view-recherche section { scroll-margin-top: 120px; }
+
+  /* —— Collection: one large painting, amplified —— */
+  .collection {
+    padding: 36px var(--page-pad) 56px;
+  }
+  .section-heading { display: block; margin-bottom: 18px; }
+  .section-heading > p { margin-top: 10px; }
   .collection-toolbar {
     flex-direction: column;
     align-items: stretch;
     gap: 8px;
+    margin-bottom: 18px;
   }
   .collection-toolbar .filters {
     order: 1;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    gap: 8px 16px;
+    scrollbar-width: none;
   }
+  .collection-toolbar .filters::-webkit-scrollbar { display: none; }
   .collection-toolbar .site-search-slot {
     order: 0;
     width: 100%;
@@ -1746,45 +1818,85 @@ footer {
     margin-left: 0;
     padding-bottom: 4px;
   }
-  /* search width 100% inherited from max-width: 900px */
-  .search-page { padding: 24px var(--page-pad) 48px; }
+  .filter {
+    flex: 0 0 auto;
+    padding-bottom: 10px;
+    letter-spacing: .1em;
+  }
+  .art-grid {
+    grid-template-columns: 1fr;
+    gap: 36px 0;
+    min-height: 240px;
+  }
+  .art-open {
+    /* Taller stage → paintings read larger than the desktop 4/3 tile. */
+    aspect-ratio: 5 / 6;
+  }
+  .art-open .art-preview {
+    inset: 2px;
+    width: calc(100% - 4px);
+    height: calc(100% - 4px);
+  }
+  .art-meta { padding-top: 16px; }
+  .art-meta .art-artist {
+    font-size: var(--type-artist);
+  }
+  .art-meta .art-facts {
+    margin-top: 6px;
+  }
+  .collection-end { flex-direction: column; align-items: flex-start; }
+  .section-ornament {
+    width: min(148px, 56%);
+    margin: -12px auto 18px;
+    gap: 10px;
+  }
+
+  /* —— Search —— */
+  .search-page { padding: 22px var(--page-pad) 48px; }
   .search-page-tools {
     align-items: stretch;
     width: 100%;
   }
-  .search-page-tools #search-lede {
-    text-align: left;
-  }
+  .search-page-tools #search-lede { text-align: left; }
   .search-page .site-search-slot {
     width: 100%;
     justify-content: stretch;
   }
   .search-status.is-empty { font-size: 22px; }
-  .hero-stage { min-height: min(100dvh, 920px); }
-  .hero-meta {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 14px;
-    padding-bottom: 22px;
+
+  /* —— Galerie about: photos first, generous —— */
+  .about {
+    --side: min(100%, 100%);
+    --gal-space: 16px;
+    padding: 48px var(--page-pad) 56px;
+    gap: 16px;
   }
-  .hero-controls { justify-content: space-between; width: 100%; }
-  .section-heading { display: block; }
-  .section-heading > p { margin-top: 12px; }
-  /* Phone: single column of collection photos. */
-  .art-grid { grid-template-columns: 1fr; gap: 28px 0; min-height: 280px; }
-  .collection-end { flex-direction: column; align-items: flex-start; }
+  .about-photo,
+  .about-photo--facade,
+  .about-photo--salle {
+    max-width: none;
+  }
+
   footer { align-items: flex-start; }
   footer .wordmark { display: inline-block; }
   footer .wordmark span { text-align: center; }
   .footer-credit { text-align: left; }
+
+  /* —— Lightbox: painting dominates —— */
   .lightbox {
-    width: calc(100vw - 6px);
-    height: calc(100dvh - 6px);
-    max-width: calc(100vw - 6px);
-    max-height: calc(100dvh - 6px);
+    width: calc(100vw - 4px);
+    height: calc(100dvh - 4px);
+    max-width: calc(100vw - 4px);
+    max-height: calc(100dvh - 4px);
+  }
+  .lightbox-layout {
+    grid-template-rows: minmax(0, 1fr) auto;
   }
   .lightbox-photo {
-    max-height: min(56dvh, 520px);
+    max-height: none;
+    height: 100%;
+    min-height: min(70dvh, 100%);
+    padding: 2px;
   }
   .lightbox-photo.is-zoomed,
   .lightbox.is-loupe .lightbox-photo {
@@ -1792,25 +1904,31 @@ footer {
     height: 100%;
   }
   .lightbox-photo img.art-detail {
-    max-height: min(56dvh, 520px);
+    max-height: 100%;
   }
   .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;
   }
+  .lightbox-fiche {
+    max-height: min(28dvh, 280px);
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+    padding-block: 12px;
+  }
   .lightbox-loupe {
-    top: 10px;
-    right: 10px;
+    top: max(10px, env(safe-area-inset-top, 0px));
+    right: max(10px, env(safe-area-inset-right, 0px));
     min-height: 44px;
   }
   .lightbox-zoom-gauge {
-    bottom: 12px;
+    bottom: max(12px, env(safe-area-inset-bottom, 0px));
     min-width: min(240px, calc(100% - 20px));
     max-width: calc(100% - 20px);
     padding: 10px 12px;
     gap: 10px;
   }
   .lightbox-fiche h2 { font-size: var(--type-meta); }
-  .lightbox-artist { font-size: 24px; }
+  .lightbox-artist { font-size: 26px; }
 }
 
 html.entrance .hero-stage {

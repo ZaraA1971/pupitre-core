@@ -766,11 +766,18 @@ function bindSiteSearch() {
  * Per-slide hero fit: minimize cropping while keeping the stage filled when
  * aspect ratios are close. Always center (`object-position: center`).
  *
- * Rule — compare |log(imgAR / stageAR)| to HERO_FIT_LOG_THRESHOLD (~22 % AR):
- * - below → `cover` (crop is small; fill the tall stage)
- * - above → `contain` (portrait / mismatch; letterbox on --stage, no heavy crop)
+ * Desktop — |log(imgAR / stageAR)| vs HERO_FIT_LOG_THRESHOLD (~22 % AR):
+ * - below → `cover` (crop is small; fill the stage)
+ * - above → `contain` (portrait / mismatch; letterbox on --stage)
+ *
+ * Mobile portrait stage — amplify paintings: landscape / near-square works
+ * use `cover` so the photo fills the tall viewport (modest side crop beats
+ * large letterbox bands). Strong portraits still `contain`.
  */
 const HERO_FIT_LOG_THRESHOLD = 0.2;
+const HERO_MOBILE_MAX_WIDTH = 700;
+/** imgAR ≥ this → treat as landscape/square on phone (prefer cover). */
+const HERO_MOBILE_COVER_MIN_AR = 0.88;
 
 function fitHeroImage(img) {
   if (!img) return;
@@ -788,6 +795,11 @@ function fitHeroImage(img) {
     }
     const imgAR = nw / nh;
     const stageAR = sw / sh;
+    const portraitPhone = sw <= HERO_MOBILE_MAX_WIDTH && sh > sw;
+    if (portraitPhone && imgAR >= HERO_MOBILE_COVER_MIN_AR) {
+      img.style.objectFit = "cover";
+      return;
+    }
     const delta = Math.abs(Math.log(imgAR / stageAR));
     img.style.objectFit =
       delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain";
