@@ -548,12 +548,14 @@ function readSearchRoute(hash = location.hash) {
   return { active: true, query: (params.get("q") || "").trim() };
 }
 
-/** Leave search view (empty clear / bare #recherche) → full catalog. */
-const SEARCH_EXIT_HASH = "#collection";
-
+/** Leave search → no section hash (reload must open at the top). */
 function searchHashFor(query) {
   const q = String(query || "").trim();
-  return q ? `#recherche?q=${encodeURIComponent(q)}` : SEARCH_EXIT_HASH;
+  return q ? `#recherche?q=${encodeURIComponent(q)}` : "";
+}
+
+function pathWithSearch(hash = "") {
+  return `${location.pathname}${location.search}${hash || ""}`;
 }
 
 function mountSiteSearch(inSearchMode) {
@@ -605,11 +607,8 @@ function leaveSearchView({ replaceHash = false, scroll = false } = {}) {
     setSearchMode(false);
     closeSearchLightbox();
   }
-  if (replaceHash) {
-    const next = SEARCH_EXIT_HASH;
-    if ((location.hash || "") !== next) {
-      history.replaceState(null, "", `${location.pathname}${location.search}${next}`);
-    }
+  if (replaceHash && location.hash) {
+    history.replaceState(null, "", pathWithSearch(""));
   }
   if (scroll) {
     const target = document.getElementById("collection");
@@ -730,8 +729,8 @@ function navigateSearch(query, { replace = false, scroll = false } = {}) {
     applySearchRoute({ scroll });
     return;
   }
-  if (replace) {
-    history.replaceState(null, "", `${location.pathname}${location.search}${next}`);
+  if (replace || !next) {
+    history.replaceState(null, "", pathWithSearch(next));
     applySearchRoute({ scroll });
     return;
   }
@@ -1669,6 +1668,26 @@ dialog.addEventListener("keydown", (event) => {
 
 bindSiteSearch();
 
+function bindScrollTopLinks() {
+  document.querySelectorAll("[data-scroll-top]").forEach((link) => {
+    if (link.dataset.scrollTopBound) return;
+    link.dataset.scrollTopBound = "1";
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (location.hash) {
+        history.replaceState(null, "", pathWithSearch(""));
+        applySearchRoute();
+      }
+      window.scrollTo({
+        top: 0,
+        behavior: prefersReduce() ? "auto" : "smooth",
+      });
+    });
+  });
+}
+
+bindScrollTopLinks();
+
 window.addEventListener("hashchange", () => {
   applySearchRoute();
 });
@@ -1765,6 +1784,19 @@ loadWorks()
     const clean = url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : "");
     history.replaceState(null, "", `${clean}${searchHashFor(q)}`);
   } catch (error) {
+    /* ignore */
+  }
+})();
+
+/* Drop leftover section hashes (#accueil / #collection / …) once JS runs. */
+(function stripSectionHashes() {
+  try {
+    const route = readSearchRoute();
+    if (route.active && route.query) return;
+    if (location.hash) {
+      history.replaceState(null, "", pathWithSearch(""));
+    }
+  } catch (_) {
     /* ignore */
   }
 })();
