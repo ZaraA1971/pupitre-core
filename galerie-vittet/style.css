@@ -955,14 +955,14 @@ footer a {
   transform-origin: center center;
 }
 
-/* Hover : soulèvement + ombre diffuse (guidance macOS — soft, layered). */
+/* Hover : soulèvement + ombre diffuse (guidance macOS — large blur, low alpha). */
 .art-open:hover .art-preview,
 .art-open:focus-visible .art-preview {
-  transform: translateY(-4px);
+  transform: translateY(-3px);
   box-shadow:
-    0 1px 2px rgba(0, 0, 0, .04),
-    0 4px 12px rgba(0, 0, 0, .06),
-    0 12px 28px rgba(0, 0, 0, .08);
+    0 2px 6px rgba(0, 0, 0, .03),
+    0 8px 24px rgba(0, 0, 0, .05),
+    0 18px 48px rgba(0, 0, 0, .06);
 }
 
 .art-detail {
