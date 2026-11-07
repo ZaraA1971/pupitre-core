@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#f5efe6">
+  <script>
+    try {
+      if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.documentElement.classList.add("entrance");
+      }
+      var _lang = "";
+      try {
+        var _p = new URLSearchParams(location.search || "");
+        _lang = (_p.get("lang") || "").toLowerCase();
+      } catch (e1) {}
+      if (!_lang) {
+        try { _lang = (localStorage.getItem("galerie-vittet-lang") || "").toLowerCase(); } catch (e2) {}
+      }
+      if (_lang === "en" || _lang === "uk" || _lang === "en-gb") {
+        document.documentElement.lang = "en-GB";
+        document.documentElement.dataset.lang = "en";
+      }
+      /* Strip section hashes on load; keep only #recherche?q=… */
+      if ("scrollRestoration" in history) history.scrollRestoration = "manual";
+      var _h = String(location.hash || "");
+      var _keepSearch = /^#recherche\?(?:.*&)?q=[^&]+/.test(_h);
+      if (!_keepSearch) {
+        if (location.hash) history.replaceState(null, "", location.pathname + location.search);
+        window.scrollTo(0, 0);
+      }
+    } catch (error) {}
+  </script>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Galerie Vittet — peintures anciennes, œuvres choisies avec exigence à Paris depuis 1988.">
+  <title>Galerie Vittet — L’art du regard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css?v=20261107-paper2">
+</head>
+<body>
+  <!-- Balance des blancs douce pour --img-enhance (pas de teinte brune / sépia). -->
+  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute;width:0;height:0;overflow:hidden">
+    <defs>
+      <filter id="img-warm-wb" color-interpolation-filters="sRGB">
+        <!-- R↑ G↑ léger, B↓ : réchauffe sans colorer -->
+        <feColorMatrix type="matrix" values="
+          1.03  0     0     0  0
+          0     1.012 0     0  0
+          0     0     0.975 0  0
+          0     0     0     1  0
+        "/>
+      </filter>
+    </defs>
+  </svg>
+  <!-- Header + carousel = one full-bleed composition (brand/contact overlaid on photos). -->
+  <header class="site-hero" id="site-header">
+    <div class="hero-stage" aria-roledescription="carousel" data-i18n-aria="heroStageAria" aria-label="Œuvres à la une">
+      <div class="hero-viewport">
+        <figure class="hero-slide is-active" data-title="Intérieur de la cathédrale d’Anvers" data-artist="Pieter Neefs l’Ancien">
+          <img class="art-hero" src="images/cathedrale-neef.webp" alt="Intérieur monumental d’une cathédrale flamande, attribué à Pieter Neefs" fetchpriority="high" width="1800" height="1366">
+        </figure>
+        <figure class="hero-slide" data-title="Le départ du fils prodigue" data-artist="Abel Grimmer · École flamande">
+          <img class="art-hero" src="images/fils-prodigue.webp" alt="Paysage flamand animé de personnages" loading="lazy" width="1800" height="1360">
+        </figure>
+        <figure class="hero-slide" data-title="La Descente de Croix" data-artist="Carle van Loo">
+          <img class="art-hero" src="images/descente-croix.webp" alt="Composition religieuse de la Descente de Croix" loading="lazy" width="1261" height="1800">
+        </figure>
+        <figure class="hero-slide" data-title="La Tour de Babel" data-artist="École flamande">
+          <img class="art-hero" src="images/tour-babel.webp" alt="Scène biblique avec la Tour de Babel" loading="lazy" width="1800" height="1457">
+        </figure>
+      </div>
+      <div class="hero-scrim" aria-hidden="true"></div>
+      <div class="header header--overlay">
+        <div class="header-brand">
+          <a class="wordmark" href="/" data-scroll-top data-i18n-aria="homeAria" aria-label="Galerie Vittet, accueil">VITTET<span>MAÎTRES ANCIENS</span></a>
+          <p class="header-place">
+            <a href="https://www.openstreetmap.org/search?query=21%20quai%20Voltaire%2C%2075007%20Paris" rel="noopener noreferrer">21 quai Voltaire · 75007 Paris</a>
+          </p>
+        </div>
+        <div class="header-contact" id="contact" data-i18n-aria="contactAria" aria-label="Coordonnées de la galerie">
+          <button class="lang-switch" type="button" aria-label="English (UK)">UK</button>
+          <div class="header-phones">
+            <a href="tel:+33142601139">+33 1 42 60 11 39</a>
+            <a href="tel:+33619471431">+33 6 19 47 14 31</a>
+          </div>
+          <a class="header-mail" href="mailto:vittet.claude@yahoo.fr" data-i18n="writeGallery">Écrire à la galerie</a>
+          <p class="header-hours" data-i18n="hours">Mar–sam 14h30–19h · sur rendez-vous</p>
+        </div>
+      </div>
+      <div class="hero-meta">
+        <div class="hero-caption">
+          <p class="eyebrow" data-i18n="featured">À la une</p>
+          <p class="hero-title" id="hero-title">Intérieur de la cathédrale d’Anvers</p>
+          <p class="hero-artist" id="hero-artist">Pieter Neefs l’Ancien</p>
+        </div>
+        <div class="hero-controls">
+          <button class="hero-prev" type="button" data-i18n-aria="heroPrev" aria-label="Œuvre précédente">←</button>
+          <div class="hero-pager">
+            <p class="hero-index" aria-hidden="true"><span class="hero-current">01</span> <span>—</span> <span class="hero-total">04</span></p>
+            <div class="hero-dots" id="hero-dots" role="tablist" data-i18n-aria="heroDots" aria-label="Œuvres du carrousel"></div>
+          </div>
+          <button class="hero-next" type="button" data-i18n-aria="heroNext" aria-label="Œuvre suivante">→</button>
+        </div>
+      </div>
+      <p class="visually-hidden" id="hero-live" aria-live="polite">Œuvre 1 sur 4. Intérieur de la cathédrale d’Anvers. Pieter Neefs l’Ancien.</p>
+    </div>
+  </header>
+  <main>
+    <section class="search-page" id="recherche" hidden aria-labelledby="search-heading">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" data-i18n="catalog">Catalogue</p>
+          <h2 id="search-heading" data-i18n="search">Recherche</h2>
+        </div>
+        <div class="search-page-tools">
+          <p id="search-lede" data-i18n="searchLede">Parcourir les œuvres exposées par titre, artiste ou technique.</p>
+          <div class="site-search-slot" id="recherche-search-slot" data-search-home="0"></div>
+        </div>
+      </div>
+      <p class="search-status" id="search-status" aria-live="polite"></p>
+      <div class="art-grid" id="search-grid"></div>
+    </section>
+
+    <section class="collection" id="collection">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow" data-i18n="chosenWorks">Œuvres choisies</p>
+          <h2 data-i18n="theCollection">La collection</h2>
+        </div>
+      </div>
+      <div class="collection-toolbar">
+        <div class="filters" role="tablist" data-i18n-aria="filtersAria" aria-label="Sections de la collection">
+          <button class="filter active" type="button" role="tab" id="tab-peinture" data-filter="peinture" aria-selected="true" aria-controls="collection-panel"><span data-i18n="section.peinture">Peintures</span> <span class="filter-count">(0)</span></button>
+          <button class="filter" type="button" role="tab" id="tab-miniature" data-filter="miniature" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.miniature">Miniatures</span> <span class="filter-count">(0)</span></button>
+          <button class="filter" type="button" role="tab" id="tab-nicolle" data-filter="nicolle" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.nicolle">Victor-Jean NICOLLE</span> <span class="filter-count">(0)</span></button>
+        </div>
+        <div class="site-search-slot" id="collection-search-slot" data-search-home="1">
+          <form class="site-search" id="site-search" role="search" action="/" method="get">
+            <label class="visually-hidden" for="site-search-input" data-i18n="searchLabel">Rechercher une œuvre</label>
+            <input
+              id="site-search-input"
+              class="site-search-input"
+              type="search"
+              name="q"
+              placeholder="Rechercher…"
+              data-i18n-placeholder="searchPlaceholder"
+              autocomplete="off"
+              enterkeyhint="search"
+              maxlength="120"
+            >
+            <button class="site-search-submit" type="submit" data-i18n-aria="searchSubmit" aria-label="Lancer la recherche">
+              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true" focusable="false">
+                <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke="currentColor" stroke-width="1.6"/>
+                <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
+              </svg>
+            </button>
+          </form>
+        </div>
+      </div>
+      <div id="collection-panel" role="tabpanel" aria-labelledby="tab-peinture">
+        <p class="collection-status" id="collection-status" aria-live="polite">Chargement de la collection…</p>
+        <div class="art-grid is-loading" id="art-grid" aria-busy="true">
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+          <div class="art-skeleton" aria-hidden="true"></div>
+        </div>
+        <nav class="pagination" id="pagination" data-i18n-aria="paginationAria" aria-label="Pagination de la collection" hidden>
+          <button class="page-prev" type="button" data-i18n-aria="pagePrev" aria-label="Page précédente">←</button>
+          <div class="page-numbers" id="page-numbers" role="group" data-i18n-aria="pagesAria" aria-label="Pages"></div>
+          <button class="page-next" type="button" data-i18n-aria="pageNext" aria-label="Page suivante">→</button>
+        </nav>
+      </div>
+      <div class="collection-end">
+        <span id="collection-end-label" data-i18n="collectionPick">Une sélection de la collection</span>
+      </div>
+    </section>
+
+    <div class="ornament-rule section-ornament" aria-hidden="true">
+      <span class="ornament-rule-mark">·</span>
+    </div>
+
+    <section class="about" id="galerie" data-i18n-aria="aboutAria" aria-label="La galerie">
+      <figure class="about-photo about-photo--facade">
+        <img src="images/galerie-facade.webp" data-i18n-alt="facadeAlt" alt="Façade de la Galerie Claude Vittet, 21 quai Voltaire" loading="lazy" width="1024" height="705">
+      </figure>
+      <div class="about-copy">
+        <header class="about-copy-head">
+          <p class="eyebrow" data-i18n="since1988">Depuis 1988</p>
+          <h2 data-i18n="theGallery">La galerie</h2>
+        </header>
+        <div class="about-copy-body">
+          <p data-i18n="aboutP1">Depuis 1988, Claude Vittet partage son regard sur les écoles du Nord des XVIᵉ et XVIIᵉ siècles, les paysagistes français du XVIIIᵉ siècle et l’art de la miniature.</p>
+          <p data-i18n="aboutP2">Membre de la Chambre nationale des experts spécialisés, il accompagne collectionneurs et amateurs dans la découverte de chaque œuvre.</p>
+        </div>
+      </div>
+      <figure class="about-photo about-photo--salle">
+        <img src="images/galerie-salle.webp" data-i18n-alt="salleAlt" alt="Intérieur de la Galerie Vittet, quai Voltaire" loading="lazy" width="1024" height="530">
+      </figure>
+    </section>
+
+  </main>
+  <footer>
+    <a class="wordmark" href="/" data-scroll-top data-i18n-aria="topAria" aria-label="Galerie Vittet, retour en haut">VITTET<span>MAÎTRES ANCIENS</span></a>
+    <div class="footer-meta">
+      <p class="footer-credit">Site réalisé par <a href="mailto:emmanueltorregano@mac.com">Emmanuel Torregano</a></p>
+      <button class="lang-switch lang-switch--footer" type="button" aria-label="English (UK)">UK</button>
+    </div>
+  </footer>
+  <dialog class="lightbox" aria-labelledby="lightbox-title" aria-describedby="lightbox-artist">
+    <div class="lightbox-layout">
+      <div class="lightbox-photo">
+        <img class="art-detail" alt="">
+        <button class="lightbox-loupe" type="button" hidden aria-pressed="false" data-i18n-aria="loupeAria" aria-label="Loupe — charger l’original">
+          <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" focusable="false">
+            <circle cx="10.5" cy="10.5" r="6.25" fill="none" stroke="currentColor" stroke-width="1.6"/>
+            <path d="M15.2 15.2 20 20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="square"/>
+            <path d="M10.5 7.6v5.8M7.6 10.5h5.8" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="square"/>
+          </svg>
+          <span class="lightbox-loupe-label" data-i18n="loupe">Loupe</span>
+        </button>
+        <div class="lightbox-zoom-gauge" hidden>
+          <label class="lightbox-zoom-gauge-label" for="lightbox-zoom-range" data-i18n="zoom">Zoom</label>
+          <input
+            class="lightbox-zoom-range"
+            id="lightbox-zoom-range"
+            type="range"
+            min="100"
+            max="100"
+            step="1"
+            value="100"
+            aria-valuemin="100"
+            aria-valuemax="100"
+            aria-valuenow="100"
+            aria-valuetext="100 %"
+          >
+          <span class="lightbox-zoom-gauge-value" aria-hidden="true">100 %</span>
+        </div>
+        <p class="lightbox-zoom-status" aria-live="polite"></p>
+      </div>
+      <div class="lightbox-fiche">
+        <button class="lightbox-close" type="button" data-i18n="close">Fermer</button>
+        <div class="lightbox-block">
+          <p class="lightbox-label" data-i18n="labelTitle">Titre</p>
+          <h2 id="lightbox-title"></h2>
+        </div>
+        <div class="lightbox-block">
+          <p class="lightbox-label" data-i18n="labelArtist">Artiste</p>
+          <p class="lightbox-artist" id="lightbox-artist"></p>
+        </div>
+        <div class="lightbox-block" id="lightbox-support-block" hidden>
+          <p class="lightbox-label" data-i18n="labelSupport">Technique / support</p>
+          <p class="lightbox-support" id="lightbox-support"></p>
+        </div>
+        <div class="lightbox-block" id="lightbox-dimensions-block" hidden>
+          <p class="lightbox-label" data-i18n="labelDimensions">Dimensions</p>
+          <p class="lightbox-dimensions" id="lightbox-dimensions"></p>
+        </div>
+        <div class="lightbox-block" id="lightbox-note-block" hidden>
+          <p class="lightbox-label" data-i18n="labelNote">Note</p>
+          <p class="lightbox-note"></p>
+        </div>
+        <a class="lightbox-cta" id="lightbox-cta" href="mailto:vittet.claude@yahoo.fr" data-i18n="askWork">Demander cette œuvre →</a>
+        <p class="lightbox-pos" aria-live="polite"></p>
+        <div class="lightbox-nav">
+          <button class="lightbox-prev" type="button">←</button>
+          <button class="lightbox-next" type="button">→</button>
+        </div>
+      </div>
+    </div>
+  </dialog>
+  <script src="i18n.js?v=20261107-paper2" defer></script>
+  <script src="main.js?v=20261107-paper2" defer></script>
+</body>
+</html>
