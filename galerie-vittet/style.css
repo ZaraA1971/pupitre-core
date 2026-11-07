@@ -1768,22 +1768,23 @@ footer {
   .hero-meta {
     align-items: stretch;
     flex-direction: column;
-    gap: 12px;
+    gap: 8px;
     padding:
       0
       max(var(--page-pad), env(safe-area-inset-right, 0px))
-      max(18px, env(safe-area-inset-bottom, 0px));
+      max(14px, env(safe-area-inset-bottom, 0px));
   }
   .hero-caption .eyebrow {
     font-size: 10px;
     letter-spacing: .18em;
+    margin-bottom: 2px;
   }
   .site-hero .hero-title {
     font-size: clamp(13px, 3.6vw, 15px);
   }
   .site-hero .hero-artist {
     font-size: clamp(22px, 6.2vw, 28px);
-    margin-top: 4px;
+    margin-top: 2px;
   }
   .hero-controls { justify-content: space-between; width: 100%; }
 
@@ -1825,24 +1826,37 @@ footer {
   }
   .art-grid {
     grid-template-columns: 1fr;
-    gap: 36px 0;
+    gap: 28px 0;
     min-height: 240px;
   }
+  /*
+   * Hug the painting: fixed tall aspect left empty air under landscapes
+   * before the caption. Flow the image so title/artist sit right under it.
+   */
   .art-open {
-    /* Taller stage → paintings read larger than the desktop 4/3 tile. */
-    aspect-ratio: 5 / 6;
+    aspect-ratio: auto;
+    height: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: visible;
   }
   .art-open .art-preview {
-    inset: 2px;
-    width: calc(100% - 4px);
-    height: calc(100% - 4px);
+    position: relative;
+    inset: auto;
+    display: block;
+    width: 100%;
+    height: auto;
+    max-height: min(78vw, 560px);
+    object-fit: contain;
   }
-  .art-meta { padding-top: 16px; }
+  .art-meta { padding-top: 8px; }
   .art-meta .art-artist {
     font-size: var(--type-artist);
+    margin-top: 4px;
   }
   .art-meta .art-facts {
-    margin-top: 6px;
+    margin-top: 4px;
   }
   .collection-end { flex-direction: column; align-items: flex-start; }
   .section-ornament {
@@ -1882,7 +1896,7 @@ footer {
   footer .wordmark span { text-align: center; }
   .footer-credit { text-align: left; }
 
-  /* —— Lightbox: painting dominates —— */
+  /* —— Lightbox: painting dominates, caption glued under it —— */
   .lightbox {
     width: calc(100vw - 4px);
     height: calc(100dvh - 4px);
@@ -1890,30 +1904,38 @@ footer {
     max-height: calc(100dvh - 4px);
   }
   .lightbox-layout {
-    grid-template-rows: minmax(0, 1fr) auto;
+    /* auto/auto: photo sizes to the image; no flex gap above the fiche. */
+    grid-template-rows: auto auto;
+    align-content: start;
+  }
+  .lightbox.is-loupe .lightbox-layout {
+    grid-template-rows: minmax(0, 1fr);
+    height: 100%;
   }
   .lightbox-photo {
-    max-height: none;
-    height: 100%;
-    min-height: min(70dvh, 100%);
+    max-height: min(72dvh, 100%);
+    height: auto;
+    min-height: 0;
     padding: 2px;
   }
   .lightbox-photo.is-zoomed,
   .lightbox.is-loupe .lightbox-photo {
     max-height: none;
     height: 100%;
+    min-height: 0;
   }
   .lightbox-photo img.art-detail {
-    max-height: 100%;
+    max-height: min(72dvh, calc(100dvh - 200px));
   }
   .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;
   }
   .lightbox-fiche {
-    max-height: min(28dvh, 280px);
+    max-height: min(32dvh, 300px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding-block: 12px;
+    padding: 10px 14px 14px;
+    gap: 10px;
   }
   .lightbox-loupe {
     top: max(10px, env(safe-area-inset-top, 0px));
