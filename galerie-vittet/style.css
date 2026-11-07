@@ -1834,29 +1834,30 @@ footer {
    * before the caption. Flow the image so title/artist sit right under it.
    */
   .art-open {
-    aspect-ratio: auto;
+    aspect-ratio: unset;
     height: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    min-height: 0;
+    display: block;
     overflow: visible;
   }
   .art-open .art-preview {
-    position: relative;
+    position: static;
     inset: auto;
     display: block;
     width: 100%;
     height: auto;
     max-height: min(78vw, 560px);
+    margin: 0;
     object-fit: contain;
   }
-  .art-meta { padding-top: 8px; }
+  .art-meta { padding-top: 6px; }
+  .art-meta h3 { margin: 0; }
   .art-meta .art-artist {
     font-size: var(--type-artist);
-    margin-top: 4px;
+    margin-top: 3px;
   }
   .art-meta .art-facts {
-    margin-top: 4px;
+    margin-top: 3px;
   }
   .collection-end { flex-direction: column; align-items: flex-start; }
   .section-ornament {
@@ -1907,6 +1908,7 @@ footer {
     /* auto/auto: photo sizes to the image; no flex gap above the fiche. */
     grid-template-rows: auto auto;
     align-content: start;
+    gap: 0;
   }
   .lightbox.is-loupe .lightbox-layout {
     grid-template-rows: minmax(0, 1fr);
@@ -1916,7 +1918,7 @@ footer {
     max-height: min(72dvh, 100%);
     height: auto;
     min-height: 0;
-    padding: 2px;
+    padding: 0;
   }
   .lightbox-photo.is-zoomed,
   .lightbox.is-loupe .lightbox-photo {
@@ -1925,18 +1927,33 @@ footer {
     min-height: 0;
   }
   .lightbox-photo img.art-detail {
-    max-height: min(72dvh, calc(100dvh - 200px));
+    max-height: min(72dvh, calc(100dvh - 168px));
   }
   .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;
   }
   .lightbox-fiche {
-    max-height: min(32dvh, 300px);
+    position: relative;
+    max-height: min(36dvh, 320px);
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
-    padding: 10px 14px 14px;
-    gap: 10px;
+    padding: 4px 14px 12px;
+    gap: 6px;
   }
+  /* Fermer overlays — must not consume a flex row between photo and title. */
+  .lightbox-close {
+    position: absolute;
+    top: 4px;
+    right: 8px;
+    z-index: 2;
+    min-height: 36px;
+    padding: 0 10px;
+    background: color-mix(in srgb, var(--paper) 88%, white);
+  }
+  .lightbox-fiche .lightbox-block:first-of-type {
+    padding-right: 72px; /* room for Fermer */
+  }
+  .lightbox-label { margin-bottom: 2px; }
   .lightbox-loupe {
     top: max(10px, env(safe-area-inset-top, 0px));
     right: max(10px, env(safe-area-inset-right, 0px));
