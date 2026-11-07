@@ -1650,7 +1650,10 @@ footer {
     gap: 10px 16px;
   }
   .collection-toolbar .site-search-slot {
-    flex: 1 1 180px;
+    /* Grow on the row axis only — never use a bare flex-basis that
+       becomes HEIGHT when the toolbar later stacks as a column. */
+    flex: 1 1 auto;
+    min-width: min(180px, 100%);
     justify-content: flex-end;
   }
   .collection-toolbar .site-search,
@@ -1814,12 +1817,9 @@ footer {
   .collection-toolbar .filters::-webkit-scrollbar { display: none; }
   .collection-toolbar .site-search-slot {
     order: 0;
-    /* 900px rule uses flex-basis 180px for WIDTH; in a column that
-       became ~180px of empty HEIGHT above the input — kill it. */
-    flex: 0 0 auto;
+    flex: none;
     width: 100%;
-    height: auto;
-    min-height: 0;
+    min-width: 0;
     justify-content: stretch;
     align-items: stretch;
     margin-left: 0;
@@ -1839,10 +1839,7 @@ footer {
     gap: 28px 0;
     min-height: 240px;
   }
-  /*
-   * Hug the painting: fixed tall aspect left empty air under landscapes
-   * before the caption. Flow the image so title/artist sit right under it.
-   */
+  /* Image flows — caption sits under the painting, no tall empty frame. */
   .art-open {
     aspect-ratio: unset;
     height: auto;
@@ -1891,7 +1888,7 @@ footer {
 
   /* —— Galerie about: photos first, generous —— */
   .about {
-    --side: min(100%, 100%);
+    --side: 100%;
     --gal-space: 16px;
     padding: 48px var(--page-pad) 56px;
     gap: 16px;
@@ -1907,12 +1904,11 @@ footer {
   footer .wordmark span { text-align: center; }
   .footer-credit { text-align: left; }
 
-  /* —— Lightbox: painting dominates, caption glued under it —— */
+  /* Lightbox: photo + fiche hug; loupe goes fullscreen. */
   .lightbox {
     width: calc(100vw - 4px);
     max-width: calc(100vw - 4px);
-    /* Native <dialog> ignores height:auto and keeps max-height; fit-content hugs. */
-    height: fit-content;
+    height: fit-content; /* modal <dialog> ignores height:auto */
     max-height: min(100dvh - 4px, 100%);
     margin: auto;
   }
@@ -1921,7 +1917,6 @@ footer {
     max-height: calc(100dvh - 4px);
   }
   .lightbox-layout {
-    /* auto/auto: photo sizes to the image; no flex gap above the fiche. */
     grid-template-rows: auto auto;
     align-content: start;
     align-items: start;
@@ -1962,7 +1957,7 @@ footer {
     margin-top: 8px;
     padding-top: 8px;
   }
-  /* Fermer overlays — must not consume a flex row between photo and title. */
+  /* Fermer overlays so it does not insert a blank row above Titre. */
   .lightbox-close {
     position: absolute;
     top: 4px;
