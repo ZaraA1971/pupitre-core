@@ -1900,20 +1900,22 @@ footer {
   /* —— Lightbox: painting dominates, caption glued under it —— */
   .lightbox {
     width: calc(100vw - 4px);
-    /* Hug photo+fiche — avoid a tall empty paper slab under the text. */
-    height: auto;
     max-width: calc(100vw - 4px);
-    max-height: calc(100dvh - 4px);
+    /* Native <dialog> ignores height:auto and keeps max-height; fit-content hugs. */
+    height: fit-content;
+    max-height: min(100dvh - 4px, 100%);
     margin: auto;
   }
   .lightbox.is-loupe {
     height: calc(100dvh - 4px);
+    max-height: calc(100dvh - 4px);
   }
   .lightbox-layout {
     /* auto/auto: photo sizes to the image; no flex gap above the fiche. */
     grid-template-rows: auto auto;
     align-content: start;
-    height: auto;
+    align-items: start;
+    height: fit-content;
     gap: 0;
   }
   .lightbox.is-loupe .lightbox-layout {
@@ -1941,9 +1943,14 @@ footer {
   .lightbox-fiche {
     position: relative;
     max-height: none;
+    height: fit-content;
     overflow: visible;
     padding: 4px 14px 12px;
     gap: 6px;
+  }
+  .lightbox-nav {
+    margin-top: 8px;
+    padding-top: 8px;
   }
   /* Fermer overlays — must not consume a flex row between photo and title. */
   .lightbox-close {
