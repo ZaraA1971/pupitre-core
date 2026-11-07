@@ -1781,21 +1781,24 @@ loadWorks()
     if (readSearchRoute().active) return;
     const url = new URL(location.href);
     url.searchParams.delete("q");
-    const clean = url.pathname + (url.searchParams.toString() ? `?${url.searchParams}` : "");
-    history.replaceState(null, "", `${clean}${searchHashFor(q)}`);
+    history.replaceState(
+      null,
+      "",
+      url.pathname +
+        (url.searchParams.toString() ? `?${url.searchParams}` : "") +
+        searchHashFor(q)
+    );
   } catch (error) {
     /* ignore */
   }
 })();
 
-/* Drop leftover section hashes (#accueil / #collection / …) once JS runs. */
+/* Safety net if a section hash survived the early head script. */
 (function stripSectionHashes() {
   try {
     const route = readSearchRoute();
     if (route.active && route.query) return;
-    if (location.hash) {
-      history.replaceState(null, "", pathWithSearch(""));
-    }
+    if (location.hash) history.replaceState(null, "", pathWithSearch(""));
   } catch (_) {
     /* ignore */
   }

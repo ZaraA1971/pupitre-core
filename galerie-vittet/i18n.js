@@ -32,7 +32,6 @@
       searchLabel: "Rechercher une œuvre",
       searchPlaceholder: "Rechercher…",
       searchSubmit: "Lancer la recherche",
-      loadingCollection: "Chargement de la collection…",
       paginationAria: "Pagination de la collection",
       pagePrev: "Page précédente",
       pageNext: "Page suivante",
@@ -109,7 +108,6 @@
       searchLabel: "Search for a work",
       searchPlaceholder: "Search…",
       searchSubmit: "Search",
-      loadingCollection: "Loading the collection…",
       paginationAria: "Collection pagination",
       pagePrev: "Previous page",
       pageNext: "Next page",
@@ -296,7 +294,6 @@
     applyStatic,
     init,
     sectionLabel(key) {
-      if (key === "nicolle") return t("section.nicolle");
       return t(`section.${key}`);
     },
   };
