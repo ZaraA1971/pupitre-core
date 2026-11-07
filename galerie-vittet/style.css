@@ -1795,13 +1795,13 @@ footer {
   .collection {
     padding: 36px var(--page-pad) 56px;
   }
-  .section-heading { display: block; margin-bottom: 18px; }
+  .section-heading { display: block; margin-bottom: 12px; }
   .section-heading > p { margin-top: 10px; }
   .collection-toolbar {
     flex-direction: column;
     align-items: stretch;
-    gap: 8px;
-    margin-bottom: 18px;
+    gap: 6px;
+    margin-bottom: 12px;
   }
   .collection-toolbar .filters {
     order: 1;
@@ -1814,10 +1814,20 @@ footer {
   .collection-toolbar .filters::-webkit-scrollbar { display: none; }
   .collection-toolbar .site-search-slot {
     order: 0;
+    /* 900px rule uses flex-basis 180px for WIDTH; in a column that
+       became ~180px of empty HEIGHT above the input — kill it. */
+    flex: 0 0 auto;
     width: 100%;
+    height: auto;
+    min-height: 0;
     justify-content: stretch;
+    align-items: stretch;
     margin-left: 0;
-    padding-bottom: 4px;
+    padding-bottom: 0;
+  }
+  .collection-toolbar .site-search {
+    margin-bottom: 0;
+    width: 100%;
   }
   .filter {
     flex: 0 0 auto;
