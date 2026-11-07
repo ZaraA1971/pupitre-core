@@ -211,7 +211,8 @@ section { scroll-margin-top: 48px; }
 }
 
 .header--overlay a,
-.header--overlay button {
+.header--overlay button,
+.header--overlay .lang-switch {
   pointer-events: auto;
 }
 
@@ -358,6 +359,50 @@ section { scroll-margin-top: 48px; }
   font: 500 var(--type-sm) / 1.45 var(--serif);
   letter-spacing: .03em;
   color: var(--ink-photo-faint);
+}
+
+/* Discreet FR ↔ UK switch (static UI only; catalogue content stays as stored). */
+.lang-switch {
+  margin: 6px 0 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--ink-photo-faint);
+  font: 500 11px / 1.2 var(--sans);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  cursor: pointer;
+  opacity: .72;
+  transition: color .25s ease, opacity .25s ease;
+  justify-self: end;
+  pointer-events: auto;
+}
+
+.lang-switch:hover,
+.lang-switch:focus-visible {
+  color: var(--gold-photo);
+  opacity: 1;
+}
+
+.lang-switch--footer {
+  margin: 0;
+  color: var(--ink);
+  opacity: .55;
+  justify-self: auto;
+}
+
+.lang-switch--footer:hover,
+.lang-switch--footer:focus-visible {
+  color: var(--ink);
+  opacity: .9;
+}
+
+.footer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 0;
 }
 
 .site-search {
@@ -1134,6 +1179,10 @@ footer {
   text-align: right;
 }
 
+.footer-meta .footer-credit {
+  text-align: right;
+}
+
 .footer-credit a {
   color: inherit;
   font-size: inherit;
@@ -1902,7 +1951,10 @@ footer {
   footer { align-items: flex-start; }
   footer .wordmark { display: inline-block; }
   footer .wordmark span { text-align: center; }
-  .footer-credit { text-align: left; }
+  .footer-meta { align-items: flex-start; }
+  .footer-credit,
+  .footer-meta .footer-credit { text-align: left; }
+  .lang-switch--footer { align-self: flex-start; }
 
   /* Lightbox: photo + fiche hug; loupe goes fullscreen. */
   .lightbox {

@@ -3,12 +3,17 @@ const PAGE_SIZE = 15;
 const PAGE_WINDOW = 5;
 /** Public tabs: category tags for peinture/miniature; artist match for nicolle. */
 const SECTIONS = ["peinture", "miniature", "nicolle"];
-const SECTION_LABELS = {
-  peinture: "Peintures",
-  miniature: "Miniatures",
-  nicolle: "Victor-Jean NICOLLE",
-};
 const CONTACT_MAIL = "vittet.claude@yahoo.fr";
+
+function t(key, vars) {
+  return window.GalerieI18n ? window.GalerieI18n.t(key, vars) : key;
+}
+
+function sectionLabel(key) {
+  return window.GalerieI18n
+    ? window.GalerieI18n.sectionLabel(key)
+    : key;
+}
 
 const filters = [...document.querySelectorAll(".filter")];
 const grid = document.getElementById("art-grid");
@@ -263,7 +268,10 @@ function makeCard(work, { source = "grid" } = {}) {
   button.dataset.support = work.support || "";
   button.dataset.dimensions = work.dimensions || "";
   button.dataset.note = work.note || "";
-  button.setAttribute("aria-label", `Agrandir ${work.title || "l’œuvre"}`);
+  button.setAttribute(
+    "aria-label",
+    t("enlarge", { title: work.title || t("theWork") })
+  );
 
   const img = document.createElement("img");
   img.className = "art-preview";
@@ -275,7 +283,7 @@ function makeCard(work, { source = "grid" } = {}) {
   const meta = document.createElement("div");
   meta.className = "art-meta";
   const title = document.createElement("h3");
-  title.textContent = work.title || "Sans titre";
+  title.textContent = work.title || t("untitled");
   const artist = document.createElement("span");
   artist.className = "art-artist";
   artist.textContent = work.artist || "Galerie Vittet";
@@ -316,7 +324,7 @@ function renderPageNumbers(totalPages) {
     button.type = "button";
     button.className = "page-num" + (page === currentPage ? " is-active" : "");
     button.textContent = String(page);
-    button.setAttribute("aria-label", `Page ${page}`);
+    button.setAttribute("aria-label", t("pageN", { n: page }));
     if (page === currentPage) button.setAttribute("aria-current", "page");
     button.addEventListener("click", () => goToPage(page));
     pageNumbers.append(button);
@@ -355,10 +363,10 @@ function renderPage() {
   pagePrev.disabled = currentPage <= 1;
   pageNext.disabled = currentPage >= totalPages;
   pagination.hidden = filtered.length === 0 || totalPages <= 1;
-  const label = SECTION_LABELS[activeSection] || activeSection;
+  const label = sectionLabel(activeSection) || activeSection;
   if (!filtered.length) {
     collectionStatus.hidden = false;
-    collectionStatus.textContent = `Aucune œuvre dans « ${label} » pour le moment.`;
+    collectionStatus.textContent = t("emptySection", { label });
   } else {
     collectionStatus.hidden = true;
     collectionStatus.textContent = "";
@@ -366,8 +374,8 @@ function renderPage() {
   const from = filtered.length ? start + 1 : 0;
   const to = start + pageWorks.length;
   collectionEndLabel.textContent = filtered.length
-    ? `${label} · ${from}–${to} sur ${filtered.length}`
-    : `${label} · aucune œuvre`;
+    ? t("rangeOf", { label, from, to, total: filtered.length })
+    : t("noneInSection", { label });
 
   if (dialog.open && lightboxSource === "grid") {
     const visible = cardsForSource("grid");
@@ -591,7 +599,7 @@ function leaveSearchView({ replaceHash = false, scroll = false } = {}) {
     searchStatus.classList.remove("is-empty");
   }
   if (searchLede) {
-    searchLede.textContent = "Parcourir les œuvres exposées par titre, artiste ou technique.";
+    searchLede.textContent = t("searchLede");
   }
   if (searchMode) {
     setSearchMode(false);
@@ -642,8 +650,8 @@ function renderSearchResults(query) {
 
   if (searchLede) {
     searchLede.textContent = searchQuery
-      ? `Résultats pour « ${searchQuery} ».`
-      : "Parcourir les œuvres exposées par titre, artiste ou technique.";
+      ? t("searchResultsFor", { query: searchQuery })
+      : t("searchLede");
   }
 
   searchGrid.replaceChildren();
@@ -652,7 +660,7 @@ function renderSearchResults(query) {
   if (!searchQuery) {
     searchStatus.hidden = false;
     searchStatus.classList.add("is-empty");
-    searchStatus.textContent = "Saisissez un titre, un artiste ou une technique.";
+    searchStatus.textContent = t("searchPrompt");
     closeSearchLightbox();
     return;
   }
@@ -661,7 +669,7 @@ function renderSearchResults(query) {
   if (!matches.length) {
     searchStatus.hidden = false;
     searchStatus.classList.add("is-empty");
-    searchStatus.textContent = `Aucune œuvre ne correspond à « ${searchQuery} ».`;
+    searchStatus.textContent = t("searchNone", { query: searchQuery });
     closeSearchLightbox();
     return;
   }
@@ -670,8 +678,8 @@ function renderSearchResults(query) {
   searchStatus.hidden = false;
   searchStatus.textContent =
     matches.length === 1
-      ? "1 œuvre trouvée."
-      : `${matches.length} œuvres trouvées.`;
+      ? t("searchOne")
+      : t("searchMany", { n: matches.length });
 
   searchCards = matches.map((work) => makeCard(work, { source: "search" }));
   searchCards.forEach((card, index) => {
@@ -846,7 +854,7 @@ function renderHeroDots() {
     const dot = document.createElement("button");
     dot.type = "button";
     dot.className = "hero-dot" + (index === heroIndex ? " is-active" : "");
-    dot.setAttribute("aria-label", `Aller à l’œuvre ${index + 1}`);
+    dot.setAttribute("aria-label", t("goToWork", { n: index + 1 }));
     dot.addEventListener("click", () => showHero(index));
     heroDots.append(dot);
   });
@@ -928,7 +936,7 @@ function showHero(index) {
     heroArtist.textContent = "";
     heroCurrent.textContent = "00";
     heroTotal.textContent = "00";
-    heroLive.textContent = "Aucune œuvre en carousel.";
+    heroLive.textContent = t("heroEmpty");
     renderHeroDots();
     return;
   }
@@ -946,7 +954,12 @@ function showHero(index) {
   };
   heroCurrent.textContent = pad(heroIndex + 1);
   heroTotal.textContent = pad(slides.length);
-  heroLive.textContent = `Œuvre ${heroIndex + 1} sur ${slides.length}. ${slide.dataset.title}. ${slide.dataset.artist}.`;
+  heroLive.textContent = t("heroLive", {
+    n: heroIndex + 1,
+    total: slides.length,
+    title: slide.dataset.title || "",
+    artist: slide.dataset.artist || "",
+  });
   renderHeroDots();
   scheduleHeroAutoplay();
   if (!heroReady || prefersReduce()) {
@@ -1232,9 +1245,9 @@ function resetZoomChrome() {
   applyLoupeZoomMax(1);
   if (dialogLoupe) {
     dialogLoupe.setAttribute("aria-pressed", "false");
-    dialogLoupe.setAttribute("aria-label", "Loupe — charger l’original");
+    dialogLoupe.setAttribute("aria-label", t("loupeAria"));
     const label = dialogLoupe.querySelector(".lightbox-loupe-label");
-    if (label) label.textContent = "Loupe";
+    if (label) label.textContent = t("loupe");
   }
   syncZoomGauge(100);
   setZoomStatus("");
@@ -1335,9 +1348,9 @@ async function enterZoom() {
   setZoomStatus("Chargement de l’original…");
   if (dialogLoupe) {
     dialogLoupe.setAttribute("aria-pressed", "true");
-    dialogLoupe.setAttribute("aria-label", "Quitter la loupe");
+    dialogLoupe.setAttribute("aria-label", t("loupeExitAria"));
     const label = dialogLoupe.querySelector(".lightbox-loupe-label");
-    if (label) label.textContent = "Quitter";
+    if (label) label.textContent = t("loupeExit");
   }
   syncZoomGauge(100);
   pokeLoupeChrome();
@@ -1452,10 +1465,10 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   dialogNoteBlock.hidden = !note;
 
   const subject = data.title
-    ? `Demande d’information — ${data.title}`
-    : "Demande d’information — œuvre Galerie Vittet";
+    ? t("mailSubject", { title: data.title })
+    : t("mailSubjectFallback");
   dialogCta.href = `mailto:${CONTACT_MAIL}?subject=${encodeURIComponent(subject)}`;
-  dialogCta.textContent = "Demander cette œuvre →";
+  dialogCta.textContent = t("askWork");
 
   dialogPos.textContent = positionLabel;
   dialogPrev.disabled = !navEnabled;
@@ -1694,6 +1707,32 @@ function enableReveal() {
 
 enableReveal();
 
+if (window.GalerieI18n) window.GalerieI18n.init();
+
+function refreshUiForLang() {
+  if (window.GalerieI18n) window.GalerieI18n.applyStatic();
+  if (works.length) {
+    renderPage();
+    if (searchMode) renderSearchResults(searchQuery);
+    if (slides.length) showHero(heroIndex);
+  }
+  if (dialog.open) {
+    if (lightboxSource === "hero") openHeroLightbox();
+    else if (openButton) {
+      fillDialogFromDataset(openButton.dataset, {
+        imageAlt: openButton.querySelector("img")?.alt || "",
+        positionLabel: positionLabelForButton(
+          openButton,
+          lightboxSource === "search" ? "search" : "grid"
+        ),
+        navEnabled: true,
+      });
+    }
+  }
+}
+
+document.addEventListener("galerie:lang", refreshUiForLang);
+
 loadWorks()
   .then((list) => {
     works = list;
@@ -1708,7 +1747,7 @@ loadWorks()
     grid.removeAttribute("aria-busy");
     grid.replaceChildren();
     collectionStatus.hidden = false;
-    collectionStatus.textContent = "La collection est momentanément indisponible.";
+    collectionStatus.textContent = t("collectionUnavailable");
     refreshCounts();
     pagination.hidden = true;
     applySearchRoute();
