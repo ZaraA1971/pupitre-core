@@ -121,7 +121,7 @@
       aboutP1:
         "Since 1988, Claude Vittet has shared his eye for the Northern schools of the 16th and 17th centuries, French landscape painters of the 18th century, and the art of miniature.",
       aboutP2:
-        "A member of the Chambre nationale des experts spécialisés, he accompanies collectors and enthusiasts in the discovery of each work.",
+        "A member of the National Chamber of Experts Specialized in Works of Art and Collectibles, he accompanies collectors and enthusiasts in the discovery of each work.",
       facadeAlt: "Façade of Galerie Claude Vittet, 21 quai Voltaire",
       salleAlt: "Interior of Galerie Vittet, quai Voltaire",
       creditPrefix: "Website by ",

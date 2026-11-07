@@ -363,7 +363,7 @@ section { scroll-margin-top: 48px; }
 
 /* Discreet FR ↔ UK switch (static UI only; catalogue content stays as stored). */
 .lang-switch {
-  margin: 6px 0 0;
+  margin: 0 0 4px;
   padding: 0;
   border: 0;
   background: transparent;
