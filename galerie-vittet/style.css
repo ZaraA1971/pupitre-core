@@ -688,8 +688,8 @@ footer a {
   max-height: none;
   /* Fallback before JS measures aspect; fitHeroImage overrides per slide. */
   object-fit: cover;
-  /* Always center — cover crop or contain letterbox. */
-  object-position: center center;
+  /* Cover default: bottom-anchored (fitHeroImage may switch to contain/center). */
+  object-position: center bottom;
   margin: 0;
   user-select: none;
   -webkit-user-drag: none;

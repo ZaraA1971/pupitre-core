@@ -770,23 +770,29 @@ function bindSiteSearch() {
 }
 
 /**
- * Per-slide hero fit. Always center (`object-position: center`).
+ * Per-slide hero fit.
  *
  * Rules:
  * 1. If 100% of the photo (contain) would leave black bands on the SIDES
- *    (image narrower than the stage) → cover: center + zoom to fill width.
+ *    (image narrower than the stage) → cover: zoom to fill width.
  * 2. Else if aspects are close → cover (tiny crop beats letterbox).
  * 3. Else contain (top/bottom letterbox on --stage when the photo is wider).
  * 4. Mobile portrait stage: landscape / near-square → cover (amplify).
+ * Cover crops are anchored to the bottom edge (not vertically centered).
  */
 const HERO_FIT_LOG_THRESHOLD = 0.2;
 const HERO_MOBILE_MAX_WIDTH = 700;
 /** imgAR ≥ this → treat as landscape/square on phone (prefer cover). */
 const HERO_MOBILE_COVER_MIN_AR = 0.88;
 
+function applyHeroFit(img, fit) {
+  img.style.objectFit = fit;
+  /* Zoomed slides: keep the bottom of the painting in frame. */
+  img.style.objectPosition = fit === "cover" ? "center bottom" : "center center";
+}
+
 function fitHeroImage(img) {
   if (!img) return;
-  img.style.objectPosition = "center center";
 
   const apply = () => {
     const nw = img.naturalWidth;
@@ -795,24 +801,26 @@ function fitHeroImage(img) {
     const sw = stage ? stage.clientWidth : 0;
     const sh = stage ? stage.clientHeight : 0;
     if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
-      img.style.objectFit = "cover";
+      applyHeroFit(img, "cover");
       return;
     }
     const imgAR = nw / nh;
     const stageAR = sw / sh;
     /* Contain would pillarbox (side bands) → zoom/cover instead. */
     if (imgAR < stageAR) {
-      img.style.objectFit = "cover";
+      applyHeroFit(img, "cover");
       return;
     }
     const portraitPhone = sw <= HERO_MOBILE_MAX_WIDTH && sh > sw;
     if (portraitPhone && imgAR >= HERO_MOBILE_COVER_MIN_AR) {
-      img.style.objectFit = "cover";
+      applyHeroFit(img, "cover");
       return;
     }
     const delta = Math.abs(Math.log(imgAR / stageAR));
-    img.style.objectFit =
-      delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain";
+    applyHeroFit(
+      img,
+      delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain"
+    );
   };
 
   if (img.complete && img.naturalWidth > 0) {
