@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie12 about photo gaps ~72px desktop (2026-11-09)
+
+- `--gal-photo-gap: clamp(40px, 5vw, 80px)` · hauteur pinnée galerie9 (~390 / `405px`)
+- Cache-bust `?v=20261107-galerie12` · commit `8999c93`
+- Compte Emmanuel · sync-trees · deploy preview + main
+- Prod `c1d2d430` · preview `63ede33b` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galerie12-galerie-vittet.md`
+
 ## Galerie11 about photo gaps ~50px desktop (2026-11-09)
 
 - `--gal-photo-gap: clamp(28px, 3.5vw, 56px)` · hauteur pinnée galerie9 (~390 / `405px`)
