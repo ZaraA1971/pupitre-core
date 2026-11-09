@@ -1076,8 +1076,17 @@ footer a {
 /* #galerie — left copy above equal-HEIGHT photos (no crop), spread full-width */
 .about {
   --gal-pad-block: 64px;
-  --gal-photo-h: clamp(200px, 22vw, 260px);
-  --gal-photo-gap: clamp(16px, 2.4vw, 36px);
+  --gal-photo-gap: clamp(8px, 1vw, 14px);
+  /* Sum of native width/height for the three photos — keeps one shared height. */
+  --gal-ar-sum: 4.12;
+  /* Target +30% vs galerie7 (260→338); fit row: (viewport - pads - gaps) / Σ(w/h). */
+  --gal-photo-h: min(
+    338px,
+    calc(
+      (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
+        var(--gal-ar-sum)
+    )
+  );
   display: flex;
   flex-direction: column;
   gap: clamp(24px, 3vw, 32px);
@@ -1161,7 +1170,7 @@ footer a {
   /* Same rendered height for every photo; width follows native ratio — no crop. */
   height: var(--gal-photo-h);
   width: auto;
-  max-width: 100%;
+  max-width: none;
   object-fit: contain;
   object-position: center bottom;
   background: transparent;
@@ -1617,7 +1626,13 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --gal-photo-h: clamp(170px, 22vw, 220px);
+    --gal-photo-h: min(
+      286px,
+      calc(
+        (100vw - 2 * var(--page-pad-lg) - 2 * var(--gal-photo-gap)) /
+          var(--gal-ar-sum)
+      )
+    );
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -1912,8 +1927,14 @@ footer {
   /* —— Galerie about: left copy + equal-height triptych —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-h: clamp(96px, 26vw, 132px);
     --gal-photo-gap: 8px;
+    --gal-photo-h: min(
+      172px,
+      calc(
+        (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
+          var(--gal-ar-sum)
+      )
+    );
     padding: 36px var(--page-pad) 44px;
     gap: 18px;
   }
