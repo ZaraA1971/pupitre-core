@@ -1077,7 +1077,7 @@ footer a {
 .about {
   --gal-pad-block: 64px;
   /* Wider breathing room between the three photos (size stays pinned below). */
-  --gal-photo-gap: clamp(20px, 2.6vw, 40px);
+  --gal-photo-gap: clamp(28px, 3.5vw, 56px);
   /* Sum of native width/height for the three photos — keeps one shared height. */
   --gal-ar-sum: 4.12;
   /* Height pinned to galerie9 (~390); gap no longer shrinks the images. */
@@ -1931,7 +1931,7 @@ footer {
   /* —— Galerie about: left copy + equal-height triptych —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-gap: 14px;
+    --gal-photo-gap: 18px;
     --gal-photo-h: min(
       206px,
       calc(
