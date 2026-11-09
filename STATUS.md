@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie8 about photos +30% / equal-height fit (2026-11-09)
+
+- `--gal-photo-h: min(338px, fit-row)` · +30 % vs galerie7 (260→338) · hauteur égale, contain
+- Cache-bust `?v=20261107-galerie8` · commit `f31dff6`
+- Compte Emmanuel · sync-trees · deploy preview + main
+- Prod `edbe1881` · preview `c258950d` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galerie8-galerie-vittet.md`
+
 ## Cleanup8 après hero-stage / paper / carousel (2026-11-06)
 
 - Conservé : header-carousel, paper `#e3d1be`, letterbox `--stage`, carousel≠collection, hero filter, mobile 1-col, fit adaptatif
