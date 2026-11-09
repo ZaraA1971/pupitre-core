@@ -1446,7 +1446,7 @@ function workItem(work) {
   actions.className = "library-actions";
   const save = document.createElement("button");
   save.type = "button";
-  save.textContent = "Enregistrer légendes";
+  save.textContent = "Enregistrer";
   const saveStatus = document.createElement("span");
   saveStatus.className = "edit-status";
   save.addEventListener("click", () => saveWorkMeta(work, item, saveStatus));
