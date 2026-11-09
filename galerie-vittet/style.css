@@ -1073,13 +1073,11 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — left copy above equal-height, uncropped photo slots */
+/* #galerie — left copy above equal-HEIGHT photos (no crop), spread full-width */
 .about {
   --gal-pad-block: 64px;
-  /* Same tile width as before, spaced across full width. */
-  --gal-photo-basis: calc(100% * 0.7 / 3);
-  /* Shared frame height for all three (no crop — contain inside). */
-  --gal-photo-h: clamp(200px, 22vw, 280px);
+  --gal-photo-h: clamp(200px, 22vw, 260px);
+  --gal-photo-gap: clamp(16px, 2.4vw, 36px);
   display: flex;
   flex-direction: column;
   gap: clamp(24px, 3vw, 32px);
@@ -1144,31 +1142,28 @@ footer a {
 .about-gallery {
   display: flex;
   justify-content: space-between;
-  align-items: stretch;
+  align-items: flex-end;
   width: 100%;
   max-width: 100%;
-  gap: 0;
+  gap: var(--gal-photo-gap);
 }
 
 .about-photo {
   margin: 0;
+  flex: 0 1 auto;
   min-width: 0;
-  flex: 0 0 var(--gal-photo-basis);
-  width: var(--gal-photo-basis);
-  max-width: var(--gal-photo-basis);
   height: var(--gal-photo-h);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  line-height: 0;
 }
 
 .about-photo img {
   display: block;
-  width: 100%;
-  height: 100%;
-  /* Full photo visible inside the equal-height frame. */
+  /* Same rendered height for every photo; width follows native ratio — no crop. */
+  height: var(--gal-photo-h);
+  width: auto;
+  max-width: 100%;
   object-fit: contain;
-  object-position: center center;
+  object-position: center bottom;
   background: transparent;
 }
 
@@ -1622,8 +1617,7 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --gal-photo-basis: calc(100% * 0.74 / 3);
-    --gal-photo-h: clamp(180px, 24vw, 240px);
+    --gal-photo-h: clamp(170px, 22vw, 220px);
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -1915,11 +1909,11 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: left copy + spread triptych —— */
+  /* —— Galerie about: left copy + equal-height triptych —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-basis: calc(100% * 0.88 / 3);
-    --gal-photo-h: clamp(120px, 32vw, 168px);
+    --gal-photo-h: clamp(96px, 26vw, 132px);
+    --gal-photo-gap: 8px;
     padding: 36px var(--page-pad) 44px;
     gap: 18px;
   }
