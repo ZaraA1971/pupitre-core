@@ -334,14 +334,23 @@ section { scroll-margin-top: 48px; }
   min-width: 0;
 }
 
-/* Collection / Galerie — top-right, above UK/FR. */
-.header-nav {
+/* Collection / Galerie + UK/FR on one top-right row. */
+.header-menu-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: baseline;
   gap: 10px 18px;
   margin: 0 0 2px;
+}
+
+.header-nav {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 10px 18px;
+  margin: 0;
 }
 
 .header-nav a {
@@ -407,6 +416,15 @@ section { scroll-margin-top: 48px; }
 }
 
 /* Discreet FR ↔ UK switch (static UI only; catalogue content stays as stored). */
+.header-menu-row .lang-switch {
+  margin: 0;
+  justify-self: auto;
+  align-self: baseline;
+  font: 600 clamp(12px, 1.15vw, 14px) / 1.2 var(--serif);
+  letter-spacing: .16em;
+  text-shadow: 0 1px 14px rgba(10, 8, 6, .28);
+}
+
 .lang-switch {
   margin: 0 0 4px;
   padding: 0;
@@ -1799,11 +1817,15 @@ footer {
     padding-top: 0;
     border-top: 0;
   }
-  .header-nav {
+  .header-menu-row {
     gap: 8px 12px;
     margin-bottom: 1px;
   }
-  .header-nav a {
+  .header-nav {
+    gap: 8px 12px;
+  }
+  .header-nav a,
+  .header-menu-row .lang-switch {
     font-size: 11px;
     letter-spacing: .14em;
   }
