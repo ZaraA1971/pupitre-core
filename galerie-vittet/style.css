@@ -1073,16 +1073,17 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — legend band above a equal square triptych */
+/* #galerie — left copy above a reduced equal square triptych */
 .about {
   --gal-pad-block: 64px;
-  --gal-space: clamp(14px, 2vw, 24px);
+  --gal-space: clamp(12px, 1.8vw, 20px);
   --gal-photo-ratio: 1 / 1;
-  --gal-caption-gap: 10px;
+  /* ~30% smaller than full-bleed strip */
+  --gal-gallery-width: 70%;
   display: flex;
   flex-direction: column;
-  gap: clamp(28px, 3.2vw, 36px);
-  align-items: stretch;
+  gap: clamp(24px, 3vw, 32px);
+  align-items: flex-start;
   padding: var(--gal-pad-block) var(--page-pad) var(--gal-pad-block);
   position: relative;
   z-index: 0;
@@ -1093,24 +1094,26 @@ footer a {
 .about-copy {
   --copy-head-gap: 8px;
   --eyebrow-lh: 1.2;
-  display: grid;
-  grid-template-columns: minmax(11rem, 0.85fr) minmax(0, 1.55fr);
-  column-gap: clamp(28px, 4vw, 56px);
-  row-gap: 18px;
-  align-items: start;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: flex-start;
   min-width: 0;
   width: 100%;
+  max-width: 68ch;
   margin: 0;
   padding: 0;
   background: transparent;
   position: static;
   transform: none;
+  text-align: left;
 }
 
 .about-copy-head {
   display: grid;
   gap: var(--copy-head-gap);
   align-content: start;
+  text-align: left;
 }
 
 .about-copy .eyebrow {
@@ -1121,8 +1124,8 @@ footer a {
 .about-copy-body {
   display: grid;
   gap: 14px;
-  max-width: 62ch;
-  justify-self: stretch;
+  width: 100%;
+  max-width: none;
 }
 
 .about-copy-body > p {
@@ -1142,19 +1145,16 @@ footer a {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gal-space);
-  width: 100%;
+  width: var(--gal-gallery-width);
+  max-width: 100%;
   align-items: start;
+  align-self: flex-start;
 }
 
 .about-photo {
   margin: 0;
   min-width: 0;
   width: 100%;
-  display: grid;
-  /* Image row + shared caption band → captions share one baseline. */
-  grid-template-rows: auto 1.35em;
-  gap: var(--gal-caption-gap);
-  align-items: start;
 }
 
 .about-photo img {
@@ -1178,17 +1178,6 @@ footer a {
 
 .about-photo--salle img {
   object-position: center 48%;
-}
-
-.about-photo figcaption {
-  margin: 0;
-  font: 500 var(--type-xs) / 1.35 var(--sans);
-  letter-spacing: .16em;
-  text-transform: uppercase;
-  color: var(--gold);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 footer {
@@ -1641,15 +1630,9 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --gal-space: 16px;
+    --gal-space: 14px;
+    --gal-gallery-width: 78%;
     padding: 56px var(--page-pad-lg) 56px;
-  }
-  .about-copy {
-    grid-template-columns: 1fr;
-    row-gap: 14px;
-  }
-  .about-copy-body {
-    max-width: none;
   }
   .about-gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1943,23 +1926,20 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: legend + square triptych —— */
+  /* —— Galerie about: left copy + smaller triptych —— */
   .about {
     --gal-space: 8px;
-    --gal-caption-gap: 8px;
     --gal-pad-block: 36px;
+    --gal-gallery-width: 100%;
     padding: 36px var(--page-pad) 44px;
     gap: 18px;
   }
   .about-copy {
-    grid-template-columns: 1fr;
+    max-width: none;
   }
   .about-gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
-  }
-  .about-photo figcaption {
-    letter-spacing: .1em;
-    font-size: 10px;
+    width: 100%;
   }
 
   footer { align-items: flex-start; }

@@ -45,11 +45,8 @@
       aboutP2:
         "Membre de la Chambre nationale des experts spécialisés, il accompagne collectionneurs et amateurs dans la découverte de chaque œuvre.",
       facadeAlt: "Façade de la Galerie Claude Vittet, 21 quai Voltaire",
-      facadeCaption: "Façade",
       galeristesAlt: "Les galeristes devant une œuvre, Galerie Vittet",
-      galeristesCaption: "Galeristes",
       salleAlt: "Intérieur de la Galerie Vittet, quai Voltaire",
-      salleCaption: "Salle",
       creditPrefix: "Site réalisé par ",
       loupe: "Loupe",
       loupeAria: "Loupe — charger l’original",
@@ -125,11 +122,8 @@
       aboutP2:
         "A member of the National Chamber of Experts Specialized in Works of Art and Collectibles, he accompanies collectors and enthusiasts in the discovery of each work.",
       facadeAlt: "Façade of Galerie Claude Vittet, 21 quai Voltaire",
-      facadeCaption: "Façade",
       galeristesAlt: "The gallerists in front of a painting, Galerie Vittet",
-      galeristesCaption: "Gallerists",
       salleAlt: "Interior of Galerie Vittet, quai Voltaire",
-      salleCaption: "Room",
       creditPrefix: "Website by ",
       loupe: "Loupe",
       loupeAria: "Loupe — load the original",
