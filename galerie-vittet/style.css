@@ -257,6 +257,7 @@ section { scroll-margin-top: 48px; }
 .header-brand {
   display: grid;
   grid-template-rows: subgrid;
+  grid-column: 1;
   grid-row: 1 / -1;
   align-items: start;
   justify-items: stretch;
@@ -323,25 +324,33 @@ section { scroll-margin-top: 48px; }
 }
 
 .header-contact {
-  display: grid;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
   gap: 6px;
-  /* Span wordmark + address rows; sit on the address baseline (bottoms align). */
+  /* Span both header rows; pin phones/mail/hours to the address baseline. */
+  grid-column: 2;
   grid-row: 1 / -1;
-  align-self: end;
+  align-self: stretch;
   justify-self: end;
-  justify-items: end;
+  justify-content: flex-end;
   text-align: right;
   min-width: 0;
 }
 
-/* Collection / Galerie + UK/FR on one top-right row. */
+/* Collection / Galerie + UK/FR — top-right, level with the top of VITTET. */
 .header-menu-row {
   display: flex;
   flex-wrap: wrap;
   justify-content: flex-end;
   align-items: baseline;
   gap: 10px 18px;
-  margin: 0 0 2px;
+  grid-column: 2;
+  grid-row: 1;
+  align-self: start;
+  justify-self: end;
+  margin: 0;
+  padding-top: 0.06em; /* match wordmark padding-block top */
 }
 
 .header-nav {
@@ -1807,19 +1816,26 @@ footer {
     font-size: clamp(13px, 3.4vw, 16px);
     line-height: 1.3;
   }
-  .header-contact {
-    grid-row: 1 / -1;
-    align-self: end;
+  .header-menu-row {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: start;
     justify-self: end;
-    justify-items: end;
+    gap: 8px 12px;
+    margin: 0;
+    padding-top: 0.04em;
+  }
+  .header-contact {
+    grid-column: 2;
+    grid-row: 1 / -1;
+    align-self: stretch;
+    justify-self: end;
+    justify-content: flex-end;
+    align-items: flex-end;
     text-align: right;
     gap: 3px;
     padding-top: 0;
     border-top: 0;
-  }
-  .header-menu-row {
-    gap: 8px 12px;
-    margin-bottom: 1px;
   }
   .header-nav {
     gap: 8px 12px;
