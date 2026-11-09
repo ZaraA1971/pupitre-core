@@ -27,6 +27,21 @@ Nettoyage prudent du code atelier uniquement. Aucun changement de comportement v
 
 `?v=20261109-clean9` sur atelier (style + atelier.css + atelier.js).
 
-## Deploy
+## Deploy (package + `functions/`) — Compte Emmanuel `69008766…` · commit `fc981a0`
 
-Déployer **main**, **preview** et la branche Pages **`atelier-kv-preview`** (alias https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/).
+| Cible | Id / URL |
+|---|---|
+| Prod (main) | `6f8621cb` · https://galerie-vittet-preview.pages.dev/ |
+| Hash | https://6f8621cb.galerie-vittet-preview.pages.dev/ |
+| Preview | `c96ca3ca` · https://preview.galerie-vittet-preview.pages.dev/ |
+| Atelier | `da709794` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/ |
+
+## Vérif
+
+| Check | Résultat |
+|---|---|
+| Cache-bust `clean9` + `#catalog-filter-search` | présents (repo + `/tmp/galerie-vittet-pages`) |
+| `KV_VALUE_MAX_BYTES` / `exifFilled` | absents de `atelier.js` |
+| Alias `atelier-kv-preview` | pointe sur `da709794` |
+| `GET /atelier/` | 401 (Basic Auth) |
+| `GET /api/oeuvres` | 200 · JSON · **102** œuvres |
