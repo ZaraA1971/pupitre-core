@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Search2 atelier-kv-preview alias refresh (2026-11-09)
+
+- Cause : alias `atelier-kv-preview` restait sur deploy `3a5e8219` (branche `atelier-kv-preview`, 2026-11-06 cleanup8) — pas sur les deploys `main`/`preview` search1/search2
+- Action : `sync-trees.sh` + `wrangler pages deploy` `--branch=atelier-kv-preview` depuis commit `757a3a5`
+- Package vérifié : `#catalog-filter-search` + `?v=20261109-search2` ×3
+- Atelier alias `909b02ea` · hashes atelier == prod search2 `5797d174` · ≠ stale `3a5e8219`
+- https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-search2-atelier-kv-preview-galerie-vittet.md`
+
 ## Search1 atelier instant search (2026-11-09)
 
 - `#catalog-filter-search` après le tri · filtre instantané catalogue
