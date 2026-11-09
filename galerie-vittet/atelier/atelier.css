@@ -301,22 +301,28 @@
 }
 
 .catalog-search-field {
-  flex: 1 1 220px;
+  flex: 1 1 100%;
   align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-lift) 88%, #fff 12%);
+  box-sizing: border-box;
 }
 
 .catalog-search-field input[type="search"] {
   flex: 1 1 auto;
-  min-width: min(220px, 70vw);
-  max-width: min(420px, 100%);
-  min-height: 44px;
-  border: 1px solid var(--line);
-  background: var(--paper-lift);
+  min-width: 0;
+  width: 100%;
+  max-width: none;
+  min-height: 48px;
+  border: 1px solid #b9b1a5;
+  background: #fff;
   color: var(--ink);
-  font: 400 15px var(--sans);
+  font: 400 16px var(--sans);
   letter-spacing: 0;
   text-transform: none;
-  padding: 0 12px;
+  padding: 0 14px;
 }
 
 .catalog-search-field input[type="search"]::placeholder {
