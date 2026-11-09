@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie9 about photos +20% / equal-height fit (2026-11-09)
+
+- `--gal-photo-h: min(405px, fit-row)` · +20 % vs galerie8 (338→405) · hauteur égale, contain
+- Cache-bust `?v=20261107-galerie9` · commit `9fe3358`
+- Compte Emmanuel · sync-trees · deploy preview + main
+- Prod `e8302a88` · preview `ef3ed627` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-galerie9-galerie-vittet.md`
+
 ## Galerie8 about photos +30% / equal-height fit (2026-11-09)
 
 - `--gal-photo-h: min(338px, fit-row)` · +30 % vs galerie7 (260→338) · hauteur égale, contain
