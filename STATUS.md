@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Search1 atelier instant search (2026-11-09)
+
+- `#catalog-filter-search` après le tri · filtre instantané catalogue
+- Cache-bust `?v=20261109-search1` · commit `016960f`
+- Compte Emmanuel · sync-trees · deploy preview + main
+- Prod `cc8ce71e` · preview `c7d7f321` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-search1-galerie-vittet.md`
+
 ## Galerie12 about photo gaps ~72px desktop (2026-11-09)
 
 - `--gal-photo-gap: clamp(40px, 5vw, 80px)` · hauteur pinnée galerie9 (~390 / `405px`)
