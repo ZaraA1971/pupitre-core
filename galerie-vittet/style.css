@@ -1073,11 +1073,10 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — left copy above a reduced square triptych spread full-width */
+/* #galerie — left copy above uncropped photos, equal slots, bottoms aligned */
 .about {
   --gal-pad-block: 64px;
-  --gal-photo-ratio: 1 / 1;
-  /* Same tile size as the former 70%-wide strip, spaced across full width. */
+  /* Same tile width as before, spaced across full width. */
   --gal-photo-basis: calc(100% * 0.7 / 3);
   display: flex;
   flex-direction: column;
@@ -1143,7 +1142,8 @@ footer a {
 .about-gallery {
   display: flex;
   justify-content: space-between;
-  align-items: start;
+  /* Equalize bottoms across mixed aspect ratios. */
+  align-items: flex-end;
   width: 100%;
   max-width: 100%;
   gap: 0;
@@ -1155,29 +1155,19 @@ footer a {
   flex: 0 0 var(--gal-photo-basis);
   width: var(--gal-photo-basis);
   max-width: var(--gal-photo-basis);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
 }
 
 .about-photo img {
   display: block;
   width: 100%;
-  aspect-ratio: var(--gal-photo-ratio);
   height: auto;
-  object-fit: cover;
-  object-position: center center;
-  background: var(--stage);
-}
-
-/* Focal points: signage, faces, room center */
-.about-photo--facade img {
-  object-position: center 32%;
-}
-
-.about-photo--galeristes img {
-  object-position: center 22%;
-}
-
-.about-photo--salle img {
-  object-position: center 48%;
+  /* Show full photo — no crop. */
+  object-fit: contain;
+  object-position: center bottom;
+  background: transparent;
 }
 
 footer {
