@@ -1073,14 +1073,15 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — full-width copy above a row of three photos */
+/* #galerie — legend band above a equal square triptych */
 .about {
-  --gal-pad-block: 72px;
-  --gal-space: clamp(12px, 2.2vw, 28px);
-  --gal-photo-ratio: 4 / 5;
+  --gal-pad-block: 64px;
+  --gal-space: clamp(14px, 2vw, 24px);
+  --gal-photo-ratio: 1 / 1;
+  --gal-caption-gap: 10px;
   display: flex;
   flex-direction: column;
-  gap: clamp(28px, 3.5vw, 40px);
+  gap: clamp(28px, 3.2vw, 36px);
   align-items: stretch;
   padding: var(--gal-pad-block) var(--page-pad) var(--gal-pad-block);
   position: relative;
@@ -1090,15 +1091,15 @@ footer a {
 }
 
 .about-copy {
-  --copy-head-gap: 6px;
+  --copy-head-gap: 8px;
   --eyebrow-lh: 1.2;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  gap: 16px;
+  display: grid;
+  grid-template-columns: minmax(11rem, 0.85fr) minmax(0, 1.55fr);
+  column-gap: clamp(28px, 4vw, 56px);
+  row-gap: 18px;
+  align-items: start;
   min-width: 0;
   width: 100%;
-  max-width: none;
   margin: 0;
   padding: 0;
   background: transparent;
@@ -1109,6 +1110,7 @@ footer a {
 .about-copy-head {
   display: grid;
   gap: var(--copy-head-gap);
+  align-content: start;
 }
 
 .about-copy .eyebrow {
@@ -1118,21 +1120,22 @@ footer a {
 
 .about-copy-body {
   display: grid;
-  gap: 12px;
-  max-width: none;
+  gap: 14px;
+  max-width: 62ch;
+  justify-self: stretch;
 }
 
 .about-copy-body > p {
   margin: 0;
-  font-size: 1em;
-  line-height: 1.7;
-  text-align: justify;
-  hyphens: auto;
-  -webkit-hyphens: auto;
+  font-size: var(--type-body);
+  line-height: 1.65;
+  text-align: left;
+  text-wrap: pretty;
+  hyphens: manual;
 }
 
 .about-copy-body > p:first-child {
-  text-indent: 1.6em;
+  text-indent: 0;
 }
 
 .about-gallery {
@@ -1140,24 +1143,52 @@ footer a {
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: var(--gal-space);
   width: 100%;
-  align-items: stretch;
+  align-items: start;
 }
 
 .about-photo {
   margin: 0;
   min-width: 0;
   width: 100%;
-  aspect-ratio: var(--gal-photo-ratio);
-  overflow: hidden;
-  background: var(--stage);
+  display: grid;
+  /* Image row + shared caption band → captions share one baseline. */
+  grid-template-rows: auto 1.35em;
+  gap: var(--gal-caption-gap);
+  align-items: start;
 }
 
 .about-photo img {
   display: block;
   width: 100%;
-  height: 100%;
+  aspect-ratio: var(--gal-photo-ratio);
+  height: auto;
   object-fit: cover;
-  object-position: center bottom;
+  object-position: center center;
+  background: var(--stage);
+}
+
+/* Focal points: signage, faces, room center */
+.about-photo--facade img {
+  object-position: center 32%;
+}
+
+.about-photo--galeristes img {
+  object-position: center 22%;
+}
+
+.about-photo--salle img {
+  object-position: center 48%;
+}
+
+.about-photo figcaption {
+  margin: 0;
+  font: 500 var(--type-xs) / 1.35 var(--sans);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--gold);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 footer {
@@ -1610,8 +1641,15 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --gal-space: 20px;
+    --gal-space: 16px;
     padding: 56px var(--page-pad-lg) 56px;
+  }
+  .about-copy {
+    grid-template-columns: 1fr;
+    row-gap: 14px;
+  }
+  .about-copy-body {
+    max-width: none;
   }
   .about-gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -1905,15 +1943,23 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: copy then photo strip —— */
+  /* —— Galerie about: legend + square triptych —— */
   .about {
-    --gal-space: 10px;
-    --gal-pad-block: 40px;
-    padding: 40px var(--page-pad) 48px;
-    gap: 20px;
+    --gal-space: 8px;
+    --gal-caption-gap: 8px;
+    --gal-pad-block: 36px;
+    padding: 36px var(--page-pad) 44px;
+    gap: 18px;
+  }
+  .about-copy {
+    grid-template-columns: 1fr;
   }
   .about-gallery {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .about-photo figcaption {
+    letter-spacing: .1em;
+    font-size: 10px;
   }
 
   footer { align-items: flex-start; }
