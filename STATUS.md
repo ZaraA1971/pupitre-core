@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie16 header vertical spacing tightened (2026-11-09)
+
+- Header paddings / row-gaps / brand+contact margins resserrés (typo inchangée)
+- Cache-bust `?v=20261109-galerie16` · commit `0e7ae55`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `48a70705` · preview `20e43692` · atelier `94652da7` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-galerie16-galerie-vittet.md`
+
 ## Galerie15 header Collection/Galerie/UK top-aligned with VITTET (2026-11-09)
 
 - `.header-menu-row` sibling de `.header-contact` · aligné au haut de VITTET
