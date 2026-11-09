@@ -1079,12 +1079,12 @@ footer a {
   --gal-photo-gap: clamp(8px, 1vw, 14px);
   /* Sum of native width/height for the three photos — keeps one shared height. */
   --gal-ar-sum: 4.12;
-  /* Target +30% vs galerie7 (260→338); fit row: (viewport - pads - gaps) / Σ(w/h). */
+  /* +20% vs galerie8 fit; row may extend slightly past the content pad. */
   --gal-photo-h: min(
-    338px,
+    405px,
     calc(
       (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
-        var(--gal-ar-sum)
+        var(--gal-ar-sum) * 1.2
     )
   );
   display: flex;
@@ -1152,9 +1152,12 @@ footer a {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  width: 100%;
-  max-width: 100%;
+  width: max-content;
+  max-width: none;
   gap: var(--gal-photo-gap);
+  /* Center the larger row; body overflow-x clips the sides evenly. */
+  margin-left: 50%;
+  transform: translateX(-50%);
 }
 
 .about-photo {
@@ -1627,10 +1630,10 @@ footer {
   }
   .about {
     --gal-photo-h: min(
-      286px,
+      343px,
       calc(
         (100vw - 2 * var(--page-pad-lg) - 2 * var(--gal-photo-gap)) /
-          var(--gal-ar-sum)
+          var(--gal-ar-sum) * 1.2
       )
     );
     padding: 56px var(--page-pad-lg) 56px;
@@ -1929,10 +1932,10 @@ footer {
     --gal-pad-block: 36px;
     --gal-photo-gap: 8px;
     --gal-photo-h: min(
-      172px,
+      206px,
       calc(
         (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
-          var(--gal-ar-sum)
+          var(--gal-ar-sum) * 1.2
       )
     );
     padding: 36px var(--page-pad) 44px;
