@@ -36,7 +36,6 @@ const catalogPageTotal = document.getElementById("catalog-page-total");
 const MAX_BYTES = 12_000_000;
 /** Source avant réencodage : on accepte plus gros (scans print), puis on vérifie le blob encodé. */
 const MAX_SOURCE_BYTES = 40 * 1024 * 1024;
-const KV_VALUE_MAX_BYTES = 25 * 1024 * 1024;
 /** Dérivé d’affichage web : grand côté max (px), qualité canvas ~0.82. */
 const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
@@ -100,7 +99,7 @@ function emptyMeta() {
 }
 
 let previewReady = false;
-/** @type {Array<{file: File, artist: string, title: string, note: string, signed_dated: string, support: string, dimensions: string, editions: string, alt: string, categories: string[], detailBlob: Blob|null, webBlob: Blob|null, previewBlob: Blob|null, detailMeta: object|null, webMeta: object|null, previewMeta: object|null, objectUrl: string, exifFilled?: boolean}>} */
+/** @type {Array<{file: File, artist: string, title: string, note: string, signed_dated: string, support: string, dimensions: string, editions: string, alt: string, categories: string[], detailBlob: Blob|null, webBlob: Blob|null, previewBlob: Blob|null, detailMeta: {keptOriginal: boolean}|null, webMeta: object|null, previewMeta: object|null, objectUrl: string}>} */
 let pendingItems = [];
 /** Empêche une sélection concurrente pendant la lecture EXIF. */
 let pickBusy = false;
@@ -559,7 +558,6 @@ async function setPendingFromFiles(fileList) {
       webMeta: null,
       previewMeta: null,
       objectUrl: URL.createObjectURL(file),
-      exifFilled: hasMeta,
     });
   }
   renderUploadQueue();
@@ -663,20 +661,11 @@ async function buildPreview() {
           /^(image\/jpeg|image\/png|image\/webp)$/i.test(item.file.type || "");
         if (canKeepOriginal) {
           item.detailBlob = item.file;
-          item.detailMeta = {
-            width: loaded.image.naturalWidth,
-            height: loaded.image.naturalHeight,
-            source: [loaded.image.naturalWidth, loaded.image.naturalHeight],
-            keptOriginal: true,
-          };
+          item.detailMeta = { keptOriginal: true };
         } else {
+          /* Oversized source: original KV slot stores the same encode as web. */
           item.detailBlob = webPart.blob;
-          item.detailMeta = {
-            width: webPart.width,
-            height: webPart.height,
-            source: [loaded.image.naturalWidth, loaded.image.naturalHeight],
-            keptOriginal: false,
-          };
+          item.detailMeta = { keptOriginal: false };
         }
         item.webBlob = webPart.blob;
         item.previewBlob = previewPart.blob;
@@ -1271,7 +1260,7 @@ async function deleteLibraryWork(work, button, statusEl) {
 
 function workItem(work) {
   const item = document.createElement("li");
-  item.className = "added-item library-item";
+  item.className = "library-item";
   item.dataset.id = work.id;
   item.dataset.source = isExposee(work) ? "exposee" : "ajout";
   const frontMode = isFrontOrderMode();
