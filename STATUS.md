@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie17 header vertical spacing tightened again (2026-11-09)
+
+- Header paddings / row-gaps / brand+contact margins encore resserrés (typo inchangée)
+- Cache-bust `?v=20261109-galerie17` · commit `1cbf2ee`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `ff80a850` · preview `21d5416f` · atelier `a317bc4b` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-galerie17-galerie-vittet.md`
+
 ## Galerie16 header vertical spacing tightened (2026-11-09)
 
 - Header paddings / row-gaps / brand+contact margins resserrés (typo inchangée)
