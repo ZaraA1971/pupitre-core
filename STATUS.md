@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Galerie15 header Collection/Galerie/UK top-aligned with VITTET (2026-11-09)
+
+- `.header-menu-row` sibling de `.header-contact` · aligné au haut de VITTET
+- Cache-bust `?v=20261109-galerie15` · commit `82682bc`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `1c0741b9` · preview `ef2b3065` · atelier `3161c744` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-galerie15-galerie-vittet.md`
+
 ## Galerie14 header UK/FR same row (2026-11-09)
 
 - UK/FR dans `.header-menu-row` avec Collection / Galerie
