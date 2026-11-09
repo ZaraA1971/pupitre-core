@@ -302,8 +302,9 @@ section { scroll-margin-top: 48px; }
 }
 
 .header-brand .header-place a {
-  display: block;
-  width: 100%;
+  display: inline-block;
+  width: auto;
+  max-width: none;
   box-sizing: border-box;
   white-space: nowrap;
   letter-spacing: inherit;

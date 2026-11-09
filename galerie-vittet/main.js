@@ -1001,10 +1001,17 @@ heroStage.addEventListener("keydown", (event) => {
 });
 
 /**
- * Align address width to the VITTET wordmark (same left/right edges).
+ * Align address ink width to the VITTET wordmark (same left/right edges).
  * Column width comes from CSS (shrink-wrap wordmark); we tune font-size /
- * letter-spacing so the place line fills that width exactly.
+ * letter-spacing against the text Range — not the 100%-wide box.
  */
+function measureRangeWidth(el) {
+  if (!el) return 0;
+  const range = document.createRange();
+  range.selectNodeContents(el);
+  return range.getBoundingClientRect().width;
+}
+
 function measureWordmarkTitleWidth(wordmark) {
   const text = wordmark.firstChild;
   if (!text || text.nodeType !== Node.TEXT_NODE) {
@@ -1026,36 +1033,39 @@ function fitHeaderPlace() {
   link.style.letterSpacing = "0px";
   link.style.fontSize = "";
   link.style.transform = "";
+  link.style.display = "inline-block";
+  link.style.width = "auto";
   place.style.letterSpacing = "0px";
 
   const target = measureWordmarkTitleWidth(wordmark);
   if (!(target > 1)) return;
 
+  const inkWidth = () => measureRangeWidth(link);
   const baseSize = parseFloat(getComputedStyle(link).fontSize) || 16;
-  let natural = link.scrollWidth;
+  let natural = inkWidth();
   if (!(natural > 0)) return;
 
   /* Shrink type first when the line is wider than VITTET. */
   if (natural > target) {
     link.style.fontSize = `${(baseSize * target) / natural}px`;
-    natural = link.scrollWidth;
+    natural = inkWidth();
   }
 
-  /* Spread letter-spacing so edges land on the wordmark. */
+  /* Spread letter-spacing so ink edges land on the wordmark. */
   const text = link.textContent || "";
   const gaps = Math.max(text.length - 1, 1);
   let lo = 0;
-  let hi = Math.max((target - natural) / gaps + 2, 0.5);
-  for (let i = 0; i < 20; i += 1) {
+  let hi = Math.max((target - natural) / gaps + 4, 1);
+  for (let i = 0; i < 24; i += 1) {
     const mid = (lo + hi) / 2;
     link.style.letterSpacing = `${mid}px`;
-    if (link.scrollWidth > target) hi = mid;
+    if (inkWidth() > target) hi = mid;
     else lo = mid;
   }
   link.style.letterSpacing = `${lo}px`;
 
-  /* Sub-pixel nudge — keep transform-origin left so left edges stay flush. */
-  const finalW = link.scrollWidth;
+  /* Sub-pixel nudge from the left edge. */
+  const finalW = inkWidth();
   if (finalW > 0 && Math.abs(finalW - target) > 0.25) {
     link.style.transform = `scaleX(${target / finalW})`;
   }
