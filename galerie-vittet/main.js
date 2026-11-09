@@ -1792,6 +1792,27 @@ function bindScrollTopLinks() {
 
 bindScrollTopLinks();
 
+function bindSectionNav() {
+  document.querySelectorAll(".header-nav a[data-section]").forEach((link) => {
+    if (link.dataset.sectionBound) return;
+    link.dataset.sectionBound = "1";
+    link.addEventListener("click", (event) => {
+      event.preventDefault();
+      const id = link.getAttribute("data-section");
+      const target = id ? document.getElementById(id) : null;
+      if (!target) return;
+      if (searchMode) leaveSearchView({ replaceHash: true });
+      else if (location.hash) history.replaceState(null, "", pathWithSearch(""));
+      target.scrollIntoView({
+        behavior: prefersReduce() ? "auto" : "smooth",
+        block: "start",
+      });
+    });
+  });
+}
+
+bindSectionNav();
+
 window.addEventListener("hashchange", () => {
   applySearchRoute();
 });
