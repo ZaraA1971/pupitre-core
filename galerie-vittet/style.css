@@ -192,14 +192,14 @@ section { scroll-margin-top: 48px; }
 .header {
   min-height: 0;
   /* Tight to the top edge; brand + contact still share the same bottom via subgrid. */
-  padding: 5px max(var(--page-pad), 3.2vw) 8px;
+  padding: 4px max(var(--page-pad), 3.2vw) 6px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: auto auto;
   align-items: start;
   column-gap: 48px;
-  /* Another gentle tighten — keep brand/contact rhythm. */
-  row-gap: 9px;
+  /* Keep brand/contact rhythm; still room to breathe under VITTET. */
+  row-gap: 6px;
   position: relative;
   background: transparent;
   color: var(--ink-photo);
@@ -275,7 +275,7 @@ section { scroll-margin-top: 48px; }
   letter-spacing: .12em;
   display: inline-block;
   overflow: visible;
-  padding-block: 0.03em 0.01em;
+  padding-block: 0.02em 0;
   color: var(--ink-photo);
   text-shadow: 0 1px 18px rgba(10, 8, 6, .35);
 }
@@ -283,7 +283,7 @@ section { scroll-margin-top: 48px; }
 .header-brand .wordmark span {
   font: 600 clamp(12px, 1.15vw, 14px) / 1.3 var(--serif);
   letter-spacing: .28em;
-  margin-top: 6px;
+  margin-top: 4px;
   /* Center under VITTET wordmark width (not the wider address column). */
   text-align: center;
   color: var(--ink-photo-soft);
@@ -328,7 +328,7 @@ section { scroll-margin-top: 48px; }
   display: flex;
   flex-direction: column;
   align-items: flex-end;
-  gap: 3px;
+  gap: 2px;
   /* Span both header rows; pin phones/mail/hours to the address baseline. */
   grid-column: 2;
   grid-row: 1 / -1;
@@ -419,7 +419,7 @@ section { scroll-margin-top: 48px; }
 }
 
 .header-hours {
-  margin: 1px 0 0;
+  margin: 0;
   font: 500 var(--type-sm) / 1.45 var(--serif);
   letter-spacing: .03em;
   color: var(--ink-photo-faint);
@@ -1786,11 +1786,11 @@ footer {
     grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
     grid-template-rows: auto auto;
     column-gap: 12px;
-    row-gap: 4px;
+    row-gap: 3px;
     padding:
-      max(3px, env(safe-area-inset-top, 0px))
+      max(2px, env(safe-area-inset-top, 0px))
       max(var(--page-pad), env(safe-area-inset-right, 0px))
-      5px
+      4px
       max(var(--page-pad), env(safe-area-inset-left, 0px));
   }
   .header-brand {
@@ -1799,7 +1799,7 @@ footer {
     grid-row: 1 / -1;
     align-items: start;
     justify-items: stretch;
-    gap: 3px;
+    gap: 2px;
     width: max-content;
     max-width: 100%;
   }
@@ -1811,7 +1811,7 @@ footer {
   .header-brand .wordmark span {
     font-size: 10px;
     letter-spacing: .26em;
-    margin-top: 3px;
+    margin-top: 2px;
   }
   .header-brand .header-place {
     font-size: clamp(13px, 3.4vw, 16px);
