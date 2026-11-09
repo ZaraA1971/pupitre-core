@@ -1076,14 +1076,15 @@ footer a {
 /* #galerie — left copy above equal-HEIGHT photos (no crop), spread full-width */
 .about {
   --gal-pad-block: 64px;
-  --gal-photo-gap: clamp(8px, 1vw, 14px);
+  /* Wider breathing room between the three photos (size stays pinned below). */
+  --gal-photo-gap: clamp(20px, 2.6vw, 40px);
   /* Sum of native width/height for the three photos — keeps one shared height. */
   --gal-ar-sum: 4.12;
-  /* +20% vs galerie8 fit; row may extend slightly past the content pad. */
+  /* Height pinned to galerie9 (~390); gap no longer shrinks the images. */
   --gal-photo-h: min(
     405px,
     calc(
-      (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
+      (100vw - 2 * var(--page-pad) - 28px) /
         var(--gal-ar-sum) * 1.2
     )
   );
@@ -1632,7 +1633,7 @@ footer {
     --gal-photo-h: min(
       343px,
       calc(
-        (100vw - 2 * var(--page-pad-lg) - 2 * var(--gal-photo-gap)) /
+        (100vw - 2 * var(--page-pad-lg) - 28px) /
           var(--gal-ar-sum) * 1.2
       )
     );
@@ -1930,11 +1931,11 @@ footer {
   /* —— Galerie about: left copy + equal-height triptych —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-gap: 8px;
+    --gal-photo-gap: 14px;
     --gal-photo-h: min(
       206px,
       calc(
-        (100vw - 2 * var(--page-pad) - 2 * var(--gal-photo-gap)) /
+        (100vw - 2 * var(--page-pad) - 16px) /
           var(--gal-ar-sum) * 1.2
       )
     );
