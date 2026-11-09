@@ -1073,11 +1073,13 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — left copy above uncropped photos, equal slots, bottoms aligned */
+/* #galerie — left copy above equal-height, uncropped photo slots */
 .about {
   --gal-pad-block: 64px;
   /* Same tile width as before, spaced across full width. */
   --gal-photo-basis: calc(100% * 0.7 / 3);
+  /* Shared frame height for all three (no crop — contain inside). */
+  --gal-photo-h: clamp(200px, 22vw, 280px);
   display: flex;
   flex-direction: column;
   gap: clamp(24px, 3vw, 32px);
@@ -1142,8 +1144,7 @@ footer a {
 .about-gallery {
   display: flex;
   justify-content: space-between;
-  /* Equalize bottoms across mixed aspect ratios. */
-  align-items: flex-end;
+  align-items: stretch;
   width: 100%;
   max-width: 100%;
   gap: 0;
@@ -1155,18 +1156,19 @@ footer a {
   flex: 0 0 var(--gal-photo-basis);
   width: var(--gal-photo-basis);
   max-width: var(--gal-photo-basis);
+  height: var(--gal-photo-h);
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: center;
 }
 
 .about-photo img {
   display: block;
   width: 100%;
-  height: auto;
-  /* Show full photo — no crop. */
+  height: 100%;
+  /* Full photo visible inside the equal-height frame. */
   object-fit: contain;
-  object-position: center bottom;
+  object-position: center center;
   background: transparent;
 }
 
@@ -1621,6 +1623,7 @@ footer {
   }
   .about {
     --gal-photo-basis: calc(100% * 0.74 / 3);
+    --gal-photo-h: clamp(180px, 24vw, 240px);
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -1916,6 +1919,7 @@ footer {
   .about {
     --gal-pad-block: 36px;
     --gal-photo-basis: calc(100% * 0.88 / 3);
+    --gal-photo-h: clamp(120px, 32vw, 168px);
     padding: 36px var(--page-pad) 44px;
     gap: 18px;
   }
