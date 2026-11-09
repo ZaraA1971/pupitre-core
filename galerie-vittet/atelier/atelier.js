@@ -20,6 +20,7 @@ const catalogFilterCategory = document.getElementById("catalog-filter-category")
 const catalogFilterArtist = document.getElementById("catalog-filter-artist");
 const catalogFilterPeriod = document.getElementById("catalog-filter-period");
 const catalogFilterExposed = document.getElementById("catalog-filter-exposed");
+const catalogFilterSearch = document.getElementById("catalog-filter-search");
 const catalogSort = document.getElementById("catalog-sort");
 const catalogSelectAll = document.getElementById("catalog-select-all");
 const catalogPdf = document.getElementById("catalog-pdf");
@@ -998,6 +999,39 @@ function needsReview(work) {
   return !artist || artist === "À vérifier" || artist === "À identifier";
 }
 
+function normalizeSearchText(value) {
+  return String(value || "")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .trim();
+}
+
+function workSearchHaystack(work) {
+  const cats = Array.isArray(work.categories) ? work.categories.join(" ") : "";
+  return normalizeSearchText(
+    [
+      work.id,
+      work.artist,
+      work.title,
+      work.note,
+      work.support,
+      work.dimensions,
+      work.signed_dated,
+      work.editions,
+      work.alt,
+      cats,
+    ].join(" ")
+  );
+}
+
+function workMatchesSearch(work, query) {
+  const q = normalizeSearchText(query);
+  if (!q) return true;
+  const hay = workSearchHaystack(work);
+  return q.split(/\s+/).filter(Boolean).every((token) => hay.includes(token));
+}
+
 function workMatchesFilters(work) {
   const cat = catalogFilterCategory ? catalogFilterCategory.value : "";
   if (cat === "a-verifier") {
@@ -1020,6 +1054,7 @@ function workMatchesFilters(work) {
   const exp = catalogFilterExposed ? catalogFilterExposed.value : "";
   if (exp === "1" && !work.exposed) return false;
   if (exp === "0" && work.exposed) return false;
+  if (catalogFilterSearch && !workMatchesSearch(work, catalogFilterSearch.value)) return false;
   return true;
 }
 
@@ -1896,6 +1931,22 @@ publishButton.addEventListener("click", publish);
 [catalogFilterCategory, catalogFilterArtist, catalogFilterPeriod, catalogFilterExposed].forEach((el) => {
   if (el) el.addEventListener("change", () => renderLibrary({ resetPage: true }));
 });
+if (catalogFilterSearch) {
+  let searchTimer = 0;
+  const runSearch = () => {
+    searchTimer = 0;
+    renderLibrary({ resetPage: true });
+  };
+  catalogFilterSearch.addEventListener("input", () => {
+    if (searchTimer) window.clearTimeout(searchTimer);
+    /* Instant feel; tiny debounce avoids thrashing on fast typing. */
+    searchTimer = window.setTimeout(runSearch, 80);
+  });
+  catalogFilterSearch.addEventListener("search", () => {
+    if (searchTimer) window.clearTimeout(searchTimer);
+    runSearch();
+  });
+}
 if (catalogSort) {
   catalogSort.addEventListener("click", (event) => {
     const btn = event.target.closest(".sort-btn[data-sort]");

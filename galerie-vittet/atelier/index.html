@@ -10,8 +10,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../style.css?v=20261107-clean10">
-  <link rel="stylesheet" href="atelier.css?v=20261107-clean10">
+  <link rel="stylesheet" href="../style.css?v=20261109-search1">
+  <link rel="stylesheet" href="atelier.css?v=20261109-search1">
 </head>
 <body>
   <header class="atelier-bar">
@@ -62,8 +62,19 @@
             <button type="button" class="sort-btn" data-sort="title" aria-pressed="false" title="Titre (A→Z)">Titre A→Z</button>
           </div>
         </div>
+        <label class="catalog-filter catalog-search-field">Recherche
+          <input
+            id="catalog-filter-search"
+            type="search"
+            enterkeyhint="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Titre, artiste, note…"
+            aria-label="Recherche instantanée dans les photos"
+          >
+        </label>
       </div>
-      <p class="catalog-filter-hint" id="catalog-filter-hint">Tri par défaut : plus récente téléchargée ou modifiée (max création / modification). En « Ordre d’affichage front », glissez ou utilisez ↑↓ pour regrouper les œuvres sur la vitrine (filtre Exposées recommandé) — l’ordre est enregistré dans D1 (`sort_order`). La période ne retient que les siècles déjà écrits dans les métadonnées. Les filtres masquent hors critère, puis 25 fichiers par page.</p>
+      <p class="catalog-filter-hint" id="catalog-filter-hint">Tri par défaut : plus récente téléchargée ou modifiée (max création / modification). La recherche filtre instantanément titre, artiste, note, support, dimensions et identifiant. En « Ordre d’affichage front », glissez ou utilisez ↑↓ pour regrouper les œuvres sur la vitrine (filtre Exposées recommandé) — l’ordre est enregistré dans D1 (`sort_order`). La période ne retient que les siècles déjà écrits dans les métadonnées. Les filtres masquent hors critère, puis 25 fichiers par page.</p>
       <label class="catalog-select-all">
         <input type="checkbox" id="catalog-select-all">
         Tout sélectionner (filtrées)
@@ -132,6 +143,6 @@
 
   <script src="vendor/jspdf.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js" defer></script>
-  <script src="atelier.js?v=20261107-clean10" defer></script>
+  <script src="atelier.js?v=20261109-search1" defer></script>
 </body>
 </html>

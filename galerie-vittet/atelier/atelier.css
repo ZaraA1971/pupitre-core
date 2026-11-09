@@ -300,6 +300,35 @@
   flex: 1 1 100%;
 }
 
+.catalog-search-field {
+  flex: 1 1 220px;
+  align-items: center;
+}
+
+.catalog-search-field input[type="search"] {
+  flex: 1 1 auto;
+  min-width: min(220px, 70vw);
+  max-width: min(420px, 100%);
+  min-height: 44px;
+  border: 1px solid var(--line);
+  background: var(--paper-lift);
+  color: var(--ink);
+  font: 400 15px var(--sans);
+  letter-spacing: 0;
+  text-transform: none;
+  padding: 0 12px;
+}
+
+.catalog-search-field input[type="search"]::placeholder {
+  color: var(--atelier-hint);
+  opacity: 0.9;
+}
+
+.catalog-search-field input[type="search"]:focus-visible {
+  outline: 2px solid var(--atelier-err);
+  outline-offset: 2px;
+}
+
 .catalog-sort-label {
   padding-top: 12px;
   flex: 0 0 auto;
@@ -618,6 +647,17 @@
     gap: 8px;
   }
   .catalog-sort-label { padding-top: 0; }
+  .catalog-search-field {
+    flex: 1 1 100%;
+    align-items: stretch;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .catalog-search-field input[type="search"] {
+    max-width: none;
+    min-width: 0;
+    width: 100%;
+  }
   .sort-btn {
     min-height: 38px;
     padding: 0 11px;
