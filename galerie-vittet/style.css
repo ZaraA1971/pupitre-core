@@ -1073,84 +1073,37 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — façade | text | salle
-   +15% photo height (~306 → ~352) needs wider side tracks than a
-   1fr|240|1fr grid allows @1440. Photos in 1fr|1fr; copy absolute on
-   the page midline. --gal-space still = outer pad = column gap. */
+/* #galerie — full-width copy above a row of three photos */
 .about {
-  --side: 240px;
-  --gal-pad-block: 96px;
-  --gal-photo-h: clamp(320px, 24.4vw, 352px);
-  /* 2 pads + 1 gap between photo columns → /3 when pad = gap */
-  --gal-space: clamp(
-    4px,
-    calc((100vw - 2 * (var(--gal-photo-h) * 1024 / 530)) / 3),
-    40px
-  );
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--gal-space);
-  align-items: start;
-  padding: var(--gal-pad-block) var(--gal-space) var(--gal-pad-block);
+  --gal-pad-block: 72px;
+  --gal-space: clamp(12px, 2.2vw, 28px);
+  --gal-photo-ratio: 4 / 5;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(28px, 3.5vw, 40px);
+  align-items: stretch;
+  padding: var(--gal-pad-block) var(--page-pad) var(--gal-pad-block);
   position: relative;
   z-index: 0;
-  overflow: clip;
   /* Junction dress is `.section-ornament` — no full-width top rule. */
   border-top: 0;
-}
-
-.about-photo {
-  margin: 0;
-  min-width: 0;
-  width: 100%;
-  height: var(--gal-photo-h);
-  display: flex;
-  align-items: start;
-  justify-content: center;
-}
-
-.about-photo--facade {
-  grid-column: 1;
-  grid-row: 1;
-}
-
-.about-photo--salle {
-  grid-column: 2;
-  grid-row: 1;
-}
-
-.about-photo img {
-  display: block;
-  max-height: 100%;
-  max-width: 100%;
-  width: auto;
-  height: auto;
-  object-fit: contain;
 }
 
 .about-copy {
   --copy-head-gap: 6px;
   --eyebrow-lh: 1.2;
-  /* Eyebrow sits above the photo tops; h2 top meets photo tops */
-  --eyebrow-lift: calc(var(--type-xs) * var(--eyebrow-lh) + var(--copy-head-gap));
-  grid-column: 1 / -1;
-  grid-row: 1;
-  position: absolute;
-  left: 50%;
-  top: 0;
-  transform: translateX(-50%);
-  /* Pull whole column up so « La galerie » aligns with photo tops */
-  margin-top: calc(-1 * var(--eyebrow-lift));
-  z-index: 1;
   display: flex;
   flex-direction: column;
   justify-content: flex-start;
-  gap: 14px;
+  gap: 16px;
   min-width: 0;
-  width: var(--side);
-  max-width: var(--side);
-  padding: 0 12px 8px;
-  background: var(--paper);
+  width: 100%;
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  position: static;
+  transform: none;
 }
 
 .about-copy-head {
@@ -1166,6 +1119,7 @@ footer a {
 .about-copy-body {
   display: grid;
   gap: 12px;
+  max-width: none;
 }
 
 .about-copy-body > p {
@@ -1179,6 +1133,31 @@ footer a {
 
 .about-copy-body > p:first-child {
   text-indent: 1.6em;
+}
+
+.about-gallery {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--gal-space);
+  width: 100%;
+  align-items: stretch;
+}
+
+.about-photo {
+  margin: 0;
+  min-width: 0;
+  width: 100%;
+  aspect-ratio: var(--gal-photo-ratio);
+  overflow: hidden;
+  background: var(--stage);
+}
+
+.about-photo img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center bottom;
 }
 
 footer {
@@ -1631,41 +1610,11 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --side: min(340px, 100%);
-    --gal-space: 28px;
-    --gal-photo-h: auto;
-    grid-template-columns: minmax(0, 1fr);
-    justify-content: center;
-    justify-items: center;
-    padding: 72px var(--page-pad-lg) 72px;
+    --gal-space: 20px;
+    padding: 56px var(--page-pad-lg) 56px;
   }
-  .about-photo,
-  .about-photo--facade,
-  .about-photo--salle {
-    grid-column: auto;
-    grid-row: auto;
-    max-width: 520px;
-    width: 100%;
-    height: auto;
-    justify-content: center;
-  }
-  .about-photo img {
-    height: auto;
-    width: 100%;
-  }
-  .about-copy {
-    position: static;
-    left: auto;
-    top: auto;
-    transform: none;
-    grid-column: auto;
-    grid-row: auto;
-    max-width: 340px;
-    width: 100%;
-    justify-content: flex-start;
-    gap: 12px;
-    padding: 4px 0 8px;
-    background: transparent;
+  .about-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
   .lightbox-layout {
@@ -1956,17 +1905,15 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: photos first, generous —— */
+  /* —— Galerie about: copy then photo strip —— */
   .about {
-    --side: 100%;
-    --gal-space: 16px;
-    padding: 48px var(--page-pad) 56px;
-    gap: 16px;
+    --gal-space: 10px;
+    --gal-pad-block: 40px;
+    padding: 40px var(--page-pad) 48px;
+    gap: 20px;
   }
-  .about-photo,
-  .about-photo--facade,
-  .about-photo--salle {
-    max-width: none;
+  .about-gallery {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
 
   footer { align-items: flex-start; }
