@@ -191,7 +191,8 @@ section { scroll-margin-top: 48px; }
 
 .header {
   min-height: 0;
-  padding: 22px max(var(--page-pad), 3.2vw) 18px;
+  /* Tight to the top edge; brand + contact still share the same bottom via subgrid. */
+  padding: 8px max(var(--page-pad), 3.2vw) 14px;
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
   grid-template-rows: auto auto;
@@ -1707,7 +1708,7 @@ footer {
     grid-template-columns: minmax(0, 1fr) auto;
     column-gap: 28px;
     min-height: 0;
-    padding: 18px var(--page-pad) 14px;
+    padding: 8px var(--page-pad) 12px;
   }
   .section-ornament {
     width: min(220px, 36vw);
@@ -1759,9 +1760,9 @@ footer {
     column-gap: 12px;
     row-gap: 8px;
     padding:
-      max(10px, env(safe-area-inset-top, 0px))
+      max(6px, env(safe-area-inset-top, 0px))
       max(var(--page-pad), env(safe-area-inset-right, 0px))
-      10px
+      8px
       max(var(--page-pad), env(safe-area-inset-left, 0px));
   }
   .header-brand {
