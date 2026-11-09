@@ -258,7 +258,10 @@ section { scroll-margin-top: 48px; }
   grid-template-rows: subgrid;
   grid-row: 1 / -1;
   align-items: start;
-  justify-items: start;
+  justify-items: stretch;
+  /* Shrink-wrap to the VITTET wordmark; address must not widen the column. */
+  width: max-content;
+  max-width: 100%;
   min-width: 0;
   justify-self: start;
   position: relative;
@@ -286,18 +289,29 @@ section { scroll-margin-top: 48px; }
 .header-brand .header-place {
   margin: 0;
   display: block;
+  /* Match VITTET column width (parent shrink-wraps to wordmark). */
+  width: 0;
+  min-width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
   font: 600 calc(var(--type-meta) * 2) / 1.35 var(--serif);
-  letter-spacing: .02em;
-  justify-items: start;
+  letter-spacing: 0;
   text-align: left;
   color: var(--ink-photo-soft);
   text-shadow: 0 1px 14px rgba(10, 8, 6, .3);
 }
 
 .header-brand .header-place a {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  letter-spacing: inherit;
   color: inherit;
   text-decoration: none;
   border-bottom: 1px solid transparent;
+  /* fitHeaderPlace() sets letter-spacing / font-size to match VITTET. */
+  transform-origin: left center;
 }
 
 .header-brand .header-place a:hover,
@@ -1754,9 +1768,10 @@ footer {
     grid-template-rows: subgrid;
     grid-row: 1 / -1;
     align-items: start;
-    justify-items: start;
+    justify-items: stretch;
     gap: 6px;
-    width: auto;
+    width: max-content;
+    max-width: 100%;
   }
   .header-brand .wordmark {
     font-size: clamp(36px, 9.5vw, 48px);

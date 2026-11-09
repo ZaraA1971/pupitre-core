@@ -1000,22 +1000,105 @@ heroStage.addEventListener("keydown", (event) => {
   }
 });
 
+/**
+ * Align address width to the VITTET wordmark (same left/right edges).
+ * Column width comes from CSS (shrink-wrap wordmark); we tune font-size /
+ * letter-spacing so the place line fills that width exactly.
+ */
+function measureWordmarkTitleWidth(wordmark) {
+  const text = wordmark.firstChild;
+  if (!text || text.nodeType !== Node.TEXT_NODE) {
+    return wordmark.getBoundingClientRect().width;
+  }
+  const range = document.createRange();
+  range.setStart(text, 0);
+  range.setEnd(text, text.length);
+  return range.getBoundingClientRect().width;
+}
+
+function fitHeaderPlace() {
+  const brand = document.querySelector(".header-brand");
+  const wordmark = brand && brand.querySelector(".wordmark");
+  const place = brand && brand.querySelector(".header-place");
+  const link = place && place.querySelector("a");
+  if (!wordmark || !place || !link) return;
+
+  link.style.letterSpacing = "0px";
+  link.style.fontSize = "";
+  link.style.transform = "";
+  place.style.letterSpacing = "0px";
+
+  const target = measureWordmarkTitleWidth(wordmark);
+  if (!(target > 1)) return;
+
+  const baseSize = parseFloat(getComputedStyle(link).fontSize) || 16;
+  let natural = link.scrollWidth;
+  if (!(natural > 0)) return;
+
+  /* Shrink type first when the line is wider than VITTET. */
+  if (natural > target) {
+    link.style.fontSize = `${(baseSize * target) / natural}px`;
+    natural = link.scrollWidth;
+  }
+
+  /* Spread letter-spacing so edges land on the wordmark. */
+  const text = link.textContent || "";
+  const gaps = Math.max(text.length - 1, 1);
+  let lo = 0;
+  let hi = Math.max((target - natural) / gaps + 2, 0.5);
+  for (let i = 0; i < 20; i += 1) {
+    const mid = (lo + hi) / 2;
+    link.style.letterSpacing = `${mid}px`;
+    if (link.scrollWidth > target) hi = mid;
+    else lo = mid;
+  }
+  link.style.letterSpacing = `${lo}px`;
+
+  /* Sub-pixel nudge — keep transform-origin left so left edges stay flush. */
+  const finalW = link.scrollWidth;
+  if (finalW > 0 && Math.abs(finalW - target) > 0.25) {
+    link.style.transform = `scaleX(${target / finalW})`;
+  }
+}
+
 /* Re-fit when the tall stage resizes (viewport / orientation). */
 let heroFitResizeTimer = 0;
+function onHeroChromeResize() {
+  fitAllHeroImages();
+  fitHeaderPlace();
+}
 window.addEventListener("resize", () => {
   window.clearTimeout(heroFitResizeTimer);
-  heroFitResizeTimer = window.setTimeout(fitAllHeroImages, 120);
+  heroFitResizeTimer = window.setTimeout(onHeroChromeResize, 120);
 });
 if (typeof ResizeObserver !== "undefined" && heroViewport) {
   try {
     const heroFitObserver = new ResizeObserver(() => {
       window.clearTimeout(heroFitResizeTimer);
-      heroFitResizeTimer = window.setTimeout(fitAllHeroImages, 60);
+      heroFitResizeTimer = window.setTimeout(onHeroChromeResize, 60);
     });
     heroFitObserver.observe(heroViewport);
   } catch (_) {
     /* ResizeObserver optionnel */
   }
+}
+
+const headerBrandEl = document.querySelector(".header-brand");
+if (typeof ResizeObserver !== "undefined" && headerBrandEl) {
+  try {
+    const brandObserver = new ResizeObserver(() => {
+      window.clearTimeout(heroFitResizeTimer);
+      heroFitResizeTimer = window.setTimeout(fitHeaderPlace, 40);
+    });
+    brandObserver.observe(headerBrandEl);
+  } catch (_) {
+    /* optional */
+  }
+}
+
+fitHeaderPlace();
+if (document.fonts && document.fonts.ready) {
+  document.fonts.ready.then(fitHeaderPlace).catch(() => {});
 }
 
 /**
