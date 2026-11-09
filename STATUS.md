@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Enregistrer button rename / clean10 (2026-11-09)
+
+- Bouton atelier : Enregistrer légendes → **Enregistrer** · cache-bust `?v=20261109-clean10` · commit `6f78836`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `46f47d62` · preview `88876a03` · atelier `500d0c8a` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-enregistrer-button-galerie-vittet.md`
+
 ## Search1 atelier instant search (2026-11-09)
 
 - `#catalog-filter-search` après le tri · filtre instantané catalogue
