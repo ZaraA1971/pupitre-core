@@ -1073,17 +1073,16 @@ footer a {
   font-size: var(--type-meta);
 }
 
-/* #galerie — left copy above a reduced equal square triptych */
+/* #galerie — left copy above a reduced square triptych spread full-width */
 .about {
   --gal-pad-block: 64px;
-  --gal-space: clamp(12px, 1.8vw, 20px);
   --gal-photo-ratio: 1 / 1;
-  /* ~30% smaller than full-bleed strip */
-  --gal-gallery-width: 70%;
+  /* Same tile size as the former 70%-wide strip, spaced across full width. */
+  --gal-photo-basis: calc(100% * 0.7 / 3);
   display: flex;
   flex-direction: column;
   gap: clamp(24px, 3vw, 32px);
-  align-items: flex-start;
+  align-items: stretch;
   padding: var(--gal-pad-block) var(--page-pad) var(--gal-pad-block);
   position: relative;
   z-index: 0;
@@ -1142,19 +1141,20 @@ footer a {
 }
 
 .about-gallery {
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: var(--gal-space);
-  width: var(--gal-gallery-width);
-  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
   align-items: start;
-  align-self: flex-start;
+  width: 100%;
+  max-width: 100%;
+  gap: 0;
 }
 
 .about-photo {
   margin: 0;
   min-width: 0;
-  width: 100%;
+  flex: 0 0 var(--gal-photo-basis);
+  width: var(--gal-photo-basis);
+  max-width: var(--gal-photo-basis);
 }
 
 .about-photo img {
@@ -1630,12 +1630,8 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
-    --gal-space: 14px;
-    --gal-gallery-width: 78%;
+    --gal-photo-basis: calc(100% * 0.74 / 3);
     padding: 56px var(--page-pad-lg) 56px;
-  }
-  .about-gallery {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
   .lightbox-layout {
@@ -1926,20 +1922,15 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: left copy + smaller triptych —— */
+  /* —— Galerie about: left copy + spread triptych —— */
   .about {
-    --gal-space: 8px;
     --gal-pad-block: 36px;
-    --gal-gallery-width: 100%;
+    --gal-photo-basis: calc(100% * 0.88 / 3);
     padding: 36px var(--page-pad) 44px;
     gap: 18px;
   }
   .about-copy {
     max-width: none;
-  }
-  .about-gallery {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
-    width: 100%;
   }
 
   footer { align-items: flex-start; }
