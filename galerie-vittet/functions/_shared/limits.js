@@ -36,12 +36,37 @@ export function json(status, payload) {
   });
 }
 
+/** Plafonds métadonnées Artlogic (atelier + API) — texte long accepté. */
+export const META_MAX = {
+  artist: 400,
+  title: 500,
+  note: 4000,
+  signed_dated: 400,
+  support: 800,
+  dimensions: 400,
+  editions: 800,
+  alt: 500,
+  source_file: 300,
+};
+
 export function clean(value, limit) {
   return String(value || "")
     .split(/\s+/)
     .filter(Boolean)
     .join(" ")
     .slice(0, limit);
+}
+
+/** Comme clean, mais conserve les sauts de ligne (notes longues). */
+export function cleanMultiline(value, limit) {
+  return String(value || "")
+    .replace(/\r\n?/g, "\n")
+    .split("\n")
+    .map((line) => line.split(/\s+/).filter(Boolean).join(" "))
+    .join("\n")
+    .replace(/\n{3,}/g, "\n\n")
+    .slice(0, limit)
+    .trim();
 }
 
 export function slugify(value) {

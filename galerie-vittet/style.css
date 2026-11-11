@@ -1606,6 +1606,12 @@ footer {
   line-height: 1.5;
   font: 400 var(--type-sm) / 1.5 var(--sans);
   letter-spacing: .06em;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.lightbox-note {
+  white-space: pre-wrap;
 }
 
 .lightbox-cta {

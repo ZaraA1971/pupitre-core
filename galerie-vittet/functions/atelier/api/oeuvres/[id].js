@@ -2,7 +2,9 @@ import { requireBasicAuth } from "../../../_shared/auth.js";
 import {
   ALLOWED_CATEGORIES,
   LIBRARY_ID_RE,
+  META_MAX,
   clean,
+  cleanMultiline,
   json,
   kvKeys,
 } from "../../../_shared/limits.js";
@@ -58,14 +60,18 @@ async function onRequestPatch(context) {
   }
 
   const patch = {};
-  if ("artist" in body) patch.artist = clean(body.artist, 120);
-  if ("title" in body) patch.title = clean(body.title, 140);
-  if ("note" in body) patch.note = clean(body.note, 200);
-  if ("signed_dated" in body) patch.signed_dated = clean(body.signed_dated, 120);
-  if ("support" in body) patch.support = clean(body.support, 180);
-  if ("dimensions" in body) patch.dimensions = clean(body.dimensions, 120);
-  if ("editions" in body) patch.editions = clean(body.editions, 180);
-  if ("alt" in body) patch.alt = clean(body.alt, 180);
+  if ("artist" in body) patch.artist = clean(body.artist, META_MAX.artist);
+  if ("title" in body) patch.title = clean(body.title, META_MAX.title);
+  if ("note" in body) patch.note = cleanMultiline(body.note, META_MAX.note);
+  if ("signed_dated" in body) {
+    patch.signed_dated = clean(body.signed_dated, META_MAX.signed_dated);
+  }
+  if ("support" in body) patch.support = clean(body.support, META_MAX.support);
+  if ("dimensions" in body) {
+    patch.dimensions = clean(body.dimensions, META_MAX.dimensions);
+  }
+  if ("editions" in body) patch.editions = clean(body.editions, META_MAX.editions);
+  if ("alt" in body) patch.alt = clean(body.alt, META_MAX.alt);
   if ("categories" in body) {
     const raw = Array.isArray(body.categories)
       ? body.categories

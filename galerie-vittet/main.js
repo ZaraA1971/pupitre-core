@@ -153,11 +153,10 @@ function sectionOf(work) {
   return "peinture";
 }
 
-/** Collection grid: section only — carousel=1 stays in hero, excluded from #collection. */
+/** Collection grid by section — carousel works stay in hero and also appear here. */
 function worksFor(section) {
-  const pool = works.filter((work) => !work.carousel);
-  if (section === "nicolle") return pool.filter(isNicolleArtist);
-  return pool.filter((work) => sectionOf(work) === section);
+  if (section === "nicolle") return works.filter(isNicolleArtist);
+  return works.filter((work) => sectionOf(work) === section);
 }
 
 /** Same-origin relative path (CMS + front share host). No cross-host rewrite. */
@@ -444,7 +443,7 @@ function compareByFrontOrder(a, b) {
 
 /**
  * Contract: GET /api/oeuvres → { oeuvres: exposed[] } (carousel flag included).
- * Hero = carousel; collection tabs = exposed && !carousel (front filter).
+ * Hero = carousel; collection tabs = all exposed (carousel included).
  */
 function normalizePayload(data) {
   const list = Array.isArray(data && data.oeuvres) ? data.oeuvres : [];

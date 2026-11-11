@@ -5,7 +5,9 @@ import {
   ID_RE,
   ASSET_RE,
   LIBRARY_ID_RE,
+  META_MAX,
   clean,
+  cleanMultiline,
   json,
   kvKeys,
   slugify,
@@ -105,15 +107,15 @@ async function onPost(context) {
 
   const quick =
     clean(form.get("quick"), 8) === "1" || clean(form.get("quick"), 8) === "true";
-  let artist = clean(form.get("artist"), 120);
-  let title = clean(form.get("title"), 140);
-  const note = clean(form.get("note"), 200);
-  const signed_dated = clean(form.get("signed_dated"), 120);
-  const support = clean(form.get("support"), 180);
-  const dimensions = clean(form.get("dimensions"), 120);
-  const editions = clean(form.get("editions"), 180);
-  const source_file = clean(form.get("source_file"), 180);
-  let alt = clean(form.get("alt"), 180);
+  let artist = clean(form.get("artist"), META_MAX.artist);
+  let title = clean(form.get("title"), META_MAX.title);
+  const note = cleanMultiline(form.get("note"), META_MAX.note);
+  const signed_dated = clean(form.get("signed_dated"), META_MAX.signed_dated);
+  const support = clean(form.get("support"), META_MAX.support);
+  const dimensions = clean(form.get("dimensions"), META_MAX.dimensions);
+  const editions = clean(form.get("editions"), META_MAX.editions);
+  const source_file = clean(form.get("source_file"), META_MAX.source_file);
+  let alt = clean(form.get("alt"), META_MAX.alt);
   let categories = clean(form.get("categories"), 80)
     .split(" ")
     .filter((item) => ALLOWED_CATEGORIES.has(item));

@@ -27,11 +27,7 @@ const catalogPdf = document.getElementById("catalog-pdf");
 const catalogExport = document.getElementById("catalog-export");
 const catalogCount = document.getElementById("catalog-count");
 const catalogStatus = document.getElementById("catalog-status");
-const catalogPagination = document.getElementById("catalog-pagination");
-const catalogPagePrev = document.getElementById("catalog-page-prev");
-const catalogPageNext = document.getElementById("catalog-page-next");
-const catalogPageCurrent = document.getElementById("catalog-page-current");
-const catalogPageTotal = document.getElementById("catalog-page-total");
+const catalogPagers = [...document.querySelectorAll("[data-catalog-pager]")];
 
 const MAX_BYTES = 12_000_000;
 /** Source avant réencodage : on accepte plus gros (scans print), puis on vérifie le blob encodé. */
@@ -70,16 +66,22 @@ const CATEGORY_LABELS = {
 };
 const CATEGORY_KEYS = ["peinture", "miniature", "aquarelle"];
 
-/** Labels FR des champs Artlogic (artiste, titre, note, …). */
+/** Labels FR des champs Artlogic (artiste, titre, note, …) — plafonds longs. */
 const META_FIELDS = [
-  { key: "artist", label: "artiste", max: 120 },
-  { key: "title", label: "titre", max: 140 },
-  { key: "note", label: "note", max: 200 },
-  { key: "signed_dated", label: "signé et date", max: 120 },
-  { key: "support", label: "support", max: 180 },
-  { key: "dimensions", label: "dimensions", max: 120 },
-  { key: "editions", label: "éditions", max: 180 },
+  { key: "artist", label: "artiste", max: 400 },
+  { key: "title", label: "titre", max: 500 },
+  { key: "note", label: "note", max: 4000, multiline: true },
+  { key: "signed_dated", label: "signé et date", max: 400 },
+  { key: "support", label: "support", max: 800 },
+  { key: "dimensions", label: "dimensions", max: 400 },
+  { key: "editions", label: "éditions", max: 800 },
 ];
+const META_ALT_MAX = 500;
+
+function metaMax(key) {
+  const field = META_FIELDS.find((item) => item.key === key);
+  return field ? field.max : 400;
+}
 
 function workCaption(work) {
   return [work.support, work.dimensions, work.note].filter(Boolean).join(" · ");
@@ -299,13 +301,13 @@ async function readFileExif(file) {
       raw.editions,
     );
     return {
-      artist: artist.slice(0, 120),
-      title: title.slice(0, 140),
-      note: note.slice(0, 200),
-      signed_dated: String(signed_dated).slice(0, 120),
-      support: support.slice(0, 180),
-      dimensions: dimensions.slice(0, 120),
-      editions: editions.slice(0, 180),
+      artist: artist.slice(0, metaMax("artist")),
+      title: title.slice(0, metaMax("title")),
+      note: note.slice(0, metaMax("note")),
+      signed_dated: String(signed_dated).slice(0, metaMax("signed_dated")),
+      support: support.slice(0, metaMax("support")),
+      dimensions: dimensions.slice(0, metaMax("dimensions")),
+      editions: editions.slice(0, metaMax("editions")),
     };
   } catch (error) {
     return empty;
@@ -376,7 +378,7 @@ function titleFromFileName(name) {
     .replace(/[_-]+/g, " ")
     .replace(/\s+/g, " ")
     .trim()
-    .slice(0, 140) || "Sans titre";
+    .slice(0, metaMax("title")) || "Sans titre";
 }
 
 function clearPending() {
@@ -442,11 +444,17 @@ function renderUploadQueue() {
     const fields = document.createElement("div");
     fields.className = "upload-fields";
 
-    const makeLabel = (text, field, value, max) => {
+    const makeLabel = (text, field, value, max, multiline = false) => {
       const label = document.createElement("label");
       label.textContent = text;
-      const input = document.createElement("input");
-      input.type = "text";
+      const input = multiline
+        ? document.createElement("textarea")
+        : document.createElement("input");
+      if (!multiline) input.type = "text";
+      else {
+        input.rows = 4;
+        input.spellcheck = true;
+      }
       input.dataset.field = field;
       input.maxLength = max;
       input.value = value;
@@ -455,10 +463,10 @@ function renderUploadQueue() {
       return label;
     };
 
-    META_FIELDS.forEach(({ key, label, max }) => {
-      fields.append(makeLabel(label, key, item[key] || "", max));
+    META_FIELDS.forEach(({ key, label, max, multiline }) => {
+      fields.append(makeLabel(label, key, item[key] || "", max, !!multiline));
     });
-    fields.append(makeLabel("texte alternatif", "alt", item.alt, 180));
+    fields.append(makeLabel("texte alternatif", "alt", item.alt, META_ALT_MAX));
 
     const cats = document.createElement("fieldset");
     cats.className = "upload-cats";
@@ -1156,14 +1164,18 @@ function updateCatalogChrome() {
   }
   catalogSelectAll.checked = visibleCount > 0 && selectedVisible === visibleCount;
   catalogSelectAll.indeterminate = selectedVisible > 0 && selectedVisible < visibleCount;
-  if (catalogPagination) {
-    const showPager = visibleCount > LIBRARY_PAGE_SIZE;
-    catalogPagination.hidden = !showPager;
-    if (catalogPageCurrent) catalogPageCurrent.textContent = String(libraryPage);
-    if (catalogPageTotal) catalogPageTotal.textContent = String(pages);
-    if (catalogPagePrev) catalogPagePrev.disabled = libraryPage <= 1;
-    if (catalogPageNext) catalogPageNext.disabled = libraryPage >= pages;
-  }
+  const showPager = visibleCount > LIBRARY_PAGE_SIZE;
+  catalogPagers.forEach((pager) => {
+    pager.hidden = !showPager;
+    const current = pager.querySelector("[data-page-current]");
+    const total = pager.querySelector("[data-page-total]");
+    const prev = pager.querySelector("[data-page-prev]");
+    const next = pager.querySelector("[data-page-next]");
+    if (current) current.textContent = String(libraryPage);
+    if (total) total.textContent = String(pages);
+    if (prev) prev.disabled = libraryPage <= 1;
+    if (next) next.disabled = libraryPage >= pages;
+  });
 }
 
 function readEditorFields(itemEl) {
@@ -1387,12 +1399,18 @@ function workItem(work) {
   }
   editor.append(titleRow);
 
-  const makeEdit = (labelText, field, value, max) => {
+  const makeEdit = (labelText, field, value, max, multiline = false) => {
     const label = document.createElement("label");
     label.className = "edit-field";
     label.textContent = labelText;
-    const input = document.createElement("input");
-    input.type = "text";
+    const input = multiline
+      ? document.createElement("textarea")
+      : document.createElement("input");
+    if (!multiline) input.type = "text";
+    else {
+      input.rows = 4;
+      input.spellcheck = true;
+    }
     input.dataset.edit = field;
     input.maxLength = max;
     input.value = value || "";
@@ -1400,10 +1418,10 @@ function workItem(work) {
     return label;
   };
 
-  META_FIELDS.forEach(({ key, label, max }) => {
-    editor.append(makeEdit(label, key, work[key] || "", max));
+  META_FIELDS.forEach(({ key, label, max, multiline }) => {
+    editor.append(makeEdit(label, key, work[key] || "", max, !!multiline));
   });
-  editor.append(makeEdit("texte alternatif", "alt", work.alt, 180));
+  editor.append(makeEdit("texte alternatif", "alt", work.alt, META_ALT_MAX));
 
   const cats = document.createElement("fieldset");
   cats.className = "edit-cats";
@@ -1955,27 +1973,33 @@ catalogSelectAll.addEventListener("change", () => {
   }
   renderLibrary();
 });
-if (catalogPagePrev) {
-  catalogPagePrev.addEventListener("click", () => {
-    if (libraryPage <= 1) return;
-    libraryPage -= 1;
-    renderLibrary();
-    if (catalogToolbar) {
-      catalogToolbar.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
+function scrollCatalogToTop() {
+  const topPager = document.querySelector(".catalog-pagination--top");
+  const target = topPager || catalogToolbar;
+  if (target) target.scrollIntoView({ behavior: "smooth", block: "start" });
 }
-if (catalogPageNext) {
-  catalogPageNext.addEventListener("click", () => {
-    const pages = libraryPageCount(filteredWorks().length);
-    if (libraryPage >= pages) return;
-    libraryPage += 1;
-    renderLibrary();
-    if (catalogToolbar) {
-      catalogToolbar.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  });
-}
+
+catalogPagers.forEach((pager) => {
+  const prev = pager.querySelector("[data-page-prev]");
+  const next = pager.querySelector("[data-page-next]");
+  if (prev) {
+    prev.addEventListener("click", () => {
+      if (libraryPage <= 1) return;
+      libraryPage -= 1;
+      renderLibrary();
+      scrollCatalogToTop();
+    });
+  }
+  if (next) {
+    next.addEventListener("click", () => {
+      const pages = libraryPageCount(filteredWorks().length);
+      if (libraryPage >= pages) return;
+      libraryPage += 1;
+      renderLibrary();
+      scrollCatalogToTop();
+    });
+  }
+});
 catalogPdf.addEventListener("click", generateCatalogPdf);
 if (catalogExport) catalogExport.addEventListener("click", exportDatabase);
 const catalogBackfillWeb = document.getElementById("catalog-backfill-web");

@@ -133,7 +133,9 @@
 
 .atelier-form input[type="text"],
 .upload-fields input[type="text"],
-.edit-field input[type="text"] {
+.edit-field input[type="text"],
+.upload-fields textarea,
+.edit-field textarea {
   width: 100%;
   min-height: 44px;
   border: 1px solid var(--line);
@@ -143,6 +145,17 @@
   letter-spacing: 0;
   text-transform: none;
   padding: 8px 12px;
+  box-sizing: border-box;
+}
+
+.upload-fields textarea,
+.edit-field textarea {
+  min-height: 96px;
+  resize: vertical;
+  line-height: 1.45;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .atelier-form fieldset,
@@ -416,6 +429,11 @@
   justify-content: space-between;
   gap: 16px;
   flex-wrap: wrap;
+}
+
+.catalog-pagination--top {
+  margin-top: 12px;
+  margin-bottom: 8px;
 }
 
 .catalog-pagination[hidden] { display: none; }
