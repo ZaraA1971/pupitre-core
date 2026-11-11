@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Atelierpag — pagination haut, champs longs, carousel en collection (2026-11-11)
+
+- Atelier : pagination haut+bas ; textareas + `META_MAX` (note 4000) ; cache-bust `atelierpag2`
+- Front : plus d’exclusion `!carousel` dans `worksFor` — cache-bust `atelierpag1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `6dc77083` · preview `e28132e8` · atelier `7d09edbc` · https://galerie-vittet-preview.pages.dev/
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+- Détail : `compte-rendu-atelierpag-galerie-vittet.md`
+
 ## Galerie18 header vertical spacing tightened again (2026-11-09)
 
 - Header paddings / row-gaps encore resserrés (`4px` / `6px`, `row-gap: 6px`) — typo inchangée

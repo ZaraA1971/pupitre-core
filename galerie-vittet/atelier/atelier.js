@@ -68,13 +68,13 @@ const CATEGORY_KEYS = ["peinture", "miniature", "aquarelle"];
 
 /** Labels FR des champs Artlogic (artiste, titre, note, …) — plafonds longs. */
 const META_FIELDS = [
-  { key: "artist", label: "artiste", max: 400 },
-  { key: "title", label: "titre", max: 500 },
-  { key: "note", label: "note", max: 4000, multiline: true },
-  { key: "signed_dated", label: "signé et date", max: 400 },
-  { key: "support", label: "support", max: 800 },
+  { key: "artist", label: "artiste", max: 400, multiline: true, rows: 2 },
+  { key: "title", label: "titre", max: 500, multiline: true, rows: 2 },
+  { key: "note", label: "note", max: 4000, multiline: true, rows: 4 },
+  { key: "signed_dated", label: "signé et date", max: 400, multiline: true, rows: 2 },
+  { key: "support", label: "support", max: 800, multiline: true, rows: 2 },
   { key: "dimensions", label: "dimensions", max: 400 },
-  { key: "editions", label: "éditions", max: 800 },
+  { key: "editions", label: "éditions", max: 800, multiline: true, rows: 2 },
 ];
 const META_ALT_MAX = 500;
 
@@ -444,7 +444,7 @@ function renderUploadQueue() {
     const fields = document.createElement("div");
     fields.className = "upload-fields";
 
-    const makeLabel = (text, field, value, max, multiline = false) => {
+    const makeLabel = (text, field, value, max, multiline = false, rows = 4) => {
       const label = document.createElement("label");
       label.textContent = text;
       const input = multiline
@@ -452,7 +452,7 @@ function renderUploadQueue() {
         : document.createElement("input");
       if (!multiline) input.type = "text";
       else {
-        input.rows = 4;
+        input.rows = rows;
         input.spellcheck = true;
       }
       input.dataset.field = field;
@@ -463,10 +463,14 @@ function renderUploadQueue() {
       return label;
     };
 
-    META_FIELDS.forEach(({ key, label, max, multiline }) => {
-      fields.append(makeLabel(label, key, item[key] || "", max, !!multiline));
+    META_FIELDS.forEach(({ key, label, max, multiline, rows }) => {
+      fields.append(
+        makeLabel(label, key, item[key] || "", max, !!multiline, rows || 4)
+      );
     });
-    fields.append(makeLabel("texte alternatif", "alt", item.alt, META_ALT_MAX));
+    fields.append(
+      makeLabel("texte alternatif", "alt", item.alt, META_ALT_MAX, true, 2)
+    );
 
     const cats = document.createElement("fieldset");
     cats.className = "upload-cats";
@@ -1399,7 +1403,7 @@ function workItem(work) {
   }
   editor.append(titleRow);
 
-  const makeEdit = (labelText, field, value, max, multiline = false) => {
+  const makeEdit = (labelText, field, value, max, multiline = false, rows = 4) => {
     const label = document.createElement("label");
     label.className = "edit-field";
     label.textContent = labelText;
@@ -1408,7 +1412,7 @@ function workItem(work) {
       : document.createElement("input");
     if (!multiline) input.type = "text";
     else {
-      input.rows = 4;
+      input.rows = rows;
       input.spellcheck = true;
     }
     input.dataset.edit = field;
@@ -1418,10 +1422,14 @@ function workItem(work) {
     return label;
   };
 
-  META_FIELDS.forEach(({ key, label, max, multiline }) => {
-    editor.append(makeEdit(label, key, work[key] || "", max, !!multiline));
+  META_FIELDS.forEach(({ key, label, max, multiline, rows }) => {
+    editor.append(
+      makeEdit(label, key, work[key] || "", max, !!multiline, rows || 4)
+    );
   });
-  editor.append(makeEdit("texte alternatif", "alt", work.alt, META_ALT_MAX));
+  editor.append(
+    makeEdit("texte alternatif", "alt", work.alt, META_ALT_MAX, true, 2)
+  );
 
   const cats = document.createElement("fieldset");
   cats.className = "edit-cats";
