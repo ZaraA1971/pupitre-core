@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Mobheader1 — vraie barre menus mobile (2026-11-13)
+
+- Mobile ≤700px : menu Collection / Galerie / UK en bandeau dédié (plus de mélange avec contact)
+- Cache-bust `?v=20261113-mobheader1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `1ff89d7b` · preview `13a0b86e` · atelier `e5c17ea8` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-mobheader1-galerie-vittet.md`
+
 ## Atelierpag — pagination haut, champs longs, carousel en collection (2026-11-11)
 
 - Atelier : pagination haut+bas ; textareas + `META_MAX` (note 4000) ; cache-bust `atelierpag2`
