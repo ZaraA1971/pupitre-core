@@ -1,0 +1,154 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#e3d1be">
+  <link rel="icon" href="data:,">
+  <title>Atelier — Galerie Vittet</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <link rel="stylesheet" href="../style.css?v=20261111-atelierpag2">
+  <link rel="stylesheet" href="atelier.css?v=20261111-atelierpag2">
+</head>
+<body>
+  <header class="atelier-bar">
+    <a class="wordmark" href="../">VITTET<span>ATELIER</span></a>
+    <a href="../">Retour à la galerie</a>
+  </header>
+
+  <section class="library" aria-labelledby="library-title">
+    <p class="eyebrow">Bibliothèque</p>
+    <h1 id="library-title">Gérer les œuvres</h1>
+    <p class="library-lead">Source de vérité D1 : métadonnées Artlogic en français (artiste, titre, note, signé et date, support, dimensions, éditions) + coches peinture / miniature / aquarelle, exposition, carousel hero, <strong>ordre d’affichage front</strong> (glisser-déposer ou ↑↓), filtres qui <strong>masquent</strong> hors critère, pagination 25 / page, puis catalogue PDF. Le front public n’affiche que les œuvres exposées, dans cet ordre.</p>
+
+    <div class="catalog-toolbar" id="catalog-toolbar">
+      <div class="catalog-filters" role="group" aria-label="Filtrer les œuvres">
+        <label class="catalog-filter">Catégorie
+          <select id="catalog-filter-category" aria-label="Filtrer par catégorie">
+            <option value="">Toutes</option>
+            <option value="peinture">Peinture</option>
+            <option value="miniature">Miniature</option>
+            <option value="aquarelle">Aquarelle</option>
+            <option value="a-verifier">À vérifier</option>
+          </select>
+        </label>
+        <label class="catalog-filter">Artiste
+          <select id="catalog-filter-artist" aria-label="Filtrer par artiste">
+            <option value="">Tous</option>
+          </select>
+        </label>
+        <label class="catalog-filter">Période
+          <select id="catalog-filter-period" aria-label="Filtrer par période">
+            <option value="">Toutes</option>
+          </select>
+        </label>
+        <label class="catalog-filter">Exposition
+          <select id="catalog-filter-exposed" aria-label="Filtrer par exposition">
+            <option value="">Toutes</option>
+            <option value="1">Exposées</option>
+            <option value="0">Non exposées</option>
+          </select>
+        </label>
+        <div class="catalog-filter catalog-sort-field">
+          <span class="catalog-sort-label" id="catalog-sort-label">Tri</span>
+          <div class="catalog-sort-group" id="catalog-sort" role="group" aria-labelledby="catalog-sort-label">
+            <button type="button" class="sort-btn is-pressed" data-sort="recent" aria-pressed="true" title="Plus récente téléchargée ou modifiée">Plus récente</button>
+            <button type="button" class="sort-btn" data-sort="oldest" aria-pressed="false" title="Plus ancienne">Plus ancienne</button>
+            <button type="button" class="sort-btn" data-sort="order" aria-pressed="false" title="Ordre d’affichage front">Ordre front</button>
+            <button type="button" class="sort-btn" data-sort="artist" aria-pressed="false" title="Artiste (A→Z)">Artiste A→Z</button>
+            <button type="button" class="sort-btn" data-sort="title" aria-pressed="false" title="Titre (A→Z)">Titre A→Z</button>
+          </div>
+        </div>
+        <label class="catalog-filter catalog-search-field">Recherche photos
+          <input
+            id="catalog-filter-search"
+            type="search"
+            enterkeyhint="search"
+            autocomplete="off"
+            spellcheck="false"
+            placeholder="Filtrer par titre, artiste, note…"
+            aria-label="Recherche instantanée dans les photos"
+          >
+        </label>
+      </div>
+      <p class="catalog-filter-hint" id="catalog-filter-hint">Tri par défaut : plus récente téléchargée ou modifiée (max création / modification). La recherche filtre instantanément titre, artiste, note, support, dimensions et identifiant. En « Ordre d’affichage front », glissez ou utilisez ↑↓ pour regrouper les œuvres sur la vitrine (filtre Exposées recommandé) — l’ordre est enregistré dans D1 (`sort_order`). La période ne retient que les siècles déjà écrits dans les métadonnées. Les filtres masquent hors critère, puis 25 fichiers par page.</p>
+      <label class="catalog-select-all">
+        <input type="checkbox" id="catalog-select-all">
+        Tout sélectionner (filtrées)
+      </label>
+      <button class="button" id="catalog-pdf" type="button" disabled>Générer le catalogue PDF</button>
+      <button class="button button-quiet" id="catalog-export" type="button">Exporter la base</button>
+      <button class="button button-quiet" id="catalog-backfill-web" type="button">Générer versions web manquantes</button>
+      <p class="catalog-count" id="catalog-count" aria-live="polite"></p>
+    </div>
+    <p class="atelier-status" id="catalog-status" role="alert"></p>
+    <nav class="catalog-pagination catalog-pagination--top" data-catalog-pager aria-label="Pagination bibliothèque (haut)" hidden>
+      <button class="page-prev" type="button" data-page-prev>Précédent</button>
+      <p class="page-indicator" aria-live="polite"><span data-page-current>1</span> / <span data-page-total>1</span></p>
+      <button class="page-next" type="button" data-page-next>Suivant</button>
+    </nav>
+    <ul id="added-list" class="library-list"></ul>
+    <nav class="catalog-pagination" data-catalog-pager aria-label="Pagination bibliothèque" hidden>
+      <button class="page-prev" type="button" data-page-prev>Précédent</button>
+      <p class="page-indicator" aria-live="polite"><span data-page-current>1</span> / <span data-page-total>1</span></p>
+      <button class="page-next" type="button" data-page-next>Suivant</button>
+    </nav>
+  </section>
+
+  <main class="atelier">
+    <form class="atelier-form" id="work-form">
+      <p class="eyebrow">Ajout</p>
+      <h2>Déposer des œuvres</h2>
+      <p class="atelier-lead">Un seul choix&nbsp;: fichiers ou dossier. Les <strong>EXIF / IPTC</strong> remplissent les champs Artlogic (artiste, titre, note, signé et date, support, dimensions). Corrigez au besoin, puis aperçu → enregistrement&nbsp;: <strong>original</strong> + dérivé <strong>web</strong> (~1800&nbsp;px) + <strong>vignette</strong>. Non exposées par défaut.</p>
+      <div class="file-field">
+        <span id="image-label">Images</span>
+        <input id="image" name="image" type="file" accept="image/jpeg,image/png,image/webp" class="visually-hidden" multiple aria-labelledby="image-label">
+        <input id="image-folder" type="file" class="visually-hidden" multiple webkitdirectory aria-label="Choisir un dossier d’images">
+        <div class="pick-unified">
+          <button class="file-pick" id="pick-image" type="button" aria-haspopup="menu" aria-expanded="false" aria-controls="pick-menu">Choisir images ou dossier</button>
+          <div class="pick-menu" id="pick-menu" role="menu" hidden>
+            <button type="button" role="menuitem" data-pick="files">Fichiers images</button>
+            <button type="button" role="menuitem" data-pick="folder">Dossier</button>
+          </div>
+        </div>
+        <span id="file-name">Aucun fichier choisi</span>
+      </div>
+      <div id="upload-queue" class="upload-queue" hidden></div>
+      <fieldset>
+        <legend>À cocher (par défaut pour les nouvelles)</legend>
+        <label><input type="checkbox" name="category" value="peinture" checked> peinture</label>
+        <label><input type="checkbox" name="category" value="miniature"> miniature</label>
+        <label><input type="checkbox" name="category" value="aquarelle"> aquarelle</label>
+      </fieldset>
+      <label class="expose-default">
+        <input type="checkbox" id="default-exposed" name="default-exposed">
+        Marquer comme exposée à l’enregistrement (flag D1 — visible sur le front public si exposée)
+      </label>
+      <label class="expose-default">
+        <input type="checkbox" id="default-carousel" name="default-carousel">
+        Inclure dans le carousel hero (flag D1 — visible au public seulement si aussi exposée)
+      </label>
+      <div class="atelier-actions">
+        <button class="button" id="preview-button" type="submit">Aperçu <span>↘</span></button>
+        <button class="button button-quiet" id="publish-button" type="button" disabled>Enregistrer</button>
+      </div>
+      <p class="atelier-hint" id="form-hint">Source ≤ ~40&nbsp;Mo. Sous ~12&nbsp;Mo l’original est conservé (EXIF intacts). JPEG, PNG, WebP. Aperçu avant enregistrement.</p>
+      <p class="atelier-status" id="form-status" role="alert"></p>
+    </form>
+    <section class="preview-panel" id="preview-panel" aria-labelledby="preview-title" hidden>
+      <p class="eyebrow">Aperçu</p>
+      <h2 id="preview-title">Avant enregistrement</h2>
+      <p class="preview-sizes" id="preview-sizes"></p>
+      <div id="preview-batch" class="preview-batch"></div>
+    </section>
+  </main>
+
+  <script src="vendor/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js" defer></script>
+  <script src="atelier.js?v=20261111-atelierpag2" defer></script>
+</body>
+</html>
