@@ -1858,7 +1858,7 @@ function workItem(work) {
   cropNeeded.textContent = "Recadrage 16:9 recommandé";
   const cropBtn = document.createElement("button");
   cropBtn.type = "button";
-  cropBtn.className = "button-quiet";
+  cropBtn.className = "button button-quiet";
   cropBtn.textContent = work.carousel_image ? "Recadrer" : "Recadrer pour le carousel";
   cropBtn.hidden = !work.carousel;
   cropTools.append(cropBtn, cropBadge, cropNeeded);
