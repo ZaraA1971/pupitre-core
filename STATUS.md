@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Hero5s — carrousel 5 s (2026-11-19)
+
+- `HERO_AUTOPLAY_MS` 10000 → 5000 ; cache-bust `?v=20261119-hero5s`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `eed1d376` · preview `8c278c2f` · atelier `8c2bdebe` · https://galerie-vittet-preview.pages.dev/
+- Mesure live : intervalles ~5000 / ~4999 ms
+
 ## Metaen1 — support EN + dimensions inches (2026-11-19)
 
 - Affichage UK : traduction support + conversion cm → inches (source D1 FR inchangée)
