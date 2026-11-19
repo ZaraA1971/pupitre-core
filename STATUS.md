@@ -4,6 +4,7 @@
 
 ## Croprev — dernier crop visible dans le carousel (2026-11-19)
 
+- croprev2 : seuil cover resserré (vieux 16:9 → contain) ; prod `cc51696b` · atelier `28e8437e` · `?v=20261119-croprev2`
 - Cause : même URL crop réécrit → cache 1 h ; stage ≠ cadre → contain letterbox
 - Fix : `updated_at` public + `?v=` sur `carousel_image` ; TTL crop 60 s ; cover si AR proche du stage
 - Cache-bust `?v=20261119-croprev`
