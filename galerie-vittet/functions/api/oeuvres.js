@@ -65,6 +65,7 @@ export async function onRequestGet(context) {
     return json(200, {
       version: 1,
       pageSize: 15,
+      pageSizeAfterFirst: 18,
       sections: ["peinture", "miniature", "nicolle"],
       oeuvres,
       carousel,

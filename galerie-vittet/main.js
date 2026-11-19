@@ -1,5 +1,7 @@
-/** Collection: 5 rows × 3 columns. */
-const PAGE_SIZE = 15;
+/** Collection page 1: 5 rows × 3 columns (room for the gallery block below). */
+const PAGE_SIZE_FIRST = 15;
+/** From page 2: +1 row (gallery hidden) → 6 × 3. */
+const PAGE_SIZE_NEXT = 18;
 const PAGE_WINDOW = 5;
 /** Public tabs: category tags for peinture/miniature; artist match for nicolle. */
 const SECTIONS = ["peinture", "miniature", "nicolle"];
@@ -230,8 +232,19 @@ function refreshCounts() {
   return firstAvailable;
 }
 
+function pageSizeFor(page) {
+  return page <= 1 ? PAGE_SIZE_FIRST : PAGE_SIZE_NEXT;
+}
+
+function pageStart(page) {
+  if (page <= 1) return 0;
+  return PAGE_SIZE_FIRST + (page - 2) * PAGE_SIZE_NEXT;
+}
+
 function pageCount(total) {
-  return Math.max(1, Math.ceil(total / PAGE_SIZE));
+  if (total <= 0) return 1;
+  if (total <= PAGE_SIZE_FIRST) return 1;
+  return 1 + Math.ceil((total - PAGE_SIZE_FIRST) / PAGE_SIZE_NEXT);
 }
 
 function pageWindow(current, total, size = PAGE_WINDOW) {
@@ -364,13 +377,23 @@ function goToPage(page) {
   collectionPanel.scrollIntoView({ behavior: prefersReduce() ? "auto" : "smooth", block: "start" });
 }
 
+function syncGalleryVisibility() {
+  const showGallery = currentPage <= 1;
+  const about = document.getElementById("galerie");
+  const ornament = document.querySelector(".section-ornament");
+  if (about) about.hidden = !showGallery;
+  if (ornament) ornament.hidden = !showGallery;
+  document.documentElement.classList.toggle("collection-page-deep", !showGallery);
+}
+
 function renderPage() {
   const filtered = worksFor(activeSection);
   const totalPages = pageCount(filtered.length);
   if (currentPage > totalPages) currentPage = totalPages;
   if (currentPage < 1) currentPage = 1;
-  const start = (currentPage - 1) * PAGE_SIZE;
-  const pageWorks = filtered.slice(start, start + PAGE_SIZE);
+  const size = pageSizeFor(currentPage);
+  const start = pageStart(currentPage);
+  const pageWorks = filtered.slice(start, start + size);
 
   grid.classList.remove("is-loading");
   grid.removeAttribute("aria-busy");
@@ -388,6 +411,7 @@ function renderPage() {
   pagePrev.disabled = currentPage <= 1;
   pageNext.disabled = currentPage >= totalPages;
   pagination.hidden = filtered.length === 0 || totalPages <= 1;
+  syncGalleryVisibility();
   const label = sectionLabel(activeSection) || activeSection;
   if (!filtered.length) {
     collectionStatus.hidden = false;
@@ -1826,8 +1850,12 @@ function bindSectionNav() {
     link.addEventListener("click", (event) => {
       event.preventDefault();
       const id = link.getAttribute("data-section");
+      if (id === "galerie" && currentPage > 1) {
+        currentPage = 1;
+        renderPage();
+      }
       const target = id ? document.getElementById(id) : null;
-      if (!target) return;
+      if (!target || target.hidden) return;
       if (searchMode) leaveSearchView({ replaceHash: true });
       else if (location.hash) history.replaceState(null, "", pathWithSearch(""));
       target.scrollIntoView({
