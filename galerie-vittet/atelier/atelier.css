@@ -737,7 +737,8 @@
 .crop-frame {
   position: relative;
   width: min(100%, 860px);
-  aspect-ratio: 16 / 9;
+  /* Aligné sur le hero desktop typique (~16:10 / 1.6), pas 16:9. */
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #0f0b08;
   cursor: grab;

@@ -13,7 +13,7 @@ import {
 } from "../../../../_shared/works.js";
 
 /**
- * Remplace / crée le dérivé carousel (hero recadré 16:9).
+ * Remplace / crée le dérivé carousel (cadre hero, affiché en contain côté front).
  * Ne touche jamais à l’original, au web ni à la collection.
  */
 async function onPost(context) {

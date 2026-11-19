@@ -36,8 +36,11 @@ const MAX_SOURCE_BYTES = 40 * 1024 * 1024;
 const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
 const PREVIEW_MAX_EDGE = 720;
-/** Hero carousel : cadre 16:9 ; crop si ratio trop éloigné (log ≥ 0.22 ≈ AR < 1.2 ou > 2.2). */
-const CAROUSEL_AR = 16 / 9;
+/**
+ * Cadre hero desktop typique (viewport plein : ~16:10, pas 16:9).
+ * Le front affiche le crop en contain pour ne jamais re-couper ce cadre.
+ */
+const CAROUSEL_AR = 16 / 10;
 const CAROUSEL_AR_LOG_THRESHOLD = 0.22;
 const CAROUSEL_MAX_EDGE = 1920;
 const CAROUSEL_JPEG_QUALITY = 0.86;
@@ -1236,7 +1239,7 @@ const cropZoom = document.getElementById("carousel-crop-zoom");
 const cropStatus = document.getElementById("carousel-crop-status");
 const cropLead = document.getElementById("carousel-crop-lead");
 
-/** État du modal de recadrage carousel (16:9). */
+/** État du modal de recadrage carousel (format hero). */
 let cropSession = null;
 
 function clamp(value, min, max) {
@@ -1392,7 +1395,7 @@ function encodeCarouselCropBlob() {
 }
 
 /**
- * Ouvre le recadreur 16:9. Résout true si un crop a été enregistré.
+ * Ouvre le recadreur au format hero. Résout true si un crop a été enregistré.
  */
 function openCarouselCropper(work) {
   return new Promise(async (resolve) => {
@@ -1410,7 +1413,7 @@ function openCarouselCropper(work) {
     bindCropInteractions();
     if (cropStatus) cropStatus.textContent = "Chargement de l’image…";
     if (cropLead) {
-      cropLead.textContent = `« ${work.title || work.id} » — cadre 16:9 pour le hero. La galerie garde la peinture entière.`;
+      cropLead.textContent = `« ${work.title || work.id} » — le hero affiche exactement ce cadre. La galerie garde la peinture entière.`;
     }
 
     let settled = false;
@@ -1556,7 +1559,7 @@ async function ensureCarouselCropReady(work, itemEl, statusEl) {
 
   if (statusEl) {
     statusEl.textContent =
-      "Recadrage carousel requis (proportions trop éloignées du 16:9)…";
+      "Recadrage carousel requis (proportions trop éloignées du cadre hero)…";
   }
   const ok = await openCarouselCropper(current);
   if (!ok && statusEl) {
@@ -1856,7 +1859,7 @@ function workItem(work) {
   const cropNeeded = document.createElement("span");
   cropNeeded.className = "carousel-crop-needed";
   cropNeeded.hidden = true;
-  cropNeeded.textContent = "Recadrage 16:9 recommandé";
+  cropNeeded.textContent = "Recadrage carousel recommandé";
   const cropBtn = document.createElement("button");
   cropBtn.type = "button";
   cropBtn.className = "button button-quiet";
