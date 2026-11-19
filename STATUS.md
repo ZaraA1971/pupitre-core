@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropfill — carousel sans bandes noires (2026-11-19)
+
+- Hero : crops `object-fit: cover` (remplit le stage, plus de letterbox)
+- Atelier : cadre crop = proportions hero live (`carouselStageAr`)
+- Cache-bust `?v=20261119-cropfill`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `0cfe8573` · preview `668cca7b` · atelier `04cf2f2d` · https://galerie-vittet-preview.pages.dev/
+
 ## Croprev — dernier crop visible dans le carousel (2026-11-19)
 
 - croprev2 : seuil cover resserré (vieux 16:9 → contain) ; prod `cc51696b` · atelier `28e8437e` · `?v=20261119-croprev2`
