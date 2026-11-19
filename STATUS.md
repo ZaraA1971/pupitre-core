@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Hero4s — carrousel 4 s (2026-11-19)
+
+- `HERO_AUTOPLAY_MS` 5000 → 4000 ; cache-bust `?v=20261119-hero4s`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `0921d08e` · preview `d0111f00` · atelier `7225c38a` · https://galerie-vittet-preview.pages.dev/
+- Mesure live : intervalles 4000 / 3999 ms
+
 ## Hero5s — carrousel 5 s (2026-11-19)
 
 - `HERO_AUTOPLAY_MS` 10000 → 5000 ; cache-bust `?v=20261119-hero5s`
