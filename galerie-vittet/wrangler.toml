@@ -1,0 +1,16 @@
+# Galerie Vittet — CMS + front partagent le même plan de données.
+# D1 galerie-vittet-oeuvres + KV galerie-vittet-images (même ids pour prod et atelier).
+# Auth Basic (ATELIER_USER/PASS) protège seulement /atelier/* et images non exposées.
+name = "galerie-vittet-preview"
+compatibility_date = "2024-10-26"
+pages_build_output_dir = "."
+
+[[d1_databases]]
+binding = "DB"
+database_name = "galerie-vittet-oeuvres"
+database_id = "b44e630e-cd76-4ca2-83f5-351cb63f2650"
+
+[[kv_namespaces]]
+binding = "IMAGES"
+id = "a89aa092eea540729f94cf302370d453"
+preview_id = "15b72a6cba40401099a9f28c8a4e3306"
