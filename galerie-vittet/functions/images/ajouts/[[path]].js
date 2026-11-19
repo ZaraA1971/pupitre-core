@@ -1,10 +1,10 @@
 import { requireBasicAuth } from "../../_shared/auth.js";
-import { ASSET_RE, ID_RE, kvKeys } from "../../_shared/limits.js";
+import { ASSET_RE, ID_RE, LIBRARY_ID_RE, kvKeys } from "../../_shared/limits.js";
 import { getWork } from "../../_shared/works.js";
 
 /**
  * Sert les binaires KV derrière le même chemin logique que Scaleway.
- * Variantes : original (images/ajouts/id.ext), web/ (affichage), preview/ (vignette).
+ * Variantes : original, web/ (affichage), preview/ (vignette), carousel/ (hero recadré).
  * Public uniquement si l’œuvre est exposed=1 ; sinon Basic Auth (brouillons).
  */
 export async function onRequestGet(context) {
@@ -23,6 +23,9 @@ export async function onRequestGet(context) {
   } else if (relative.startsWith("web/")) {
     kind = "web";
     fileName = relative.slice("web/".length);
+  } else if (relative.startsWith("carousel/")) {
+    kind = "carousel";
+    fileName = relative.slice("carousel/".length);
   }
 
   const match = /^([a-z0-9][a-z0-9._-]{0,80})\.(webp|jpg|png)$/.exec(fileName);
@@ -30,7 +33,8 @@ export async function onRequestGet(context) {
     return new Response("Introuvable.", { status: 404 });
   }
   const id = match[1];
-  if (!ID_RE.test(id)) {
+  // Carousel crop may exist for exposee-* as well as ajout-*.
+  if (kind === "carousel" ? !LIBRARY_ID_RE.test(id) : !ID_RE.test(id)) {
     return new Response("Introuvable.", { status: 404 });
   }
 
@@ -40,7 +44,13 @@ export async function onRequestGet(context) {
   }
 
   const expected =
-    kind === "preview" ? work.preview : kind === "web" ? work.web : work.image;
+    kind === "preview"
+      ? work.preview
+      : kind === "web"
+        ? work.web
+        : kind === "carousel"
+          ? work.carousel_image
+          : work.image;
   if (!expected || expected !== assetPath) {
     return new Response("Introuvable.", { status: 404 });
   }
@@ -51,7 +61,14 @@ export async function onRequestGet(context) {
   }
 
   const keys = kvKeys(id);
-  const key = kind === "preview" ? keys.preview : kind === "web" ? keys.web : keys.detail;
+  const key =
+    kind === "preview"
+      ? keys.preview
+      : kind === "web"
+        ? keys.web
+        : kind === "carousel"
+          ? keys.carousel
+          : keys.detail;
   const result = await context.env.IMAGES.getWithMetadata(key, { type: "arrayBuffer" });
   if (!result || !result.value) {
     return new Response("Introuvable.", { status: 404 });

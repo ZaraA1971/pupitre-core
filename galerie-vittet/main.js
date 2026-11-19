@@ -199,6 +199,7 @@ function assetPath(path) {
  * - display = web derivative when present, else image
  * - preview = vignette
  * - original = loupe source only when distinct from display
+ * - carousel = hero crop only (collection keeps display)
  */
 function workAssetPaths(work) {
   const display = assetPath((work && (work.web || work.image)) || "");
@@ -208,7 +209,8 @@ function workAssetPaths(work) {
   const rawOriginal = assetPath((work && work.original) || "");
   const original =
     rawOriginal && rawOriginal !== display ? rawOriginal : "";
-  return { display, preview, original };
+  const carousel = assetPath((work && work.carousel_image) || "");
+  return { display, preview, original, carousel };
 }
 
 function countFor(name) {
@@ -515,6 +517,7 @@ function normalizePayload(data) {
       web: item.web || "",
       original: item.original || "",
       preview: item.preview || item.image || "",
+      carousel_image: item.carousel_image || "",
       order: Number(item.order) || 0,
       carousel:
         item.carousel === true || item.carousel === 1 || item.carousel === "1",
@@ -893,9 +896,9 @@ function buildHeroSlide(work, index, startIndex = 0) {
   if (!isStart) figure.setAttribute("aria-hidden", "true");
   const assets = workAssetPaths(work);
   const img = document.createElement("img");
-  // Full-bleed hero needs web (~1800px), not preview vignettes (~720px).
+  // Hero: crop carousel dédié si présent ; sinon web (~1800px). Collection inchangée.
   img.className = "art-hero";
-  img.src = assets.display || assets.preview;
+  img.src = assets.carousel || assets.display || assets.preview;
   img.alt = work.alt || work.title || "";
   img.decoding = "async";
   fitHeroImage(img);

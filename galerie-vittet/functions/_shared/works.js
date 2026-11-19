@@ -8,7 +8,7 @@ import {
 /** Colonnes métadonnées Artlogic (labels FR atelier : artiste, titre, note,
  * signé et date, support, dimensions, éditions) + tags peinture/miniature/aquarelle. */
 const SELECT_COLS =
-  "id, artist, title, note, signed_dated, support, dimensions, editions, source_file, alt, categories, image, web, preview, created_at, updated_at, exposed, carousel, sort_order";
+  "id, artist, title, note, signed_dated, support, dimensions, editions, source_file, alt, categories, image, web, preview, carousel_image, created_at, updated_at, exposed, carousel, sort_order";
 
 const META_COLUMNS = [
   ["signed_dated", "TEXT NOT NULL DEFAULT ''"],
@@ -18,6 +18,8 @@ const META_COLUMNS = [
   ["source_file", "TEXT NOT NULL DEFAULT ''"],
   /** Dérivé web (affichage front) — original reste dans `image`. */
   ["web", "TEXT NOT NULL DEFAULT ''"],
+  /** Recadrage dédié au hero carousel (collection garde web/original). */
+  ["carousel_image", "TEXT NOT NULL DEFAULT ''"],
 ];
 
 /** Horodatage SQLite `datetime('now')` → `YYYY-MM-DD HH:MM:SS` (UTC). */
@@ -56,6 +58,7 @@ export function rowToWork(row) {
     image: row.image,
     web: row.web || "",
     preview: row.preview,
+    carousel_image: row.carousel_image || "",
     created_at: row.created_at || "",
     updated_at: row.updated_at || row.created_at || "",
     exposed,
@@ -241,6 +244,22 @@ export async function updateWorkWeb(db, id, { web }) {
   await db
     .prepare(`UPDATE oeuvres SET web = ?, updated_at = ? WHERE id = ?`)
     .bind(web, stampNow(), id)
+    .run();
+  return getWork(db, id);
+}
+
+/**
+ * Enregistre / remplace le dérivé carousel (hero) sans toucher web/original/collection.
+ */
+export async function updateWorkCarouselImage(db, id, { carousel_image }) {
+  if (!LIBRARY_ID_RE.test(id)) throw new Error("id");
+  if (carousel_image && !ASSET_RE.test(carousel_image)) throw new Error("path");
+  await ensureSchema(db);
+  const current = await getWork(db, id);
+  if (!current) return null;
+  await db
+    .prepare(`UPDATE oeuvres SET carousel_image = ?, updated_at = ? WHERE id = ?`)
+    .bind(carousel_image || "", stampNow(), id)
     .run();
   return getWork(db, id);
 }

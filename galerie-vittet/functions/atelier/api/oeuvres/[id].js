@@ -35,6 +35,7 @@ export async function onRequestDelete(context) {
   await context.env.IMAGES.delete(keys.detail).catch(() => {});
   await context.env.IMAGES.delete(keys.web).catch(() => {});
   await context.env.IMAGES.delete(keys.preview).catch(() => {});
+  await context.env.IMAGES.delete(keys.carousel).catch(() => {});
   return json(200, { ok: true, id: workId });
 }
 

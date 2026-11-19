@@ -36,6 +36,11 @@ const MAX_SOURCE_BYTES = 40 * 1024 * 1024;
 const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
 const PREVIEW_MAX_EDGE = 720;
+/** Hero carousel : cadre 16:9 ; crop si ratio trop éloigné (log ≥ 0.22 ≈ AR < 1.2 ou > 2.2). */
+const CAROUSEL_AR = 16 / 9;
+const CAROUSEL_AR_LOG_THRESHOLD = 0.22;
+const CAROUSEL_MAX_EDGE = 1920;
+const CAROUSEL_JPEG_QUALITY = 0.86;
 const LIBRARY_PAGE_SIZE = 25;
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ID_PATTERN = /^ajout-[a-z0-9-]{1,80}$/;
@@ -334,6 +339,30 @@ function encodeType() {
     if (canvas.toDataURL("image/webp").startsWith("data:image/webp")) return "image/webp";
   } catch (error) {}
   return "image/jpeg";
+}
+
+function carouselArDelta(nw, nh) {
+  if (!(nw > 0 && nh > 0)) return Infinity;
+  return Math.abs(Math.log(nw / nh / CAROUSEL_AR));
+}
+
+function needsCarouselCrop(nw, nh) {
+  return carouselArDelta(nw, nh) >= CAROUSEL_AR_LOG_THRESHOLD;
+}
+
+function sourcePathForCrop(work) {
+  if (!work) return "";
+  return work.web || work.image || work.preview || "";
+}
+
+function loadImageNaturalSize(url) {
+  return new Promise((resolve, reject) => {
+    const image = new Image();
+    image.onload = () =>
+      resolve({ width: image.naturalWidth, height: image.naturalHeight, image });
+    image.onerror = () => reject(new Error("image"));
+    image.src = url;
+  });
 }
 
 function loadBitmap(file) {
@@ -1198,6 +1227,343 @@ function readEditorFields(itemEl) {
   return fields;
 }
 
+const cropDialog = document.getElementById("carousel-crop-dialog");
+const cropForm = document.getElementById("carousel-crop-form");
+const cropFrame = document.getElementById("carousel-crop-frame");
+const cropImage = document.getElementById("carousel-crop-image");
+const cropZoom = document.getElementById("carousel-crop-zoom");
+const cropStatus = document.getElementById("carousel-crop-status");
+const cropLead = document.getElementById("carousel-crop-lead");
+
+/** État du modal de recadrage carousel (16:9). */
+let cropSession = null;
+
+function clamp(value, min, max) {
+  return Math.min(max, Math.max(min, value));
+}
+
+function resetCropSession() {
+  if (cropSession && cropSession.objectUrl) {
+    URL.revokeObjectURL(cropSession.objectUrl);
+  }
+  cropSession = null;
+  if (cropImage) {
+    cropImage.removeAttribute("src");
+    cropImage.style.transform = "";
+    cropImage.style.width = "";
+    cropImage.style.height = "";
+  }
+  if (cropFrame) cropFrame.classList.remove("is-dragging");
+  if (cropStatus) cropStatus.textContent = "";
+  if (cropZoom) cropZoom.value = "100";
+}
+
+function applyCropTransform() {
+  if (!cropSession || !cropImage) return;
+  const { baseW, baseH, panX, panY, zoom } = cropSession;
+  cropImage.style.width = `${baseW * zoom}px`;
+  cropImage.style.height = `${baseH * zoom}px`;
+  cropImage.style.transform = `translate(-50%, -50%) translate(${panX}px, ${panY}px)`;
+}
+
+function clampCropPan() {
+  if (!cropSession || !cropFrame) return;
+  const fw = cropFrame.clientWidth;
+  const fh = cropFrame.clientHeight;
+  const iw = cropSession.baseW * cropSession.zoom;
+  const ih = cropSession.baseH * cropSession.zoom;
+  const maxX = Math.max(0, (iw - fw) / 2);
+  const maxY = Math.max(0, (ih - fh) / 2);
+  cropSession.panX = clamp(cropSession.panX, -maxX, maxX);
+  cropSession.panY = clamp(cropSession.panY, -maxY, maxY);
+}
+
+function syncCropBaseSize() {
+  if (!cropSession || !cropFrame) return;
+  const fw = cropFrame.clientWidth;
+  const fh = cropFrame.clientHeight;
+  const cover = Math.max(fw / cropSession.nw, fh / cropSession.nh);
+  cropSession.baseW = cropSession.nw * cover;
+  cropSession.baseH = cropSession.nh * cover;
+  clampCropPan();
+  applyCropTransform();
+}
+
+function bindCropInteractions() {
+  if (!cropFrame || cropFrame.dataset.cropBound === "1") return;
+  cropFrame.dataset.cropBound = "1";
+
+  cropFrame.addEventListener("pointerdown", (event) => {
+    if (!cropSession || event.button !== 0) return;
+    cropSession.dragging = true;
+    cropSession.dragX = event.clientX;
+    cropSession.dragY = event.clientY;
+    cropFrame.classList.add("is-dragging");
+    try {
+      cropFrame.setPointerCapture(event.pointerId);
+    } catch {
+      /* ignore */
+    }
+  });
+
+  cropFrame.addEventListener("pointermove", (event) => {
+    if (!cropSession || !cropSession.dragging) return;
+    const dx = event.clientX - cropSession.dragX;
+    const dy = event.clientY - cropSession.dragY;
+    cropSession.dragX = event.clientX;
+    cropSession.dragY = event.clientY;
+    cropSession.panX += dx;
+    cropSession.panY += dy;
+    clampCropPan();
+    applyCropTransform();
+  });
+
+  const endDrag = (event) => {
+    if (!cropSession) return;
+    cropSession.dragging = false;
+    cropFrame.classList.remove("is-dragging");
+    try {
+      cropFrame.releasePointerCapture(event.pointerId);
+    } catch {
+      /* ignore */
+    }
+  };
+  cropFrame.addEventListener("pointerup", endDrag);
+  cropFrame.addEventListener("pointercancel", endDrag);
+
+  if (cropZoom) {
+    cropZoom.addEventListener("input", () => {
+      if (!cropSession) return;
+      cropSession.zoom = Number(cropZoom.value) / 100 || 1;
+      clampCropPan();
+      applyCropTransform();
+    });
+  }
+
+  window.addEventListener("resize", () => {
+    if (!cropSession || !cropDialog || !cropDialog.open) return;
+    syncCropBaseSize();
+  });
+}
+
+function encodeCarouselCropBlob() {
+  if (!cropSession || !cropFrame) return Promise.reject(new Error("crop"));
+  const fw = cropFrame.clientWidth;
+  const fh = cropFrame.clientHeight;
+  if (!(fw > 0 && fh > 0)) return Promise.reject(new Error("frame"));
+
+  const { nw, nh, baseW, baseH, panX, panY, zoom, image } = cropSession;
+  const dispW = baseW * zoom;
+  const dispH = baseH * zoom;
+  // Coin haut-gauche de l’image affichée dans le cadre.
+  const imgLeft = fw / 2 + panX - dispW / 2;
+  const imgTop = fh / 2 + panY - dispH / 2;
+  const sx = ((0 - imgLeft) / dispW) * nw;
+  const sy = ((0 - imgTop) / dispH) * nh;
+  const sw = (fw / dispW) * nw;
+  const sh = (fh / dispH) * nh;
+
+  const scale = Math.min(1, CAROUSEL_MAX_EDGE / Math.max(sw, sh));
+  const outW = Math.max(1, Math.round(sw * scale));
+  const outH = Math.max(1, Math.round(sh * scale));
+  const canvas = document.createElement("canvas");
+  canvas.width = outW;
+  canvas.height = outH;
+  const ctx = canvas.getContext("2d");
+  ctx.fillStyle = "#0f0b08";
+  ctx.fillRect(0, 0, outW, outH);
+  ctx.drawImage(image, sx, sy, sw, sh, 0, 0, outW, outH);
+
+  const type = encodeType();
+  return new Promise((resolve, reject) => {
+    canvas.toBlob(
+      (blob) => {
+        if (!blob) {
+          reject(new Error("format"));
+          return;
+        }
+        resolve(blob);
+      },
+      type,
+      CAROUSEL_JPEG_QUALITY
+    );
+  });
+}
+
+/**
+ * Ouvre le recadreur 16:9. Résout true si un crop a été enregistré.
+ */
+function openCarouselCropper(work) {
+  return new Promise(async (resolve) => {
+    if (!cropDialog || !cropImage || !cropFrame) {
+      resolve(false);
+      return;
+    }
+    const path = sourcePathForCrop(work);
+    if (!path) {
+      resolve(false);
+      return;
+    }
+
+    resetCropSession();
+    bindCropInteractions();
+    if (cropStatus) cropStatus.textContent = "Chargement de l’image…";
+    if (cropLead) {
+      cropLead.textContent = `« ${work.title || work.id} » — cadre 16:9 pour le hero. La galerie garde la peinture entière.`;
+    }
+
+    let settled = false;
+    const finish = (ok) => {
+      if (settled) return;
+      settled = true;
+      try {
+        cropDialog.close();
+      } catch {
+        /* ignore */
+      }
+      resetCropSession();
+      resolve(ok);
+    };
+
+    try {
+      const url = mediaUrl(path);
+      const response = await fetch(url, {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const loaded = await loadImageNaturalSize(objectUrl);
+      cropSession = {
+        workId: work.id,
+        work,
+        objectUrl,
+        image: loaded.image,
+        nw: loaded.width,
+        nh: loaded.height,
+        baseW: loaded.width,
+        baseH: loaded.height,
+        panX: 0,
+        panY: 0,
+        zoom: 1,
+        dragging: false,
+        dragX: 0,
+        dragY: 0,
+      };
+      cropImage.src = objectUrl;
+      cropImage.alt = work.alt || work.title || "";
+      if (cropZoom) cropZoom.value = "100";
+      if (cropStatus) cropStatus.textContent = "";
+      if (typeof cropDialog.showModal === "function") cropDialog.showModal();
+      else cropDialog.setAttribute("open", "");
+      // Layout after open so frame has size.
+      requestAnimationFrame(() => syncCropBaseSize());
+    } catch (error) {
+      if (cropStatus) cropStatus.textContent = "Impossible de charger l’image.";
+      finish(false);
+      return;
+    }
+
+    const onClose = () => {
+      cropDialog.removeEventListener("close", onClose);
+      if (!settled) finish(false);
+    };
+    cropDialog.addEventListener("close", onClose);
+
+    if (cropForm) {
+      cropForm.onsubmit = async (event) => {
+        event.preventDefault();
+        const submitter = event.submitter;
+        const value = submitter && submitter.value ? submitter.value : "cancel";
+        if (value !== "confirm") {
+          finish(false);
+          return;
+        }
+        if (cropStatus) cropStatus.textContent = "Encodage et envoi…";
+        const confirmBtn = document.getElementById("carousel-crop-confirm");
+        const cancelBtn = document.getElementById("carousel-crop-cancel");
+        if (confirmBtn) confirmBtn.disabled = true;
+        if (cancelBtn) cancelBtn.disabled = true;
+        try {
+          const blob = await encodeCarouselCropBlob();
+          if (!blob || blob.size > MAX_BYTES) throw new Error("encode");
+          const body = new FormData();
+          body.set("carousel", blob, `carousel.${extensionFor(blob)}`);
+          const put = await fetch(
+            `api/oeuvres/${encodeURIComponent(work.id)}/carousel`,
+            {
+              method: "POST",
+              body,
+              credentials: "same-origin",
+              headers: { "X-Atelier": "1" },
+            }
+          );
+          const payload = await put.json().catch(() => ({}));
+          if (!put.ok) throw new Error(payload.error || `HTTP ${put.status}`);
+          const updated = normalizeWork(payload.work || payload) || {
+            ...work,
+            carousel_image:
+              (payload.work && payload.work.carousel_image) ||
+              payload.carousel_image ||
+              work.carousel_image,
+          };
+          const idx = libraryWorks.findIndex((w) => w.id === work.id);
+          if (idx >= 0) libraryWorks[idx] = { ...libraryWorks[idx], ...updated };
+          Object.assign(work, updated);
+          finish(true);
+        } catch (error) {
+          if (cropStatus) {
+            cropStatus.textContent =
+              error && error.message && error.message !== "encode"
+                ? String(error.message)
+                : "Enregistrement du recadrage impossible.";
+          }
+          if (confirmBtn) confirmBtn.disabled = false;
+          if (cancelBtn) cancelBtn.disabled = false;
+        }
+      };
+    }
+  });
+}
+
+/**
+ * Si carousel coché et ratio hors cadre sans crop → ouvre le recadreur.
+ * @returns {Promise<boolean>} false si l’utilisateur annule un crop requis.
+ */
+async function ensureCarouselCropReady(work, itemEl, statusEl) {
+  const fields = readEditorFields(itemEl);
+  if (!fields.carousel) return true;
+  const current = libraryWorks.find((w) => w.id === work.id) || work;
+  if (current.carousel_image) return true;
+
+  const path = sourcePathForCrop(current);
+  if (!path) {
+    if (statusEl) {
+      statusEl.textContent = "Image source indisponible pour le recadrage.";
+    }
+    return false;
+  }
+
+  try {
+    const loaded = await loadImageNaturalSize(mediaUrl(path));
+    if (!needsCarouselCrop(loaded.width, loaded.height)) return true;
+  } catch {
+    if (statusEl) statusEl.textContent = "Impossible de lire l’image source.";
+    return false;
+  }
+
+  if (statusEl) {
+    statusEl.textContent =
+      "Recadrage carousel requis (proportions trop éloignées du 16:9)…";
+  }
+  const ok = await openCarouselCropper(current);
+  if (!ok && statusEl) {
+    statusEl.textContent = "Recadrage carousel annulé — enregistrement interrompu.";
+  }
+  return ok;
+}
+
 async function saveWorkMeta(work, itemEl, statusEl) {
   const fields = readEditorFields(itemEl);
   if (!fields.artist || !fields.title) {
@@ -1208,6 +1574,9 @@ async function saveWorkMeta(work, itemEl, statusEl) {
     statusEl.textContent = "Cochez peinture, miniature ou aquarelle.";
     return;
   }
+  const cropOk = await ensureCarouselCropReady(work, itemEl, statusEl);
+  if (!cropOk) return;
+
   statusEl.textContent = "Enregistrement…";
   try {
     const response = await fetch(`api/oeuvres/${encodeURIComponent(work.id)}`, {
@@ -1225,7 +1594,14 @@ async function saveWorkMeta(work, itemEl, statusEl) {
       return;
     }
     const idx = libraryWorks.findIndex((w) => w.id === work.id);
-    if (idx >= 0) libraryWorks[idx] = normalizeWork(payload) || { ...libraryWorks[idx], ...fields };
+    const merged = normalizeWork(payload) || { ...libraryWorks[idx], ...fields };
+    // Conserver le crop éventuellement créé juste avant le PATCH.
+    if (idx >= 0) {
+      if (!merged.carousel_image && libraryWorks[idx].carousel_image) {
+        merged.carousel_image = libraryWorks[idx].carousel_image;
+      }
+      libraryWorks[idx] = merged;
+    }
     statusEl.textContent = "Enregistré.";
     renderLibrary();
   } catch (error) {
@@ -1469,6 +1845,79 @@ function workItem(work) {
   flags.append(exposeLabel, carouselLabel);
   editor.append(flags);
 
+  const cropTools = document.createElement("div");
+  cropTools.className = "edit-carousel-tools";
+  cropTools.hidden = !work.carousel;
+  const cropBadge = document.createElement("span");
+  cropBadge.className = "carousel-crop-badge";
+  cropBadge.hidden = !work.carousel_image;
+  cropBadge.textContent = "Recadrage carousel prêt";
+  const cropNeeded = document.createElement("span");
+  cropNeeded.className = "carousel-crop-needed";
+  cropNeeded.hidden = true;
+  cropNeeded.textContent = "Recadrage 16:9 recommandé";
+  const cropBtn = document.createElement("button");
+  cropBtn.type = "button";
+  cropBtn.className = "button-quiet";
+  cropBtn.textContent = work.carousel_image ? "Recadrer" : "Recadrer pour le carousel";
+  cropBtn.hidden = !work.carousel;
+  cropTools.append(cropBtn, cropBadge, cropNeeded);
+  editor.append(cropTools);
+
+  const refreshCropChrome = async () => {
+    const on = !!carouselInput.checked;
+    cropTools.hidden = !on;
+    cropBtn.hidden = !on;
+    cropBadge.hidden = !(on && work.carousel_image);
+    cropBtn.textContent = work.carousel_image
+      ? "Recadrer"
+      : "Recadrer pour le carousel";
+    if (!on) {
+      cropNeeded.hidden = true;
+      return;
+    }
+    if (work.carousel_image) {
+      cropNeeded.hidden = true;
+      return;
+    }
+    const path = sourcePathForCrop(work);
+    if (!path) {
+      cropNeeded.hidden = false;
+      return;
+    }
+    try {
+      const loaded = await loadImageNaturalSize(mediaUrl(path));
+      cropNeeded.hidden = !needsCarouselCrop(loaded.width, loaded.height);
+    } catch {
+      cropNeeded.hidden = false;
+    }
+  };
+
+  carouselInput.addEventListener("change", async () => {
+    await refreshCropChrome();
+    if (!carouselInput.checked || work.carousel_image) return;
+    const path = sourcePathForCrop(work);
+    if (!path) return;
+    try {
+      const loaded = await loadImageNaturalSize(mediaUrl(path));
+      if (!needsCarouselCrop(loaded.width, loaded.height)) return;
+    } catch {
+      return;
+    }
+    const ok = await openCarouselCropper(work);
+    if (ok) {
+      await refreshCropChrome();
+      renderLibrary();
+    }
+  });
+
+  cropBtn.addEventListener("click", async () => {
+    const ok = await openCarouselCropper(work);
+    if (ok) renderLibrary();
+  });
+
+  refreshCropChrome();
+
   const actions = document.createElement("div");
   actions.className = "library-actions";
   const save = document.createElement("button");
@@ -1500,6 +1949,15 @@ function workItem(work) {
     webLink.rel = "noopener";
     webLink.textContent = "Web";
     actions.append(webLink);
+  }
+  if (work.carousel_image) {
+    const cropLink = document.createElement("a");
+    cropLink.className = "button-quiet";
+    cropLink.href = mediaUrl(work.carousel_image);
+    cropLink.target = "_blank";
+    cropLink.rel = "noopener";
+    cropLink.textContent = "Carousel";
+    actions.append(cropLink);
   }
   const remove = document.createElement("button");
   remove.type = "button";
@@ -1551,6 +2009,8 @@ function normalizeWork(raw) {
   const preview = typeof raw.preview === "string" ? raw.preview : "";
   const image = typeof raw.image === "string" ? raw.image : preview;
   const web = typeof raw.web === "string" ? raw.web : "";
+  const carousel_image =
+    typeof raw.carousel_image === "string" ? raw.carousel_image : "";
   if (!id || !preview || !LIBRARY_ID_PATTERN.test(id)) return null;
 
   const isEx = EXPOSEE_ID_PATTERN.test(id);
@@ -1559,6 +2019,12 @@ function normalizeWork(raw) {
   if (isAd && !preview.startsWith("images/ajouts/preview/")) return null;
   if (isEx && (preview.includes("/ajouts/") || !preview.startsWith("images/"))) return null;
   if (isAd && web && !web.startsWith("images/ajouts/web/")) return null;
+  if (
+    carousel_image &&
+    !carousel_image.startsWith("images/ajouts/carousel/")
+  ) {
+    return null;
+  }
 
   return {
     ...raw,
@@ -1566,6 +2032,7 @@ function normalizeWork(raw) {
     image,
     web,
     preview,
+    carousel_image,
     source: isEx ? "exposee" : "ajout",
     order: Number(raw.order) || (isEx ? 0 : 1000),
     categories: Array.isArray(raw.categories) ? raw.categories : [],

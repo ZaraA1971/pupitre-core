@@ -51,6 +51,7 @@ function publicWork(work) {
     web: work.web || "",
     original,
     preview: work.preview,
+    carousel_image: work.carousel_image || "",
     order: work.order || 0,
     carousel: !!work.carousel,
   };

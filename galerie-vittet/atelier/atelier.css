@@ -667,6 +667,141 @@
   color: var(--atelier-ok);
 }
 
+.edit-carousel-tools {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 14px;
+  margin-top: 4px;
+}
+
+.edit-carousel-tools .button-quiet {
+  min-height: 36px;
+  padding: 0 12px;
+  font-size: 13px;
+}
+
+.carousel-crop-badge {
+  font-size: 12px;
+  color: var(--atelier-ok);
+}
+
+.carousel-crop-needed {
+  font-size: 12px;
+  color: #8a4a3a;
+}
+
+.crop-dialog {
+  width: min(920px, calc(100vw - 24px));
+  max-height: calc(100vh - 24px);
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  background: #f7f1ea;
+  color: var(--ink);
+  box-shadow: 0 18px 48px rgba(40, 28, 18, 0.28);
+}
+
+.crop-dialog::backdrop {
+  background: rgba(28, 20, 14, 0.55);
+}
+
+.crop-shell {
+  display: grid;
+  gap: 14px;
+  padding: 18px 18px 16px;
+}
+
+.crop-header h2 {
+  margin: 0;
+  font-family: "Playfair Display", Georgia, serif;
+  font-weight: 500;
+  font-size: 1.45rem;
+}
+
+.crop-lead {
+  margin: 6px 0 0;
+  font-size: 14px;
+  line-height: 1.45;
+  color: var(--atelier-hint);
+}
+
+.crop-stage {
+  display: grid;
+  place-items: center;
+  background: #1c140e;
+  min-height: 240px;
+  overflow: hidden;
+}
+
+.crop-frame {
+  position: relative;
+  width: min(100%, 860px);
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #0f0b08;
+  cursor: grab;
+  touch-action: none;
+  user-select: none;
+}
+
+.crop-frame.is-dragging {
+  cursor: grabbing;
+}
+
+.crop-frame img {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  max-width: none;
+  transform-origin: center center;
+  pointer-events: none;
+  user-select: none;
+}
+
+.crop-controls {
+  display: grid;
+  gap: 8px;
+}
+
+.crop-zoom {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: 12px;
+  align-items: center;
+  font-size: 13px;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.crop-zoom input[type="range"] {
+  width: 100%;
+}
+
+.crop-hint {
+  margin: 0;
+  font-size: 13px;
+  color: var(--atelier-hint);
+}
+
+.crop-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: flex-end;
+}
+
+.crop-status {
+  margin: 0;
+  min-height: 1.2em;
+  font-size: 13px;
+  color: var(--atelier-err);
+}
+
+.crop-status:empty {
+  display: none;
+}
+
 @media (max-width: 800px) {
   .atelier { grid-template-columns: 1fr; gap: 28px; }
   .catalog-toolbar { gap: 10px; }

@@ -13,9 +13,9 @@ export const ID_RE = /^ajout-[a-z0-9-]{1,80}$/;
 export const EXPOSEE_ID_RE = /^exposee-[a-z0-9-]{1,80}$/;
 /** Toute entrée bibliothèque D1. */
 export const LIBRARY_ID_RE = /^(ajout|exposee)-[a-z0-9-]{1,80}$/;
-/** original | web/ (affichage) | preview/ (vignette) — même stem id. */
+/** original | web/ (affichage) | preview/ (vignette) | carousel/ (hero recadré) — même stem id. */
 export const ASSET_RE =
-  /^images\/ajouts\/(?:preview\/|web\/)?[a-z0-9][a-z0-9._-]{0,80}\.(webp|jpg|png)$/;
+  /^images\/ajouts\/(?:preview\/|web\/|carousel\/)?[a-z0-9][a-z0-9._-]{0,80}\.(webp|jpg|png)$/;
 /** Chemins images site (hors /ajouts KV) pour proxy atelier/media. */
 export const PUBLIC_ASSET_RE =
   /^images\/(?:preview\/|web\/)?[a-z0-9][a-z0-9._-]{0,80}\.(webp|jpg|png)$/;
@@ -153,5 +153,6 @@ export function kvKeys(workId) {
     detail: `detail:${workId}`,
     web: `web:${workId}`,
     preview: `preview:${workId}`,
+    carousel: `carousel:${workId}`,
   };
 }

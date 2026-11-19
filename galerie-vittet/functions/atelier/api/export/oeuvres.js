@@ -33,6 +33,7 @@ function exportPayload(works) {
       image: work.image || "",
       web: work.web || "",
       preview: work.preview || "",
+      carousel_image: work.carousel_image || "",
       created_at: work.created_at || "",
       updated_at: work.updated_at || work.created_at || "",
       exposed: !!work.exposed,
