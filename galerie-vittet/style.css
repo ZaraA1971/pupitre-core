@@ -771,6 +771,11 @@ footer a {
 .hero-meta.is-swap .hero-title,
 .hero-meta.is-swap .hero-artist { opacity: 0; }
 
+/* Caption (title/artist) stays in the DOM for JS + #hero-live; not shown on the photo. */
+.hero-caption {
+  display: none;
+}
+
 .hero-meta {
   position: absolute;
   left: 0;
@@ -778,7 +783,7 @@ footer a {
   bottom: 0;
   z-index: 3;
   display: flex;
-  justify-content: space-between;
+  justify-content: flex-end;
   align-items: flex-end;
   gap: 18px;
   padding: 0 max(var(--page-pad), 3.2vw) 28px;
