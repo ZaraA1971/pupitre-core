@@ -869,11 +869,13 @@ function fitHeroImage(img) {
     const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
     const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
 
-    // Crop atelier : afficher 100 % du dérivé (jamais de 2ᵉ coupe CSS).
-    // Le stylesheet hero force cover+100% — on impose contain en inline.
+    // Crop atelier : 100 % du bitmap (jamais de 2ᵉ coupe / re-zoom CSS).
+    // Inline gagne sur .hero-slide img { object-fit: cover }.
     if (img.dataset.carouselCrop === "1") {
-      img.style.objectFit = "contain";
-      img.style.objectPosition = "center center";
+      img.style.setProperty("object-fit", "contain");
+      img.style.setProperty("object-position", "center center");
+      img.style.setProperty("width", "100%");
+      img.style.setProperty("height", "100%");
       return;
     }
     if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
@@ -919,7 +921,10 @@ function buildHeroSlide(work, index, startIndex = 0) {
   const assets = workAssetPaths(work);
   const img = document.createElement("img");
   img.className = "art-hero";
-  if (assets.carousel) img.dataset.carouselCrop = "1";
+  if (assets.carousel) {
+    img.dataset.carouselCrop = "1";
+    figure.dataset.carouselCrop = "1";
+  }
   img.src = assets.carousel || assets.display || assets.preview;
   img.alt = work.alt || work.title || "";
   img.decoding = "async";

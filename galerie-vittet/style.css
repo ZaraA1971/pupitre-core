@@ -765,11 +765,23 @@ footer a {
   filter: var(--img-enhance-hero);
 }
 
-/* Dérivé carousel : ne pas laisser le cover ci-dessus re-zoomer le cadre atelier. */
+/*
+ * Dérivé carousel (cadre atelier) : rupture totale avec la règle cover ci-dessus.
+ * width/height 100% + object-fit:cover se chevauchaient et re-zoomaient le bitmap.
+ * Ici : boîte pleine scène + contain uniquement — 100 % du crop, zéro 2ᵉ coupe.
+ */
+.hero-slide[data-carousel-crop="1"] img,
+.hero-slide[data-carousel-crop="1"] .art-hero,
+.hero-slide[data-carousel-crop="1"].is-active img,
+.hero-slide[data-carousel-crop="1"].is-active .art-hero,
 .hero-slide img[data-carousel-crop="1"],
 .hero-slide .art-hero[data-carousel-crop="1"],
 .hero-slide.is-active img[data-carousel-crop="1"],
 .hero-slide.is-active .art-hero[data-carousel-crop="1"] {
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
   object-fit: contain;
   object-position: center center;
 }
