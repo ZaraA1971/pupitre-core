@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropbtns — boutons Valider/Annuler réactivés (2026-11-19)
+
+- Bug : après un Valider réussi, Confirm/Cancel restaient `disabled` sur le dialog persistant
+- Fix : `resetCropSession()` réactive les boutons à chaque ouverture
+- Cache-bust `?v=20261119-cropbtns` · atelier `17f626ee`
+
 ## Cropfit — crop hero affiché intégralement (2026-11-19)
 
 - Hero : `carousel_image` → `object-fit: contain` (plus de 2ᵉ coupe CSS)
