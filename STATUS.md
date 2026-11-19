@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Hours-et — horaires « et sur rendez-vous » (2026-11-19)
+
+- Header : `·` remplacé par `et` (UK : `and`)
+- Cache-bust `?v=20261119-hours-et`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `faed7ec5` · preview `097e5c61` · atelier `ea031c61` · https://galerie-vittet-preview.pages.dev/
+
 ## Herocaption0 — titres carousel masqués (2026-11-19)
 
 - Titre / artiste plus affichés sur les photos du carrousel (données inchangées)
