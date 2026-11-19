@@ -753,7 +753,8 @@
 .crop-frame {
   position: relative;
   width: min(100%, 860px);
-  aspect-ratio: 16 / 10; /* cadre hero typique */
+  /* AR posé en JS (carouselStageAr) pour coller au hero live */
+  aspect-ratio: 16 / 10;
   overflow: hidden;
   background: #0f0b08;
   cursor: grab;
