@@ -107,7 +107,7 @@ async function onPost(context) {
 
   const quick =
     clean(form.get("quick"), 8) === "1" || clean(form.get("quick"), 8) === "true";
-  let artist = clean(form.get("artist"), META_MAX.artist);
+  let artist = cleanMultiline(form.get("artist"), META_MAX.artist);
   let title = clean(form.get("title"), META_MAX.title);
   const note = cleanMultiline(form.get("note"), META_MAX.note);
   const signed_dated = clean(form.get("signed_dated"), META_MAX.signed_dated);

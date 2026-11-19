@@ -60,7 +60,7 @@ async function onRequestPatch(context) {
   }
 
   const patch = {};
-  if ("artist" in body) patch.artist = clean(body.artist, META_MAX.artist);
+  if ("artist" in body) patch.artist = cleanMultiline(body.artist, META_MAX.artist);
   if ("title" in body) patch.title = clean(body.title, META_MAX.title);
   if ("note" in body) patch.note = cleanMultiline(body.note, META_MAX.note);
   if ("signed_dated" in body) {

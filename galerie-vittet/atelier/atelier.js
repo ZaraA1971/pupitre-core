@@ -600,6 +600,7 @@ function renderBatchPreview() {
     const meta = document.createElement("div");
     meta.className = "art-meta";
     const artistLine = document.createElement("span");
+    artistLine.className = "art-artist";
     artistLine.textContent = item.artist;
     const heading = document.createElement("h3");
     heading.textContent = item.title || "Sans titre";
