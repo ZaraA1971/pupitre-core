@@ -1260,6 +1260,12 @@ function resetCropSession() {
   if (cropFrame) cropFrame.classList.remove("is-dragging");
   if (cropStatus) cropStatus.textContent = "";
   if (cropZoom) cropZoom.value = "100";
+  // Les boutons restent dans le <dialog> hors liste : les réactiver à chaque reset
+  // (sinon ils restent disabled après un Valider réussi).
+  const confirmBtn = document.getElementById("carousel-crop-confirm");
+  const cancelBtn = document.getElementById("carousel-crop-cancel");
+  if (confirmBtn) confirmBtn.disabled = false;
+  if (cancelBtn) cancelBtn.disabled = false;
 }
 
 function applyCropTransform() {
