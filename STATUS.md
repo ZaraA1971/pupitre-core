@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropfit — crop hero affiché intégralement (2026-11-19)
+
+- Hero : `carousel_image` → `object-fit: contain` (plus de 2ᵉ coupe CSS)
+- Cadre Atelier ~16:10 (stage desktop typique), plus 16:9
+- Cache-bust `?v=20261119-cropfit`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `6eff3c6b` · preview `ba78656a` · atelier `31b4d5a6`
+
 ## Recadré — libellé bouton crop déjà fait (2026-11-19)
 
 - Bouton Atelier : **Recadré** si `carousel_image` présent ; sinon **Recadrer pour le carousel**
