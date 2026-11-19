@@ -686,11 +686,6 @@ footer a {
   margin: 0 0 12px;
 }
 
-.site-hero .eyebrow {
-  color: var(--gold-photo);
-  margin-bottom: 8px;
-}
-
 .filter,
 .hero-prev,
 .hero-next,
@@ -1169,7 +1164,6 @@ html.collection-page-deep .section-ornament {
 
 .about-copy {
   --copy-head-gap: 8px;
-  --eyebrow-lh: 1.2;
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -1190,11 +1184,6 @@ html.collection-page-deep .section-ornament {
   gap: var(--copy-head-gap);
   align-content: start;
   text-align: left;
-}
-
-.about-copy .eyebrow {
-  margin: 0;
-  line-height: var(--eyebrow-lh);
 }
 
 .about-copy-body {
@@ -1939,11 +1928,6 @@ footer {
       0
       max(var(--page-pad), env(safe-area-inset-right, 0px))
       max(14px, env(safe-area-inset-bottom, 0px));
-  }
-  .hero-caption .eyebrow {
-    font-size: 10px;
-    letter-spacing: .18em;
-    margin-bottom: 2px;
   }
   .site-hero .hero-title {
     font-size: clamp(13px, 3.6vw, 15px);
