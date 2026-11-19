@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropfix2 — Valider Recadré ne reste plus bloqué (2026-11-19)
+
+- Boutons `type=button` (plus de `method=dialog` submit)
+- Pendant l’envoi : Valider grisé, **Annuler reste actif**
+- Timeout encode + fallback JPEG ; réactivation systématique
+- Cache-bust `?v=20261119-cropfix2` · atelier `be077b14`
+
 ## Cropbtns — boutons Valider/Annuler réactivés (2026-11-19)
 
 - Bug : après un Valider réussi, Confirm/Cancel restaient `disabled` sur le dialog persistant
