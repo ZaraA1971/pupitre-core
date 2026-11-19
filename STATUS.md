@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Artistnl — retours à la ligne artiste (2026-11-19)
+
+- `cleanMultiline` pour artist (POST/PATCH) ; `white-space: pre-line` cartes + lightbox
+- Cache-bust `?v=20261119-artistnl`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `3a700a70` · preview `3ce45d72` · atelier `cce70e6f` · https://galerie-vittet-preview.pages.dev/
+
 ## Claude1 — portrait milieu galerie (2026-11-19)
 
 - Remplace le couple par `galerie-claude.webp` ; alt + `--gal-ar-sum` 4.04
