@@ -8,7 +8,7 @@
 - Front : hero préfère `carousel_image` ; collection / loupe restent sur web/original
 - Cache-bust `?v=20261119-carousel-crop`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
-- Prod `327bf856` · preview `52c5dcdc` · atelier `f4502656` · https://galerie-vittet-preview.pages.dev/
+- Prod `4b80875d` · preview `05e578ca` · atelier `e808f232` · https://galerie-vittet-preview.pages.dev/
 
 ## Artistnl — retours à la ligne artiste (2026-11-19)
 
