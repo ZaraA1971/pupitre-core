@@ -2,9 +2,17 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
-## Cropfill — carousel sans bandes noires (2026-11-19)
+## Cropexact2 — crop carousel 1:1 sans re-zoom CSS (2026-11-19)
 
-- Hero : crops `object-fit: cover` (remplit le stage, plus de letterbox)
+- Cause : `.hero-slide img { object-fit: cover; width/height: 100% }` re-coupait le bitmap atelier
+- Fix : slides `data-carousel-crop` → `contain` (CSS + inline) ; figure marquée aussi ; cadre atelier fixe 16:10
+- Cache-bust `?v=20261119-cropexact2`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `2be6a96f` · preview `577b5a7d` · atelier `94b307fd` · https://galerie-vittet-preview.pages.dev/
+
+## Cropfill — carousel sans bandes noires (2026-11-19) — remplacé par cropexact2
+
+- Hero : crops `object-fit: cover` (remplit le stage, plus de letterbox) → trop zoomé vs crop réel
 - Atelier : cadre crop = proportions hero live (`carouselStageAr`)
 - Cache-bust `?v=20261119-cropfill`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
