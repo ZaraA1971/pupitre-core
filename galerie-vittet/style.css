@@ -1138,8 +1138,8 @@ html.collection-page-deep .art-grid {
   --gal-pad-block: 64px;
   /* Wider breathing room between the three photos (size stays pinned below). */
   --gal-photo-gap: clamp(40px, 5vw, 80px);
-  /* Sum of native width/height for the three photos — keeps one shared height. */
-  --gal-ar-sum: 4.12;
+  /* Sum of native width/height (façade + Claude + salle) — shared height, no crop. */
+  --gal-ar-sum: 4.04;
   /* Height pinned to galerie9 (~390); gap no longer shrinks the images. */
   --gal-photo-h: min(
     405px,

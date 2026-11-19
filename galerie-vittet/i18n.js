@@ -48,7 +48,7 @@
       aboutP3:
         "Membre de la CNES (Chambre nationale des experts spécialisés en objets d’art et de collection), il intervient en tant qu’expert auprès des particuliers.",
       facadeAlt: "Façade de la Galerie Claude Vittet, 21 quai Voltaire",
-      galeristesAlt: "Les galeristes devant une œuvre, Galerie Vittet",
+      claudeAlt: "Claude Vittet, Galerie Vittet",
       salleAlt: "Intérieur de la Galerie Vittet, quai Voltaire",
       creditPrefix: "Site réalisé par ",
       loupe: "Loupe",
@@ -127,7 +127,7 @@
       aboutP3:
         "A member of the CNES (National Chamber of Experts Specialized in Works of Art and Collectibles), he acts as an expert for private individuals.",
       facadeAlt: "Façade of Galerie Claude Vittet, 21 quai Voltaire",
-      galeristesAlt: "The gallerists in front of a painting, Galerie Vittet",
+      claudeAlt: "Claude Vittet, Galerie Vittet",
       salleAlt: "Interior of Galerie Vittet, quai Voltaire",
       creditPrefix: "Website by ",
       loupe: "Loupe",

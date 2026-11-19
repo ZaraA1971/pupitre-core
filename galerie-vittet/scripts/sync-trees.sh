@@ -38,6 +38,7 @@ copy_tree "$ROOT" "$PAGES"
 # Ghost / retired paths — tar extract does not delete orphans on dest
 rm -f "$PAGES/functions/_shared/exposes.js"
 rm -f "$PAGES/images/galeristes.webp"
+rm -f "$PAGES/images/galerie-galeristes.webp"
 # Empty local placeholder (KV serves preview/ via functions/images)
 rmdir "$PAGES/images/ajouts/preview" 2>/dev/null || true
 rmdir "$ROOT/images/ajouts/preview" 2>/dev/null || true
@@ -61,6 +62,7 @@ if [[ -d "$ROOT/images" ]]; then
   )
 fi
 rm -f "$SITE/images/galeristes.webp"
+rm -f "$SITE/images/galerie-galeristes.webp"
 rm -rf "$SITE/atelier" "$SITE/data" "$SITE/functions"
 cat > "$SITE/README.md" <<'MD'
 # Galerie Vittet — front mirror only
