@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Claude1 — portrait milieu galerie (2026-11-19)
+
+- Remplace le couple par `galerie-claude.webp` ; alt + `--gal-ar-sum` 4.04
+- Cache-bust `?v=20261119-claude1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `3259ff39` · preview `fc97ccb6` · atelier `f8983ea4` · https://galerie-vittet-preview.pages.dev/
+
 ## About3 — nouveau texte galerie (2026-11-19)
 
 - 3 paragraphes FR + UK ; cache-bust `?v=20261119-about3`
