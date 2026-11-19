@@ -12,20 +12,28 @@ import {
   updateWorkCarouselImage,
 } from "../../../../_shared/works.js";
 
-/**
- * Remplace / crée le dérivé carousel (cadre hero, affiché en contain côté front).
- * Ne touche jamais à l’original, au web ni à la collection.
- */
-async function onPost(context) {
-  const { request, env } = context;
+/** Dérivé carousel (cadre hero). Ne touche ni original, ni web, ni collection. */
+
+function requireAtelierHeader(request) {
   if (request.headers.get("X-Atelier") !== "1") {
     return json(403, { error: "Requête refusée." });
   }
+  return null;
+}
 
+function parseWorkId(context) {
   const workId = context.params.id;
-  if (!LIBRARY_ID_RE.test(workId || "")) {
-    return json(400, { error: "Œuvre inconnue." });
-  }
+  if (!LIBRARY_ID_RE.test(workId || "")) return null;
+  return workId;
+}
+
+async function onPost(context) {
+  const { request, env } = context;
+  const denied = requireAtelierHeader(request);
+  if (denied) return denied;
+
+  const workId = parseWorkId(context);
+  if (!workId) return json(400, { error: "Œuvre inconnue." });
 
   const lengthHeader = request.headers.get("Content-Length");
   if (lengthHeader != null) {
@@ -36,9 +44,7 @@ async function onPost(context) {
   }
 
   const target = await getWork(env.DB, workId);
-  if (!target) {
-    return json(404, { error: "Œuvre inconnue." });
-  }
+  if (!target) return json(404, { error: "Œuvre inconnue." });
 
   let form;
   try {
@@ -52,8 +58,7 @@ async function onPost(context) {
     return json(400, { error: "Image carousel manquante." });
   }
 
-  const cropBuf = await cropFile.arrayBuffer();
-  const crop = validateImageForKv(cropBuf, "Image carousel");
+  const crop = validateImageForKv(await cropFile.arrayBuffer(), "Image carousel");
   if (!crop.ok) return json(crop.status, { error: crop.error });
 
   const carouselPath = `images/ajouts/carousel/${workId}.${crop.ext}`;
@@ -95,17 +100,15 @@ async function onPost(context) {
 
 async function onDelete(context) {
   const { request, env } = context;
-  if (request.headers.get("X-Atelier") !== "1") {
-    return json(403, { error: "Requête refusée." });
-  }
-  const workId = context.params.id;
-  if (!LIBRARY_ID_RE.test(workId || "")) {
-    return json(400, { error: "Œuvre inconnue." });
-  }
+  const denied = requireAtelierHeader(request);
+  if (denied) return denied;
+
+  const workId = parseWorkId(context);
+  if (!workId) return json(400, { error: "Œuvre inconnue." });
+
   const target = await getWork(env.DB, workId);
-  if (!target) {
-    return json(404, { error: "Œuvre inconnue." });
-  }
+  if (!target) return json(404, { error: "Œuvre inconnue." });
+
   const keys = kvKeys(workId);
   await env.IMAGES.delete(keys.carousel).catch(() => {});
   const updated = await updateWorkCarouselImage(env.DB, workId, {

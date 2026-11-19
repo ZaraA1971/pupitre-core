@@ -681,11 +681,6 @@
   font-size: 13px;
 }
 
-.carousel-crop-badge {
-  font-size: 12px;
-  color: var(--atelier-ok);
-}
-
 .carousel-crop-needed {
   font-size: 12px;
   color: #8a4a3a;
@@ -737,8 +732,7 @@
 .crop-frame {
   position: relative;
   width: min(100%, 860px);
-  /* Aligné sur le hero desktop typique (~16:10 / 1.6), pas 16:9. */
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 10; /* cadre hero typique */
   overflow: hidden;
   background: #0f0b08;
   cursor: grab;

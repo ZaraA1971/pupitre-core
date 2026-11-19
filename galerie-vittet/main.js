@@ -847,7 +847,7 @@ function fitHeroImage(img) {
   if (!img) return;
 
   const apply = () => {
-    /* Crop atelier : afficher 100 % du cadre (pas de re-coupe CSS). */
+    // Crop atelier : contain pour afficher 100 % du cadre (pas de re-coupe).
     if (img.dataset.carouselCrop === "1") {
       applyHeroFit(img, "contain");
       img.style.objectPosition = "center center";
@@ -902,7 +902,6 @@ function buildHeroSlide(work, index, startIndex = 0) {
   if (!isStart) figure.setAttribute("aria-hidden", "true");
   const assets = workAssetPaths(work);
   const img = document.createElement("img");
-  // Hero: crop carousel dédié si présent ; sinon web (~1800px). Collection inchangée.
   img.className = "art-hero";
   if (assets.carousel) img.dataset.carouselCrop = "1";
   img.src = assets.carousel || assets.display || assets.preview;
