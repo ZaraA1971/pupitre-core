@@ -940,7 +940,7 @@ function syncHeroFromWorks(list) {
 let heroReady = false;
 let captionTimer = 0;
 const heroMeta = document.querySelector(".hero-meta");
-const HERO_AUTOPLAY_MS = 5000;
+const HERO_AUTOPLAY_MS = 4000;
 let heroAutoplayTimer = 0;
 let heroAutoplayPaused = false;
 
