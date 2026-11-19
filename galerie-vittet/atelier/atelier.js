@@ -1085,6 +1085,7 @@ function workMatchesFilters(work) {
   const exp = catalogFilterExposed ? catalogFilterExposed.value : "";
   if (exp === "1" && !work.exposed) return false;
   if (exp === "0" && work.exposed) return false;
+  if (exp === "carousel" && !work.carousel) return false;
   if (catalogFilterSearch && !workMatchesSearch(work, catalogFilterSearch.value)) return false;
   return true;
 }
