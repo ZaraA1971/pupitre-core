@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Carousel-crop — recadrage 16:9 dédié au hero (2026-11-19)
+
+- Atelier : si Carousel coché et ratio trop loin du 16:9 → outil pan/zoom ; dérivé `carousel_image` (KV + D1)
+- Front : hero préfère `carousel_image` ; collection / loupe restent sur web/original
+- Cache-bust `?v=20261119-carousel-crop`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `327bf856` · preview `52c5dcdc` · atelier `f4502656` · https://galerie-vittet-preview.pages.dev/
+
 ## Artistnl — retours à la ligne artiste (2026-11-19)
 
 - `cleanMultiline` pour artist (POST/PATCH) ; `white-space: pre-line` cartes + lightbox
