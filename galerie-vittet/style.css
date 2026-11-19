@@ -1159,6 +1159,14 @@ html.collection-page-deep .art-grid {
   border-top: 0;
 }
 
+/* display:flex above beats the bare [hidden] UA rule — keep page 2+ free of the block. */
+.about[hidden],
+.section-ornament[hidden],
+html.collection-page-deep .about,
+html.collection-page-deep .section-ornament {
+  display: none !important;
+}
+
 .about-copy {
   --copy-head-gap: 8px;
   --eyebrow-lh: 1.2;
