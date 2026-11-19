@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Expcarousel — filtre Exposition → Carousel (2026-11-19)
+
+- Menu déroulant Exposition : option **Carousel** (œuvres `carousel=1`)
+- Cache-bust `?v=20261119-expcarousel`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `f0b3f189` · preview `a273d5f8` · atelier `fe1c3668` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Carousel-crop — recadrage 16:9 dédié au hero (2026-11-19)
 
 - Atelier : si Carousel coché et ratio trop loin du 16:9 → outil pan/zoom ; dérivé `carousel_image` (KV + D1)
