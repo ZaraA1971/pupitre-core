@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Page2row — galerie masquée dès page 2 (2026-11-19)
+
+- Page 1 : 15 œuvres + bloc `#galerie` ; page 2+ : 18 œuvres, galerie masquée
+- Cache-bust `?v=20261119-page2row2`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `9b830942` · preview `69d62211` · atelier `3fd514d3` · https://galerie-vittet-preview.pages.dev/
+- Détail : `compte-rendu-page2row-galerie-vittet.md`
+
 ## Hero4s — carrousel 4 s (2026-11-19)
 
 - `HERO_AUTOPLAY_MS` 5000 → 4000 ; cache-bust `?v=20261119-hero4s`
