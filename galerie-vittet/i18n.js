@@ -12,7 +12,7 @@
       docDescription:
         "Galerie Vittet — peintures anciennes, œuvres choisies avec exigence à Paris depuis 1988.",
       writeGallery: "Écrire à la galerie",
-      hours: "Mar–sam 14h30–19h · sur rendez-vous",
+      hours: "Mar–sam 14h30–19h et sur rendez-vous",
       heroStageAria: "Œuvres à la une",
       heroPrev: "Œuvre précédente",
       heroNext: "Œuvre suivante",
@@ -89,7 +89,7 @@
       docDescription:
         "Galerie Vittet — Old Master paintings, works chosen with care in Paris since 1988.",
       writeGallery: "Write to the gallery",
-      hours: "Tue–Sat 2:30–7pm · by appointment",
+      hours: "Tue–Sat 2:30–7pm and by appointment",
       heroStageAria: "Featured works",
       heroPrev: "Previous work",
       heroNext: "Next work",
