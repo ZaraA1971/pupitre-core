@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Noeyebrows — libellés inutiles retirés (2026-11-19)
+
+- Retrait des eyebrows « À la une », « Œuvres choisies », « Depuis 1988 »
+- Cache-bust `?v=20261119-noeyebrows`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `b0a87ff4` · preview `6e400bb7` · atelier `754ccce5` · https://galerie-vittet-preview.pages.dev/
+
 ## Page2row — galerie masquée dès page 2 (2026-11-19)
 
 - Page 1 : 15 œuvres + bloc `#galerie` ; page 2+ : 18 œuvres, galerie masquée
