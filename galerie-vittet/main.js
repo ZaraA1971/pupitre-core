@@ -128,7 +128,33 @@ function categoriesOf(work) {
 }
 
 function factsLine(work) {
+  if (
+    window.GalerieI18n &&
+    typeof window.GalerieI18n.localizeFacts === "function"
+  ) {
+    return window.GalerieI18n.localizeFacts(work.support, work.dimensions);
+  }
   return [work.support, work.dimensions].filter(Boolean).join(" · ");
+}
+
+function displaySupport(value) {
+  if (
+    window.GalerieI18n &&
+    typeof window.GalerieI18n.localizeSupport === "function"
+  ) {
+    return window.GalerieI18n.localizeSupport(value);
+  }
+  return value || "";
+}
+
+function displayDimensions(value) {
+  if (
+    window.GalerieI18n &&
+    typeof window.GalerieI18n.localizeDimensions === "function"
+  ) {
+    return window.GalerieI18n.localizeDimensions(value);
+  }
+  return value || "";
 }
 
 /**
@@ -1554,11 +1580,13 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   dialogArtist.textContent = data.artist || "";
   dialogTitle.textContent = data.title || "";
 
-  const support = data.support || "";
+  const supportRaw = data.support || "";
+  const support = displaySupport(supportRaw);
   dialogSupport.textContent = support;
   dialogSupportBlock.hidden = !support;
 
-  const dimensions = data.dimensions || "";
+  const dimensionsRaw = data.dimensions || "";
+  const dimensions = displayDimensions(dimensionsRaw);
   dialogDimensions.textContent = dimensions;
   dialogDimensionsBlock.hidden = !dimensions;
 

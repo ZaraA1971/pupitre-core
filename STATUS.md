@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Metaen1 — support EN + dimensions inches (2026-11-19)
+
+- Affichage UK : traduction support + conversion cm → inches (source D1 FR inchangée)
+- Cache-bust `?v=20261119-metaen1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `c67564d7` · preview `d07aaeba` · atelier `f098471f` · https://galerie-vittet-preview.pages.dev/?lang=uk
+- Détail : `compte-rendu-metaen1-galerie-vittet.md`
+
 ## Mobheader1 — vraie barre menus mobile (2026-11-13)
 
 - Mobile ≤700px : menu Collection / Galerie / UK en bandeau dédié (plus de mélange avec contact)
