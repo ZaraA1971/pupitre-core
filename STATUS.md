@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Croprev — dernier crop visible dans le carousel (2026-11-19)
+
+- Cause : même URL crop réécrit → cache 1 h ; stage ≠ cadre → contain letterbox
+- Fix : `updated_at` public + `?v=` sur `carousel_image` ; TTL crop 60 s ; cover si AR proche du stage
+- Cache-bust `?v=20261119-croprev`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `d4d48995` · preview `495fd99b` · atelier `5eb938da` · https://galerie-vittet-preview.pages.dev/
+
 ## Cropthumb — miniature du recadrage (2026-11-19)
 
 - Atelier : vignette 16:10 du `carousel_image` à côté de **Recadré** (lien plein cadre)
