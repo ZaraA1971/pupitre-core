@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropthumb — miniature du recadrage (2026-11-19)
+
+- Atelier : vignette 16:10 du `carousel_image` à côté de **Recadré** (lien plein cadre)
+- Cache-bust `?v=20261119-cropthumb`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `fed02038` · preview `cd961fe2` · atelier `aaf41516` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Cropclean — nettoyage code recadrage carousel (2026-11-19)
 
 - Helpers crop simplifiés ; badge « prêt » retiré (libellé Recadré suffit)
