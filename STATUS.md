@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Recadré — libellé bouton crop déjà fait (2026-11-19)
+
+- Bouton Atelier : **Recadré** si `carousel_image` présent ; sinon **Recadrer pour le carousel**
+- Cache-bust `?v=20261119-recadre`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Atelier https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Expcarousel — filtre Exposition → Carousel (2026-11-19)
 
 - Menu déroulant Exposition : option **Carousel** (œuvres `carousel=1`)
