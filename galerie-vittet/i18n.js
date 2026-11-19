@@ -42,9 +42,11 @@
       theGallery: "La galerie",
       aboutAria: "La galerie",
       aboutP1:
-        "Depuis 1988, Claude Vittet partage son regard sur les écoles du Nord des XVIᵉ et XVIIᵉ siècles, les paysagistes français du XVIIIᵉ siècle et l’art de la miniature.",
+        "Actif depuis 1988, Claude Vittet est spécialiste des écoles du Nord des XVIème et XVIIème siècles, des paysagistes français du XVIIIème siècle, des œuvres de Victor Jean Nicolle, ainsi que de l’art de la miniature.",
       aboutP2:
-        "Membre de la Chambre nationale des experts spécialisés, il accompagne collectionneurs et amateurs dans la découverte de chaque œuvre.",
+        "Son goût le conduit à sélectionner des œuvres abordant la peinture d’histoire ainsi que les sujets mythologiques et religieux, lui permettant de proposer des œuvres rares et de répondre aux exigences des collectionneurs et musées.",
+      aboutP3:
+        "Membre de la CNES (Chambre nationale des experts spécialisés en objets d’art et de collection), il intervient en tant qu’expert auprès des particuliers.",
       facadeAlt: "Façade de la Galerie Claude Vittet, 21 quai Voltaire",
       galeristesAlt: "Les galeristes devant une œuvre, Galerie Vittet",
       salleAlt: "Intérieur de la Galerie Vittet, quai Voltaire",
@@ -119,9 +121,11 @@
       theGallery: "The gallery",
       aboutAria: "The gallery",
       aboutP1:
-        "Since 1988, Claude Vittet has shared his eye for the Northern schools of the 16th and 17th centuries, French landscape painters of the 18th century, and the art of miniature.",
+        "Active since 1988, Claude Vittet specialises in the Northern schools of the 16th and 17th centuries, French landscape painters of the 18th century, the works of Victor Jean Nicolle, and the art of miniature.",
       aboutP2:
-        "A member of the National Chamber of Experts Specialized in Works of Art and Collectibles, he accompanies collectors and enthusiasts in the discovery of each work.",
+        "His taste leads him to select works of history painting as well as mythological and religious subjects, enabling him to offer rare works and to meet the requirements of collectors and museums.",
+      aboutP3:
+        "A member of the CNES (National Chamber of Experts Specialized in Works of Art and Collectibles), he acts as an expert for private individuals.",
       facadeAlt: "Façade of Galerie Claude Vittet, 21 quai Voltaire",
       galeristesAlt: "The gallerists in front of a painting, Galerie Vittet",
       salleAlt: "Interior of Galerie Vittet, quai Voltaire",
