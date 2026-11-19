@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
   <link rel="stylesheet" href="../style.css?v=20261111-atelierpag2">
-  <link rel="stylesheet" href="atelier.css?v=20261119-cropbtns">
+  <link rel="stylesheet" href="atelier.css?v=20261119-cropfix2">
 </head>
 <body>
   <header class="atelier-bar">
@@ -149,7 +149,7 @@
   </main>
 
   <dialog class="crop-dialog" id="carousel-crop-dialog" aria-labelledby="carousel-crop-title">
-    <form method="dialog" class="crop-shell" id="carousel-crop-form">
+    <div class="crop-shell" id="carousel-crop-form">
       <header class="crop-header">
         <h2 id="carousel-crop-title">Recadrage carousel</h2>
         <p class="crop-lead" id="carousel-crop-lead">
@@ -169,15 +169,15 @@
         <p class="crop-hint">Glissez pour cadrer. Validez pour enregistrer uniquement le dérivé carousel.</p>
       </div>
       <div class="crop-actions">
-        <button type="submit" value="cancel" class="button button-quiet" id="carousel-crop-cancel">Annuler</button>
-        <button type="submit" value="confirm" class="button" id="carousel-crop-confirm">Valider le recadrage</button>
+        <button type="button" class="button button-quiet" id="carousel-crop-cancel">Annuler</button>
+        <button type="button" class="button" id="carousel-crop-confirm">Valider le recadrage</button>
       </div>
       <p class="crop-status" id="carousel-crop-status" role="status"></p>
-    </form>
+    </div>
   </dialog>
 
   <script src="vendor/jspdf.umd.min.js" defer></script>
   <script src="https://cdn.jsdelivr.net/npm/exifr@7.1.3/dist/full.umd.js" defer></script>
-  <script src="atelier.js?v=20261119-cropbtns" defer></script>
+  <script src="atelier.js?v=20261119-cropfix2" defer></script>
 </body>
 </html>

@@ -1246,7 +1246,28 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
+function cropActionButtons() {
+  return {
+    confirmBtn: document.getElementById("carousel-crop-confirm"),
+    cancelBtn: document.getElementById("carousel-crop-cancel"),
+  };
+}
+
+function setCropActionsEnabled(enabled, { keepCancel = false } = {}) {
+  const { confirmBtn, cancelBtn } = cropActionButtons();
+  if (confirmBtn) confirmBtn.disabled = !enabled;
+  // Annuler reste dispo pendant l’envoi pour ne pas coincer le dialog.
+  if (cancelBtn) cancelBtn.disabled = keepCancel ? false : !enabled;
+}
+
 function resetCropSession() {
+  if (cropSession && cropSession.abort) {
+    try {
+      cropSession.abort.abort();
+    } catch {
+      /* ignore */
+    }
+  }
   if (cropSession && cropSession.objectUrl) {
     URL.revokeObjectURL(cropSession.objectUrl);
   }
@@ -1260,12 +1281,7 @@ function resetCropSession() {
   if (cropFrame) cropFrame.classList.remove("is-dragging");
   if (cropStatus) cropStatus.textContent = "";
   if (cropZoom) cropZoom.value = "100";
-  // Les boutons restent dans le <dialog> hors liste : les réactiver à chaque reset
-  // (sinon ils restent disabled après un Valider réussi).
-  const confirmBtn = document.getElementById("carousel-crop-confirm");
-  const cancelBtn = document.getElementById("carousel-crop-cancel");
-  if (confirmBtn) confirmBtn.disabled = false;
-  if (cancelBtn) cancelBtn.disabled = false;
+  setCropActionsEnabled(true);
 }
 
 function applyCropTransform() {
@@ -1356,6 +1372,38 @@ function bindCropInteractions() {
   });
 }
 
+function canvasToBlob(canvas, type, quality) {
+  return new Promise((resolve, reject) => {
+    let settled = false;
+    const timer = window.setTimeout(() => {
+      if (settled) return;
+      settled = true;
+      reject(new Error("timeout"));
+    }, 45000);
+    try {
+      canvas.toBlob(
+        (blob) => {
+          if (settled) return;
+          settled = true;
+          window.clearTimeout(timer);
+          if (!blob) {
+            reject(new Error("format"));
+            return;
+          }
+          resolve(blob);
+        },
+        type,
+        quality
+      );
+    } catch (error) {
+      if (settled) return;
+      settled = true;
+      window.clearTimeout(timer);
+      reject(error || new Error("format"));
+    }
+  });
+}
+
 function encodeCarouselCropBlob() {
   if (!cropSession || !cropFrame) return Promise.reject(new Error("crop"));
   const fw = cropFrame.clientWidth;
@@ -1363,15 +1411,23 @@ function encodeCarouselCropBlob() {
   if (!(fw > 0 && fh > 0)) return Promise.reject(new Error("frame"));
 
   const { nw, nh, baseW, baseH, panX, panY, zoom, image } = cropSession;
+  if (!image || !(nw > 0 && nh > 0)) return Promise.reject(new Error("image"));
   const dispW = baseW * zoom;
   const dispH = baseH * zoom;
+  if (!(dispW > 0 && dispH > 0)) return Promise.reject(new Error("frame"));
+
   // Coin haut-gauche de l’image affichée dans le cadre.
   const imgLeft = fw / 2 + panX - dispW / 2;
   const imgTop = fh / 2 + panY - dispH / 2;
-  const sx = ((0 - imgLeft) / dispW) * nw;
-  const sy = ((0 - imgTop) / dispH) * nh;
-  const sw = (fw / dispW) * nw;
-  const sh = (fh / dispH) * nh;
+  let sx = ((0 - imgLeft) / dispW) * nw;
+  let sy = ((0 - imgTop) / dispH) * nh;
+  let sw = (fw / dispW) * nw;
+  let sh = (fh / dispH) * nh;
+  // Clamp source rect inside the bitmap (évite drawImage / toBlob bloqués).
+  sx = clamp(sx, 0, Math.max(0, nw - 1));
+  sy = clamp(sy, 0, Math.max(0, nh - 1));
+  sw = clamp(sw, 1, nw - sx);
+  sh = clamp(sh, 1, nh - sy);
 
   const scale = Math.min(1, CAROUSEL_MAX_EDGE / Math.max(sw, sh));
   const outW = Math.max(1, Math.round(sw * scale));
@@ -1380,24 +1436,15 @@ function encodeCarouselCropBlob() {
   canvas.width = outW;
   canvas.height = outH;
   const ctx = canvas.getContext("2d");
+  if (!ctx) return Promise.reject(new Error("format"));
   ctx.fillStyle = "#0f0b08";
   ctx.fillRect(0, 0, outW, outH);
   ctx.drawImage(image, sx, sy, sw, sh, 0, 0, outW, outH);
 
-  const type = encodeType();
-  return new Promise((resolve, reject) => {
-    canvas.toBlob(
-      (blob) => {
-        if (!blob) {
-          reject(new Error("format"));
-          return;
-        }
-        resolve(blob);
-      },
-      type,
-      CAROUSEL_JPEG_QUALITY
-    );
-  });
+  const preferred = encodeType();
+  return canvasToBlob(canvas, preferred, CAROUSEL_JPEG_QUALITY).catch(() =>
+    canvasToBlob(canvas, "image/jpeg", CAROUSEL_JPEG_QUALITY)
+  );
 }
 
 /**
@@ -1417,15 +1464,23 @@ function openCarouselCropper(work) {
 
     resetCropSession();
     bindCropInteractions();
+    setCropActionsEnabled(true);
     if (cropStatus) cropStatus.textContent = "Chargement de l’image…";
     if (cropLead) {
       cropLead.textContent = `« ${work.title || work.id} » — le hero affiche exactement ce cadre. La galerie garde la peinture entière.`;
     }
 
     let settled = false;
+    let saving = false;
+    const abort = new AbortController();
+    const { confirmBtn, cancelBtn } = cropActionButtons();
+
     const finish = (ok) => {
       if (settled) return;
       settled = true;
+      saving = false;
+      if (confirmBtn) confirmBtn.onclick = null;
+      if (cancelBtn) cancelBtn.onclick = null;
       try {
         cropDialog.close();
       } catch {
@@ -1440,6 +1495,7 @@ function openCarouselCropper(work) {
       const response = await fetch(url, {
         credentials: "same-origin",
         cache: "no-store",
+        signal: abort.signal,
       });
       if (!response.ok) throw new Error(`HTTP ${response.status}`);
       const blob = await response.blob();
@@ -1460,11 +1516,13 @@ function openCarouselCropper(work) {
         dragging: false,
         dragX: 0,
         dragY: 0,
+        abort,
       };
       cropImage.src = objectUrl;
       cropImage.alt = work.alt || work.title || "";
       if (cropZoom) cropZoom.value = "100";
       if (cropStatus) cropStatus.textContent = "";
+      setCropActionsEnabled(true);
       if (typeof cropDialog.showModal === "function") cropDialog.showModal();
       else cropDialog.setAttribute("open", "");
       // Layout after open so frame has size.
@@ -1477,27 +1535,41 @@ function openCarouselCropper(work) {
 
     const onClose = () => {
       cropDialog.removeEventListener("close", onClose);
-      if (!settled) finish(false);
+      if (!settled) {
+        try {
+          abort.abort();
+        } catch {
+          /* ignore */
+        }
+        finish(false);
+      }
     };
     cropDialog.addEventListener("close", onClose);
 
-    if (cropForm) {
-      cropForm.onsubmit = async (event) => {
+    if (cancelBtn) {
+      cancelBtn.onclick = (event) => {
         event.preventDefault();
-        const submitter = event.submitter;
-        const value = submitter && submitter.value ? submitter.value : "cancel";
-        if (value !== "confirm") {
-          finish(false);
-          return;
+        try {
+          abort.abort();
+        } catch {
+          /* ignore */
         }
+        finish(false);
+      };
+    }
+
+    if (confirmBtn) {
+      confirmBtn.onclick = async (event) => {
+        event.preventDefault();
+        if (settled || saving) return;
+        saving = true;
         if (cropStatus) cropStatus.textContent = "Encodage et envoi…";
-        const confirmBtn = document.getElementById("carousel-crop-confirm");
-        const cancelBtn = document.getElementById("carousel-crop-cancel");
-        if (confirmBtn) confirmBtn.disabled = true;
-        if (cancelBtn) cancelBtn.disabled = true;
+        // Confirmer grisé ; Annuler reste cliquable pour débloquer.
+        setCropActionsEnabled(false, { keepCancel: true });
         try {
           const blob = await encodeCarouselCropBlob();
           if (!blob || blob.size > MAX_BYTES) throw new Error("encode");
+          if (settled) return;
           const body = new FormData();
           body.set("carousel", blob, `carousel.${extensionFor(blob)}`);
           const put = await fetch(
@@ -1507,6 +1579,7 @@ function openCarouselCropper(work) {
               body,
               credentials: "same-origin",
               headers: { "X-Atelier": "1" },
+              signal: abort.signal,
             }
           );
           const payload = await put.json().catch(() => ({}));
@@ -1523,14 +1596,23 @@ function openCarouselCropper(work) {
           Object.assign(work, updated);
           finish(true);
         } catch (error) {
-          if (cropStatus) {
-            cropStatus.textContent =
-              error && error.message && error.message !== "encode"
-                ? String(error.message)
-                : "Enregistrement du recadrage impossible.";
+          if (settled) return;
+          saving = false;
+          const aborted =
+            (error && error.name === "AbortError") ||
+            (abort.signal && abort.signal.aborted);
+          if (aborted) {
+            finish(false);
+            return;
           }
-          if (confirmBtn) confirmBtn.disabled = false;
-          if (cancelBtn) cancelBtn.disabled = false;
+          if (cropStatus) {
+            const msg = error && error.message ? String(error.message) : "";
+            cropStatus.textContent =
+              msg && msg !== "encode" && msg !== "timeout" && msg !== "format"
+                ? msg
+                : "Enregistrement du recadrage impossible. Réessayez.";
+          }
+          setCropActionsEnabled(true);
         }
       };
     }
