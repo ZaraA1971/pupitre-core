@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## About3 — nouveau texte galerie (2026-11-19)
+
+- 3 paragraphes FR + UK ; cache-bust `?v=20261119-about3`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `b2ad60c1` · preview `2a0a00c5` · atelier `7c134ff0` · https://galerie-vittet-preview.pages.dev/
+
 ## Hours-et — horaires « et sur rendez-vous » (2026-11-19)
 
 - Header : `·` remplacé par `et` (UK : `and`)
