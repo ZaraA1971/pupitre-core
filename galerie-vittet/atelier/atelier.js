@@ -1860,7 +1860,9 @@ function workItem(work) {
   const cropBtn = document.createElement("button");
   cropBtn.type = "button";
   cropBtn.className = "button button-quiet";
-  cropBtn.textContent = work.carousel_image ? "Recadrer" : "Recadrer pour le carousel";
+  cropBtn.textContent = work.carousel_image
+    ? "Recadré"
+    : "Recadrer pour le carousel";
   cropBtn.hidden = !work.carousel;
   cropTools.append(cropBtn, cropBadge, cropNeeded);
   editor.append(cropTools);
@@ -1871,7 +1873,7 @@ function workItem(work) {
     cropBtn.hidden = !on;
     cropBadge.hidden = !(on && work.carousel_image);
     cropBtn.textContent = work.carousel_image
-      ? "Recadrer"
+      ? "Recadré"
       : "Recadrer pour le carousel";
     if (!on) {
       cropNeeded.hidden = true;
