@@ -681,6 +681,27 @@
   font-size: 13px;
 }
 
+.carousel-crop-thumb-link {
+  display: block;
+  flex: 0 0 auto;
+  line-height: 0;
+  border: 1px solid var(--line);
+  background: #0f0b08;
+}
+
+.carousel-crop-thumb-link:focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 2px;
+}
+
+.carousel-crop-thumb {
+  display: block;
+  width: 160px;
+  aspect-ratio: 16 / 10;
+  object-fit: contain;
+  background: #0f0b08;
+}
+
 .carousel-crop-needed {
   font-size: 12px;
   color: #8a4a3a;

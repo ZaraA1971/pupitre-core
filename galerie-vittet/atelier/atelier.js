@@ -1896,6 +1896,25 @@ function workItem(work) {
   const cropTools = document.createElement("div");
   cropTools.className = "edit-carousel-tools";
   cropTools.hidden = !work.carousel;
+  const cropThumbLink = document.createElement("a");
+  cropThumbLink.className = "carousel-crop-thumb-link";
+  cropThumbLink.target = "_blank";
+  cropThumbLink.rel = "noopener";
+  cropThumbLink.hidden = !work.carousel_image;
+  cropThumbLink.setAttribute(
+    "aria-label",
+    `Voir le recadrage carousel de « ${work.title || work.id} »`
+  );
+  const cropThumb = document.createElement("img");
+  cropThumb.className = "carousel-crop-thumb";
+  cropThumb.alt = "";
+  cropThumb.loading = "lazy";
+  cropThumb.decoding = "async";
+  if (work.carousel_image) {
+    cropThumbLink.href = mediaUrl(work.carousel_image);
+    cropThumb.src = mediaUrl(work.carousel_image);
+  }
+  cropThumbLink.append(cropThumb);
   const cropNeeded = document.createElement("span");
   cropNeeded.className = "carousel-crop-needed";
   cropNeeded.hidden = true;
@@ -1904,13 +1923,28 @@ function workItem(work) {
   cropBtn.type = "button";
   cropBtn.className = "button button-quiet";
   cropBtn.textContent = cropLabel(work);
-  cropTools.append(cropBtn, cropNeeded);
+  cropTools.append(cropThumbLink, cropBtn, cropNeeded);
   editor.append(cropTools);
+
+  const syncCropThumb = () => {
+    const path = work.carousel_image || "";
+    if (!path) {
+      cropThumbLink.hidden = true;
+      cropThumb.removeAttribute("src");
+      cropThumbLink.removeAttribute("href");
+      return;
+    }
+    const url = mediaUrl(path);
+    cropThumbLink.hidden = false;
+    cropThumbLink.href = url;
+    cropThumb.src = url;
+  };
 
   const refreshCropChrome = async () => {
     const on = !!carouselInput.checked;
     cropTools.hidden = !on;
     cropBtn.textContent = cropLabel(work);
+    syncCropThumb();
     if (!on || work.carousel_image) {
       cropNeeded.hidden = true;
       return;
@@ -1983,15 +2017,6 @@ function workItem(work) {
     webLink.rel = "noopener";
     webLink.textContent = "Web";
     actions.append(webLink);
-  }
-  if (work.carousel_image) {
-    const cropLink = document.createElement("a");
-    cropLink.className = "button-quiet";
-    cropLink.href = mediaUrl(work.carousel_image);
-    cropLink.target = "_blank";
-    cropLink.rel = "noopener";
-    cropLink.textContent = "Carousel";
-    actions.append(cropLink);
   }
   const remove = document.createElement("button");
   remove.type = "button";
