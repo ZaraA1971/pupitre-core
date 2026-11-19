@@ -818,11 +818,24 @@ function periodFromNote(work) {
 }
 
 /** URL média : ajouts via KV auth ; exposées via proxy atelier/media (même Basic Auth). */
-function mediaUrl(path) {
+function mediaUrl(path, rev = "") {
   if (typeof path !== "string" || !path) return "";
-  if (path.startsWith("images/ajouts/")) return `../${path}`;
-  if (path.startsWith("images/")) return `media/${path}`;
-  return `../${path}`;
+  let url = path.startsWith("images/ajouts/")
+    ? `../${path}`
+    : path.startsWith("images/")
+      ? `media/${path}`
+      : `../${path}`;
+  const stamp = String(rev || "").trim().replace(/\s+/g, "");
+  if (stamp) {
+    const sep = url.includes("?") ? "&" : "?";
+    url = `${url}${sep}v=${encodeURIComponent(stamp)}`;
+  }
+  return url;
+}
+
+function carouselMediaUrl(work) {
+  if (!work || !work.carousel_image) return "";
+  return mediaUrl(work.carousel_image, work.updated_at || "");
 }
 
 function isFrontOrderMode() {
@@ -1418,14 +1431,13 @@ function encodeCarouselCropBlob() {
 }
 
 function applyCarouselWorkUpdate(work, payload) {
+  const raw = payload.work || payload || {};
   const updated =
-    normalizeWork(payload.work || payload) ||
+    normalizeWork(raw) ||
     {
       ...work,
-      carousel_image:
-        payload.work?.carousel_image ||
-        payload.carousel_image ||
-        work.carousel_image,
+      carousel_image: raw.carousel_image || work.carousel_image,
+      updated_at: raw.updated_at || work.updated_at || "",
     };
   const idx = libraryWorks.findIndex((w) => w.id === work.id);
   if (idx >= 0) libraryWorks[idx] = { ...libraryWorks[idx], ...updated };
@@ -1911,8 +1923,9 @@ function workItem(work) {
   cropThumb.loading = "lazy";
   cropThumb.decoding = "async";
   if (work.carousel_image) {
-    cropThumbLink.href = mediaUrl(work.carousel_image);
-    cropThumb.src = mediaUrl(work.carousel_image);
+    const cropUrl = carouselMediaUrl(work);
+    cropThumbLink.href = cropUrl;
+    cropThumb.src = cropUrl;
   }
   cropThumbLink.append(cropThumb);
   const cropNeeded = document.createElement("span");
@@ -1927,14 +1940,13 @@ function workItem(work) {
   editor.append(cropTools);
 
   const syncCropThumb = () => {
-    const path = work.carousel_image || "";
-    if (!path) {
+    const url = carouselMediaUrl(work);
+    if (!url) {
       cropThumbLink.hidden = true;
       cropThumb.removeAttribute("src");
       cropThumbLink.removeAttribute("href");
       return;
     }
-    const url = mediaUrl(path);
     cropThumbLink.hidden = false;
     cropThumbLink.href = url;
     cropThumb.src = url;

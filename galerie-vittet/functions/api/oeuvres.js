@@ -52,6 +52,7 @@ function publicWork(work) {
     original,
     preview: work.preview,
     carousel_image: work.carousel_image || "",
+    updated_at: work.updated_at || "",
     order: work.order || 0,
     carousel: !!work.carousel,
   };

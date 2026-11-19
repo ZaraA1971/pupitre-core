@@ -194,6 +194,16 @@ function assetPath(path) {
   return String(path).replace(/^\//, "");
 }
 
+/** Bust browser/edge cache when a same-path derivative is rewritten (carousel crop). */
+function withAssetRev(path, rev) {
+  const base = assetPath(path);
+  if (!base || !rev) return base;
+  const stamp = String(rev).trim().replace(/\s+/g, "");
+  if (!stamp) return base;
+  const sep = base.includes("?") ? "&" : "?";
+  return `${base}${sep}v=${encodeURIComponent(stamp)}`;
+}
+
 /**
  * Public API contract (one resolution path):
  * - display = web derivative when present, else image
@@ -209,7 +219,10 @@ function workAssetPaths(work) {
   const rawOriginal = assetPath((work && work.original) || "");
   const original =
     rawOriginal && rawOriginal !== display ? rawOriginal : "";
-  const carousel = assetPath((work && work.carousel_image) || "");
+  const carousel = withAssetRev(
+    (work && work.carousel_image) || "",
+    work && work.updated_at
+  );
   return { display, preview, original, carousel };
 }
 
@@ -518,6 +531,7 @@ function normalizePayload(data) {
       original: item.original || "",
       preview: item.preview || item.image || "",
       carousel_image: item.carousel_image || "",
+      updated_at: item.updated_at || "",
       order: Number(item.order) || 0,
       carousel:
         item.carousel === true || item.carousel === 1 || item.carousel === "1",
@@ -847,23 +861,30 @@ function fitHeroImage(img) {
   if (!img) return;
 
   const apply = () => {
-    // Crop atelier : contain pour afficher 100 % du cadre (pas de re-coupe).
-    if (img.dataset.carouselCrop === "1") {
-      applyHeroFit(img, "contain");
-      img.style.objectPosition = "center center";
-      return;
-    }
     const nw = img.naturalWidth;
     const nh = img.naturalHeight;
     const stage = heroViewport || heroStage;
     const sw = stage ? stage.clientWidth : 0;
     const sh = stage ? stage.clientHeight : 0;
+    const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
+    const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
+
+    // Crop atelier : si le cadre ~ match le stage → cover (remplit le hero) ;
+    // sinon contain pour ne pas re-couper un vieux crop (ex. 16:9).
+    if (img.dataset.carouselCrop === "1") {
+      if (imgAR > 0 && stageAR > 0) {
+        const delta = Math.abs(Math.log(imgAR / stageAR));
+        applyHeroFit(img, delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain");
+      } else {
+        applyHeroFit(img, "contain");
+      }
+      img.style.objectPosition = "center center";
+      return;
+    }
     if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
       applyHeroFit(img, "cover");
       return;
     }
-    const imgAR = nw / nh;
-    const stageAR = sw / sh;
     /* Contain would pillarbox (side bands) → zoom/cover instead. */
     if (imgAR < stageAR) {
       applyHeroFit(img, "cover");
