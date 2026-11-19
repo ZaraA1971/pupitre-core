@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Herocaption0 — titres carousel masqués (2026-11-19)
+
+- Titre / artiste plus affichés sur les photos du carrousel (données inchangées)
+- Cache-bust `?v=20261119-herocaption0`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `0dff32d4` · preview `5ee41a5e` · atelier `f594e788` · https://galerie-vittet-preview.pages.dev/
+
 ## Noeyebrows — libellés inutiles retirés (2026-11-19)
 
 - Retrait des eyebrows « À la une », « Œuvres choisies », « Depuis 1988 »
