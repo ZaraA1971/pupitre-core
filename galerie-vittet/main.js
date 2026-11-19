@@ -847,6 +847,8 @@ function bindSiteSearch() {
  * Cover crops are anchored to the bottom edge (not vertically centered).
  */
 const HERO_FIT_LOG_THRESHOLD = 0.2;
+/** Crop atelier ~16:10 : cover only when very close to stage (keep old 16:9 intact). */
+const CAROUSEL_CROP_COVER_LOG_THRESHOLD = 0.05;
 const HERO_MOBILE_MAX_WIDTH = 700;
 /** imgAR ≥ this → treat as landscape/square on phone (prefer cover). */
 const HERO_MOBILE_COVER_MIN_AR = 0.88;
@@ -869,12 +871,15 @@ function fitHeroImage(img) {
     const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
     const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
 
-    // Crop atelier : si le cadre ~ match le stage → cover (remplit le hero) ;
-    // sinon contain pour ne pas re-couper un vieux crop (ex. 16:9).
+    // Crop atelier : cover seulement si AR très proche du stage ; sinon contain
+    // (garde les vieux crops 16:9 entiers, sans 2ᵉ coupe CSS).
     if (img.dataset.carouselCrop === "1") {
       if (imgAR > 0 && stageAR > 0) {
         const delta = Math.abs(Math.log(imgAR / stageAR));
-        applyHeroFit(img, delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain");
+        applyHeroFit(
+          img,
+          delta < CAROUSEL_CROP_COVER_LOG_THRESHOLD ? "cover" : "contain"
+        );
       } else {
         applyHeroFit(img, "contain");
       }
