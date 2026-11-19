@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cropclean — nettoyage code recadrage carousel (2026-11-19)
+
+- Helpers crop simplifiés ; badge « prêt » retiré (libellé Recadré suffit)
+- Boutons dialog cachés une fois ; Annuler reste actif pendant l’envoi
+- API carousel : helpers auth/id partagés
+- Cache-bust `?v=20261119-cropclean`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `b13f6c6f` · preview `43b88c9c` · atelier `07f0ce40` · https://galerie-vittet-preview.pages.dev/
+
 ## Cropfix2 — Valider Recadré ne reste plus bloqué (2026-11-19)
 
 - Boutons `type=button` (plus de `method=dialog` submit)
