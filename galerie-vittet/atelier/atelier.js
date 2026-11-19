@@ -37,19 +37,13 @@ const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
 const PREVIEW_MAX_EDGE = 720;
 /**
- * Cadre crop = proportions du hero front
- * (largeur viewport × min(100dvh, 1280px) — voir .hero-stage).
- * Front : object-fit cover pour remplir sans bandes.
+ * Cadre crop fixe = hero desktop typique (~16:10).
+ * Front : contain pour afficher 100 % de ce cadre (pas de re-zoom CSS).
  */
+const CAROUSEL_AR = 16 / 10;
 const CAROUSEL_AR_LOG_THRESHOLD = 0.22;
 const CAROUSEL_MAX_EDGE = 1920;
 const CAROUSEL_JPEG_QUALITY = 0.86;
-
-function carouselStageAr() {
-  const w = Math.max(320, window.innerWidth || 1280);
-  const h = Math.max(240, Math.min(window.innerHeight || 800, 1280));
-  return w / h;
-}
 const LIBRARY_PAGE_SIZE = 25;
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ID_PATTERN = /^ajout-[a-z0-9-]{1,80}$/;
@@ -352,9 +346,7 @@ function encodeType() {
 
 function needsCarouselCrop(nw, nh) {
   if (!(nw > 0 && nh > 0)) return true;
-  return (
-    Math.abs(Math.log(nw / nh / carouselStageAr())) >= CAROUSEL_AR_LOG_THRESHOLD
-  );
+  return Math.abs(Math.log(nw / nh / CAROUSEL_AR)) >= CAROUSEL_AR_LOG_THRESHOLD;
 }
 
 function sourcePathForCrop(work) {
@@ -1315,14 +1307,9 @@ function clampCropPan() {
   cropSession.panY = clamp(cropSession.panY, -maxY, maxY);
 }
 
-function syncCropFrameAspect() {
-  if (!cropFrame) return;
-  cropFrame.style.aspectRatio = String(carouselStageAr());
-}
-
 function syncCropBaseSize() {
   if (!cropSession || !cropFrame) return;
-  syncCropFrameAspect();
+  if (cropFrame) cropFrame.style.aspectRatio = `${CAROUSEL_AR}`;
   const cover = Math.max(
     cropFrame.clientWidth / cropSession.nw,
     cropFrame.clientHeight / cropSession.nh
@@ -1387,7 +1374,7 @@ function bindCropInteractions() {
 
 function setCropLead(work) {
   if (!cropLead) return;
-  cropLead.textContent = `« ${work.title || work.id} » — cadre aligné sur le hero. Validez pour remplir le carousel (sans bandes).`;
+  cropLead.textContent = `« ${work.title || work.id} » — cadre 16:10. Le carousel affiche ce cadre en entier (sans re-zoom).`;
 }
 
 function canvasToBlob(canvas, type, quality) {
@@ -1485,7 +1472,6 @@ function openCarouselCropper(work) {
     setCropBusy(false);
     if (cropStatus) cropStatus.textContent = "Chargement de l’image…";
     setCropLead(work);
-    syncCropFrameAspect();
 
     let settled = false;
     let saving = false;

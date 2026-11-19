@@ -869,10 +869,10 @@ function fitHeroImage(img) {
     const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
     const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
 
-    // Crop atelier : toujours fill le hero (pas de bandes --stage).
-    // Le cadre est conçu pour le carousel ; un léger trim si AR stage ≠ crop.
+    // Crop atelier : afficher 100 % du dérivé (jamais de 2ᵉ coupe CSS).
+    // Le stylesheet hero force cover+100% — on impose contain en inline.
     if (img.dataset.carouselCrop === "1") {
-      img.style.objectFit = "cover";
+      img.style.objectFit = "contain";
       img.style.objectPosition = "center center";
       return;
     }

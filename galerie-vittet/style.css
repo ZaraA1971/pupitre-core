@@ -765,6 +765,15 @@ footer a {
   filter: var(--img-enhance-hero);
 }
 
+/* Dérivé carousel : ne pas laisser le cover ci-dessus re-zoomer le cadre atelier. */
+.hero-slide img[data-carousel-crop="1"],
+.hero-slide .art-hero[data-carousel-crop="1"],
+.hero-slide.is-active img[data-carousel-crop="1"],
+.hero-slide.is-active .art-hero[data-carousel-crop="1"] {
+  object-fit: contain;
+  object-position: center center;
+}
+
 .hero-title,
 .hero-artist { transition: opacity .28s ease; }
 
