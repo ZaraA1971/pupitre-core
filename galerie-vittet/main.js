@@ -473,10 +473,22 @@ function applySection(name, { resetPage = true } = {}) {
   renderPage();
 }
 
+function scrollToCollection() {
+  const target = document.getElementById("collection");
+  if (!target) return;
+  if (searchMode) leaveSearchView({ replaceHash: true });
+  else if (location.hash) history.replaceState(null, "", pathWithSearch(""));
+  target.scrollIntoView({
+    behavior: prefersReduce() ? "auto" : "smooth",
+    block: "start",
+  });
+}
+
 filters.forEach((button) => {
   button.addEventListener("click", () => {
     if (button.disabled || button.hidden) return;
     applySection(button.dataset.filter);
+    scrollToCollection();
   });
 });
 

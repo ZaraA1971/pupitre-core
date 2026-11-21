@@ -151,8 +151,6 @@ section { scroll-margin-top: 48px; }
 .search-status,
 .header-hours,
 .footer-credit,
-.filter,
-.filter-count,
 .lightbox-label,
 .lightbox-support,
 .lightbox-dimensions,
@@ -363,22 +361,51 @@ section { scroll-margin-top: 48px; }
   margin: 0;
 }
 
-.header-nav a {
+.header-sections {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  align-items: baseline;
+  gap: 10px 14px;
+  margin: 0;
+}
+
+.header-nav a,
+.header-nav .filter {
   color: var(--ink-photo);
   text-decoration: none;
-  font: 600 clamp(12px, 1.15vw, 14px) / 1.2 var(--serif);
-  letter-spacing: .16em;
+  font: 600 clamp(11px, 1.05vw, 13px) / 1.2 var(--serif);
+  letter-spacing: .12em;
   text-transform: uppercase;
   text-shadow: 0 1px 14px rgba(10, 8, 6, .32);
+  border: 0;
   border-bottom: 1px solid transparent;
-  padding-bottom: 1px;
+  background: none;
+  padding: 0 0 1px;
+  margin: 0;
+  min-height: 0;
+  cursor: pointer;
   white-space: nowrap;
 }
 
 .header-nav a:hover,
-.header-nav a:focus-visible {
+.header-nav a:focus-visible,
+.header-nav .filter:hover,
+.header-nav .filter:focus-visible {
   color: var(--gold-photo);
   border-bottom-color: currentColor;
+}
+
+.header-nav .filter.active {
+  color: var(--gold-photo);
+  border-bottom-color: currentColor;
+}
+
+.header-nav .filter.is-empty,
+.header-nav .filter:disabled {
+  opacity: .38;
+  cursor: default;
+  pointer-events: none;
 }
 
 .header-phones {
@@ -910,17 +937,10 @@ footer a {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-end;
-  justify-content: space-between;
+  justify-content: flex-end;
   gap: 12px 28px;
   border-bottom: 1px solid var(--line);
   margin-bottom: 22px;
-}
-
-.collection-toolbar .filters {
-  border-bottom: 0;
-  margin-bottom: 0;
-  flex: 1 1 auto;
-  min-width: 0;
 }
 
 .collection-toolbar .site-search {
@@ -930,52 +950,7 @@ footer a {
 .collection-toolbar .site-search-slot {
   align-self: flex-end;
   padding-bottom: 2px;
-}
-
-.filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px 22px;
-  border-bottom: 1px solid var(--line);
-  margin-bottom: 22px;
-}
-
-.filter {
-  border: 0;
-  background: none;
-  min-height: 44px;
-  padding: 0 0 12px;
-  font: var(--type-sm) var(--sans);
-  letter-spacing: .12em;
-  text-transform: uppercase;
-  cursor: pointer;
-  border-bottom: 2px solid transparent;
-  margin-bottom: -1px;
-}
-
-.filter-count {
-  font-size: var(--type-sm);
-  letter-spacing: .04em;
-  text-transform: none;
-  margin-left: 4px;
-}
-
-.filter.active {
-  color: var(--ink);
-  border-bottom-color: var(--gold);
-  border-bottom-width: 2px;
-}
-
-.filter.active .filter-count { color: var(--gold); }
-
-.filter:hover,
-.filter:focus-visible { color: var(--ink); }
-
-.filter.is-empty,
-.filter:disabled {
-  opacity: .38;
-  cursor: default;
-  pointer-events: none;
+  margin-left: auto;
 }
 
 .filter[hidden] { display: none; }
@@ -1852,18 +1827,28 @@ footer {
   }
   .header-nav {
     display: flex;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     justify-content: flex-start;
     align-items: center;
-    gap: 8px 18px;
+    gap: 6px 12px;
+    row-gap: 4px;
     margin: 0;
     min-width: 0;
   }
+  .header-sections {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    gap: 6px 12px;
+    min-width: 0;
+  }
   .header-nav a,
+  .header-nav .filter,
   .header-menu-row .lang-switch {
-    font-size: 12px;
-    letter-spacing: .16em;
-    min-height: 40px;
+    font-size: 11px;
+    letter-spacing: .1em;
+    min-height: 36px;
     display: inline-flex;
     align-items: center;
   }
@@ -1983,17 +1968,7 @@ footer {
     gap: 6px;
     margin-bottom: 12px;
   }
-  .collection-toolbar .filters {
-    order: 1;
-    flex-wrap: nowrap;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    gap: 8px 16px;
-    scrollbar-width: none;
-  }
-  .collection-toolbar .filters::-webkit-scrollbar { display: none; }
   .collection-toolbar .site-search-slot {
-    order: 0;
     flex: none;
     width: 100%;
     min-width: 0;
@@ -2005,11 +1980,6 @@ footer {
   .collection-toolbar .site-search {
     margin-bottom: 0;
     width: 100%;
-  }
-  .filter {
-    flex: 0 0 auto;
-    padding-bottom: 10px;
-    letter-spacing: .1em;
   }
   .art-grid {
     grid-template-columns: 1fr;

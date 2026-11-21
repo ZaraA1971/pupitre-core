@@ -37,7 +37,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261119-cropexact2">
+  <link rel="stylesheet" href="style.css?v=20261121-navsec">
 </head>
 <body>
   <!-- Balance des blancs douce pour --img-enhance (pas de teinte brune / sépia). -->
@@ -81,7 +81,11 @@
         </div>
         <div class="header-menu-row">
           <nav class="header-nav" data-i18n-aria="navAria" aria-label="Sections">
-            <a href="#collection" data-section="collection" data-i18n="navCollection">Collection</a>
+            <div class="header-sections" role="tablist" data-i18n-aria="filtersAria" aria-label="Sections de la collection">
+              <button class="filter active" type="button" role="tab" id="tab-peinture" data-filter="peinture" aria-selected="true" aria-controls="collection-panel"><span data-i18n="section.peinture">Peintures</span></button>
+              <button class="filter" type="button" role="tab" id="tab-miniature" data-filter="miniature" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.miniature">Miniatures</span></button>
+              <button class="filter" type="button" role="tab" id="tab-nicolle" data-filter="nicolle" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.nicolle">Aquarelles de J. V. Nicolle</span></button>
+            </div>
             <a href="#galerie" data-section="galerie" data-i18n="navGallery">Galerie</a>
           </nav>
           <button class="lang-switch" type="button" aria-label="English (UK)">UK</button>
@@ -135,11 +139,6 @@
         </div>
       </div>
       <div class="collection-toolbar">
-        <div class="filters" role="tablist" data-i18n-aria="filtersAria" aria-label="Sections de la collection">
-          <button class="filter active" type="button" role="tab" id="tab-peinture" data-filter="peinture" aria-selected="true" aria-controls="collection-panel"><span data-i18n="section.peinture">Peintures</span> <span class="filter-count">(0)</span></button>
-          <button class="filter" type="button" role="tab" id="tab-miniature" data-filter="miniature" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.miniature">Miniatures</span> <span class="filter-count">(0)</span></button>
-          <button class="filter" type="button" role="tab" id="tab-nicolle" data-filter="nicolle" aria-selected="false" aria-controls="collection-panel"><span data-i18n="section.nicolle">Victor-Jean NICOLLE</span> <span class="filter-count">(0)</span></button>
-        </div>
         <div class="site-search-slot" id="collection-search-slot" data-search-home="1">
           <form class="site-search" id="site-search" role="search" action="/" method="get">
             <label class="visually-hidden" for="site-search-input" data-i18n="searchLabel">Rechercher une œuvre</label>
@@ -291,7 +290,7 @@
       </div>
     </div>
   </dialog>
-  <script src="i18n.js?v=20261119-artistnl" defer></script>
-  <script src="main.js?v=20261119-cropexact2" defer></script>
+  <script src="i18n.js?v=20261121-navsec" defer></script>
+  <script src="main.js?v=20261121-navsec" defer></script>
 </body>
 </html>
