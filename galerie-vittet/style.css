@@ -79,12 +79,14 @@
   /*
    * Physical size (grille + lightbox au repos) — main.js lit ces tokens.
    * --size-ref-cm     : cm mappés sur le petit côté de la cellule (cqmin)
-   * --size-min-scale  : plancher du plus grand côté affiché (0–1)
-   * Par œuvre (inline) : --phys-w / --phys-h = largeur/hauteur ÷ ref (H×W FR).
+   * --size-log-k      : adoucit les petites (log) ; ↑k → plus proche du linéaire
+   * --size-min-scale  : plancher de sécurité du plus grand côté (0–1)
+   * Courbe : soft = ln(1+k·cm) / ln(1+k·ref) ; aspect H×W conservé.
    * Loupe = plein puits (ignore phys).
    */
   --size-ref-cm: 50;
-  --size-min-scale: 0.2;
+  --size-log-k: 0.08;
+  --size-min-scale: 0.18;
   --phys-w: 1;
   --phys-h: 1;
   --size-scale: 1; /* max(--phys-w, --phys-h) — repli / loupe */

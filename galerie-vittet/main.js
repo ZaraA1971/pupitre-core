@@ -163,13 +163,14 @@ function displayDimensions(value) {
 
 /**
  * Relative physical size for grid + lightbox (resting view).
- * Knobs: style.css :root (--size-ref-cm, --size-min-scale).
- * Labels are FR hauteur × largeur → --phys-h / --phys-w as fractions of ref.
- * CSS maps 1 cqmin ≈ ref cm so portrait/landscape compare fairly.
+ * Knobs: style.css :root (--size-ref-cm, --size-log-k, --size-min-scale).
+ * Labels FR hauteur × largeur → --phys-h / --phys-w.
+ * soft(edge) = ln(1+k·cm) / ln(1+k·ref) — adoucit les petites, garde l’écart.
  * Loupe ignores phys (fills the well).
  */
 const SIZE_REF_CM_FALLBACK = 50;
-const SIZE_MIN_SCALE_FALLBACK = 0.2;
+const SIZE_LOG_K_FALLBACK = 0.08;
+const SIZE_MIN_SCALE_FALLBACK = 0.18;
 
 function readCssNumber(name, fallback) {
   try {
@@ -188,9 +189,26 @@ function sizeRefCm() {
   return n > 0 ? n : SIZE_REF_CM_FALLBACK;
 }
 
+function sizeLogK() {
+  const n = readCssNumber("--size-log-k", SIZE_LOG_K_FALLBACK);
+  return n > 0 ? n : SIZE_LOG_K_FALLBACK;
+}
+
 function sizeMinScale() {
   const n = readCssNumber("--size-min-scale", SIZE_MIN_SCALE_FALLBACK);
   return Math.min(1, Math.max(0.05, n));
+}
+
+/** Log soften: small works lift up; ≥ ref → 1. Aspect applied separately. */
+function softSizeScale(edgeCm) {
+  const ref = sizeRefCm();
+  const k = sizeLogK();
+  if (!(edgeCm > 0) || !(ref > 0)) return 1;
+  if (edgeCm >= ref) return 1;
+  const num = Math.log(1 + k * edgeCm);
+  const den = Math.log(1 + k * ref);
+  if (!(den > 0) || !Number.isFinite(num)) return Math.min(1, edgeCm / ref);
+  return Math.min(1, Math.max(0, num / den));
 }
 
 function parseFrCmNumber(raw) {
@@ -246,25 +264,17 @@ function roundPhys(n) {
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
   if (!dims) return { physW: 1, physH: 1, scale: 1 };
-  const ref = sizeRefCm();
-  let pw = dims.w / ref;
-  let ph = dims.h / ref;
-  const longest = Math.max(pw, ph);
-  if (longest > 1) {
-    pw /= longest;
-    ph /= longest;
-  }
-  const scale = Math.max(pw, ph);
+  const edge = Math.max(dims.w, dims.h);
+  let soft = softSizeScale(edge);
   const floor = sizeMinScale();
-  if (scale > 0 && scale < floor) {
-    const boost = floor / scale;
-    pw *= boost;
-    ph *= boost;
-  }
+  if (soft > 0 && soft < floor) soft = floor;
+  // Keep aspect; longest edge = soft scale (log-softened vs ref).
+  let pw = (dims.w / edge) * soft;
+  let ph = (dims.h / edge) * soft;
   return {
     physW: roundPhys(pw),
     physH: roundPhys(ph),
-    scale: roundPhys(Math.max(pw, ph)),
+    scale: roundPhys(soft),
   };
 }
 
