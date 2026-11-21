@@ -697,7 +697,7 @@
 .carousel-crop-thumb {
   display: block;
   width: 160px;
-  aspect-ratio: 16 / 10;
+  aspect-ratio: 16 / 9;
   object-fit: contain;
   background: #0f0b08;
 }
@@ -753,7 +753,7 @@
 .crop-frame {
   position: relative;
   width: min(100%, 860px);
-  aspect-ratio: 16 / 10; /* cadre hero desktop typique */
+  aspect-ratio: 16 / 9; /* = --hero-ar front */
   overflow: hidden;
   background: #0f0b08;
   cursor: grab;

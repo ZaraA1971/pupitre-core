@@ -37,10 +37,10 @@ const WEB_MAX_EDGE = 1800;
 const WEB_JPEG_QUALITY = 0.82;
 const PREVIEW_MAX_EDGE = 720;
 /**
- * Cadre crop fixe = hero desktop typique (~16:10).
+ * Cadre crop = hero desktop verrouillé 16:9 (même --hero-ar côté front).
  * Front : contain pour afficher 100 % de ce cadre (pas de re-zoom CSS).
  */
-const CAROUSEL_AR = 16 / 10;
+const CAROUSEL_AR = 16 / 9;
 const CAROUSEL_AR_LOG_THRESHOLD = 0.22;
 const CAROUSEL_MAX_EDGE = 1920;
 const CAROUSEL_JPEG_QUALITY = 0.86;
@@ -1374,7 +1374,7 @@ function bindCropInteractions() {
 
 function setCropLead(work) {
   if (!cropLead) return;
-  cropLead.textContent = `« ${work.title || work.id} » — cadre 16:10. Le carousel affiche ce cadre en entier (sans re-zoom).`;
+  cropLead.textContent = `« ${work.title || work.id} » — cadre 16:9 (comme le carousel). Le hero affiche ce cadre en entier.`;
 }
 
 function canvasToBlob(canvas, type, quality) {

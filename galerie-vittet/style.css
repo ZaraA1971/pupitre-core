@@ -11,6 +11,8 @@
   --shade: color-mix(in srgb, var(--paper) 88%, black);     /* skeleton ONLY */
   --stage: color-mix(in srgb, var(--paper) 12%, black);     /* hero contain letterbox */
   --lightbox-well: var(--paper); /* fond image lightbox = blanc cassé du site */
+  /* Hero desktop = même cadre que le crop atelier (évite bandes noires en contain). */
+  --hero-ar: 16 / 9;
 
   /* —— Ink —— */
   --ink-full: #2c261f;    /* footer wordmark / paper fields */
@@ -729,11 +731,14 @@ footer a {
 .hero-stage {
   position: relative;
   min-width: 0;
-  width: 100%;
-  /* Taller stage → less top/bottom crop under object-fit: cover for landscape works. */
-  min-height: min(100dvh, 1280px);
+  /* Boîte 16:9 verrouillée = cadre crop atelier ; centrée si l’écran est plus large. */
+  width: min(100%, calc(100dvh * 16 / 9));
+  aspect-ratio: var(--hero-ar);
+  height: auto;
+  max-height: 100dvh;
+  min-height: 0;
+  margin-inline: auto;
   isolation: isolate;
-  /* Contain letterbox = dark stage (same as lightbox photo well). */
   background: var(--stage);
 }
 
@@ -812,6 +817,20 @@ footer a {
   max-height: none;
   object-fit: contain;
   object-position: center center;
+}
+
+@media (max-width: 700px) {
+  .hero-slide[data-carousel-crop="1"] img,
+  .hero-slide[data-carousel-crop="1"] .art-hero,
+  .hero-slide[data-carousel-crop="1"].is-active img,
+  .hero-slide[data-carousel-crop="1"].is-active .art-hero,
+  .hero-slide img[data-carousel-crop="1"],
+  .hero-slide .art-hero[data-carousel-crop="1"],
+  .hero-slide.is-active img[data-carousel-crop="1"],
+  .hero-slide.is-active .art-hero[data-carousel-crop="1"] {
+    object-fit: cover;
+    object-position: center bottom;
+  }
 }
 
 .hero-title,
@@ -1676,7 +1695,7 @@ footer {
 }
 
 @media (max-width: 980px) {
-  .hero-stage { min-height: min(100dvh, 1080px); }
+  /* Hero reste 16:9 (même cadre crop) — pas de min-height plein écran. */
   .collection { padding: 44px var(--page-pad) 64px; }
   /* Tablet: still two columns; phone (≤700) collapses to one. */
   .art-grid { grid-template-columns: 1fr 1fr; gap: 32px 12px; }
@@ -1789,10 +1808,15 @@ footer {
     --type-display-sm: clamp(28px, 7.5vw, 36px);
   }
 
-  /* —— Hero: true full-bleed stage —— */
+  /* —— Hero mobile: plein écran (crops en cover via JS) —— */
   .hero-stage {
+    width: 100%;
+    aspect-ratio: auto;
+    height: auto;
+    max-height: none;
     min-height: 100dvh;
     min-height: 100svh;
+    margin-inline: 0;
   }
   .header {
     /*

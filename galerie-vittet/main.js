@@ -881,13 +881,18 @@ function fitHeroImage(img) {
     const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
     const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
 
-    // Crop atelier : 100 % du bitmap (jamais de 2ᵉ coupe / re-zoom CSS).
-    // Inline gagne sur .hero-slide img { object-fit: cover }.
+    // Crop atelier : contain 1:1 si le bitmap ≈ stage (cadre 16:9).
+    // Sinon cover (ex. vieux crops 16:10, ou mobile portrait) — pas de bandes latérales.
     if (img.dataset.carouselCrop === "1") {
-      img.style.setProperty("object-fit", "contain");
-      img.style.setProperty("object-position", "center center");
       img.style.setProperty("width", "100%");
       img.style.setProperty("height", "100%");
+      const portraitPhone = sw > 0 && sh > 0 && sw <= HERO_MOBILE_MAX_WIDTH && sh > sw;
+      if (portraitPhone || (imgAR > 0 && stageAR > 0 && imgAR < stageAR)) {
+        applyHeroFit(img, "cover");
+      } else {
+        img.style.setProperty("object-fit", "contain");
+        img.style.setProperty("object-position", "center center");
+      }
       return;
     }
     if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
