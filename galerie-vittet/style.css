@@ -78,13 +78,16 @@
 
   /*
    * Physical size (grille + lightbox au repos) — main.js lit ces tokens.
-   * --size-ref-cm     : grand côté ≥ cette valeur (cm) → plein cadre (1)
-   * --size-min-scale  : plancher d’affichage des plus petites (0–1)
-   * Échelle = clamp(maxEdgeCm / ref, min, 1). Loupe = plein puits (ignore).
+   * --size-ref-cm     : cm mappés sur le petit côté de la cellule (cqmin)
+   * --size-min-scale  : plancher du plus grand côté affiché (0–1)
+   * Par œuvre (inline) : --phys-w / --phys-h = largeur/hauteur ÷ ref (H×W FR).
+   * Loupe = plein puits (ignore phys).
    */
-  --size-ref-cm: 42;
-  --size-min-scale: 0.58;
-  --size-scale: 1; /* per-work, set inline by JS */
+  --size-ref-cm: 50;
+  --size-min-scale: 0.2;
+  --phys-w: 1;
+  --phys-h: 1;
+  --size-scale: 1; /* max(--phys-w, --phys-h) — repli / loupe */
 }
 
 * { box-sizing: border-box; }
@@ -1044,16 +1047,20 @@ html.collection-page-deep .art-grid {
   display: block;
   overflow: hidden;
   cursor: zoom-in;
+  container-type: size;
 }
 
-/* Centered in the 4:3 cell; --size-scale (JS) shrinks small physical works. */
+/*
+ * Vraie proportion cm : 1 cqmin ≈ --size-ref-cm.
+ * --phys-w / --phys-h (JS) = largeur / hauteur en fractions de la ref.
+ */
 .art-open .art-preview {
   position: absolute;
   inset: 6px;
-  width: auto;
-  height: auto;
-  max-width: calc((100% - 12px) * var(--size-scale, 1));
-  max-height: calc((100% - 12px) * var(--size-scale, 1));
+  width: calc(var(--phys-w, 1) * 100cqmin);
+  height: calc(var(--phys-h, 1) * 100cqmin);
+  max-width: calc(100% - 12px);
+  max-height: calc(100% - 12px);
   margin: auto;
   object-fit: contain;
   filter: var(--img-enhance);
@@ -1384,6 +1391,7 @@ footer {
   min-height: 0;
   overflow: hidden;
   padding: 4px;
+  container-type: size;
 }
 
 .lightbox-photo.has-loupe {
@@ -1401,11 +1409,10 @@ footer {
 
 .lightbox-photo img.art-detail {
   background: var(--lightbox-well);
-  width: auto;
-  height: auto;
-  /* --size-scale from JS; inline max* from applyNativeSizeCap may override. */
-  max-width: calc(100% * var(--size-scale, 1));
-  max-height: calc(100% * var(--size-scale, 1));
+  width: calc(var(--phys-w, 1) * 100cqmin);
+  height: calc(var(--phys-h, 1) * 100cqmin);
+  max-width: 100%;
+  max-height: 100%;
   object-fit: contain;
   object-position: center;
   opacity: 1;
@@ -1415,6 +1422,14 @@ footer {
   will-change: transform;
   user-select: none;
   -webkit-user-drag: none;
+}
+
+/* Loupe : plein puits (plus de phys cm) — inline max* via applyNativeSizeCap. */
+.lightbox.is-loupe .lightbox-photo img.art-detail,
+.lightbox-photo.is-zoomed img.art-detail,
+.lightbox-photo.is-loading-zoom img.art-detail {
+  width: auto;
+  height: auto;
 }
 
 .lightbox-photo img.art-detail.is-entering {
@@ -1762,13 +1777,12 @@ footer {
     height: 100%;
     min-height: 0;
   }
-  .lightbox-photo img.art-detail {
+  .lightbox.is-loupe .lightbox-photo img.art-detail,
+  .lightbox-photo.is-zoomed img.art-detail,
+  .lightbox-photo.is-loading-zoom img.art-detail {
     width: auto;
     height: auto;
     max-width: 100%;
-    max-height: 100%;
-  }
-  .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;
   }
   .lightbox-fiche {
@@ -2026,7 +2040,7 @@ footer {
     gap: 28px 0;
     min-height: 240px;
   }
-  /* Image flows — caption under the painting; scale keeps tiny works small. */
+  /* Image flows — caption under; phys cm vs ref length min(78vw, 560px). */
   .art-open {
     aspect-ratio: unset;
     height: auto;
@@ -2035,20 +2049,19 @@ footer {
     align-items: center;
     justify-content: center;
     overflow: visible;
+    container-type: normal;
   }
   .art-open .art-preview {
+    --mobile-ref: min(78vw, 560px);
     position: static;
     inset: auto;
     left: auto;
     top: auto;
     display: block;
-    width: auto;
-    height: auto;
-    max-width: calc(100% * var(--size-scale, 1));
-    max-height: min(
-      calc(78vw * var(--size-scale, 1)),
-      calc(560px * var(--size-scale, 1))
-    );
+    width: calc(var(--mobile-ref) * var(--phys-w, 1));
+    height: calc(var(--mobile-ref) * var(--phys-h, 1));
+    max-width: 100%;
+    max-height: var(--mobile-ref);
     margin: 0 auto;
     object-fit: contain;
     transform: none;

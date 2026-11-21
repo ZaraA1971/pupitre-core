@@ -90,8 +90,8 @@ let lightboxOriginalSrc = "";
 let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
-/** Physical size scale (0.28–1) for the open lightbox work; 1 = full well. */
-let lightboxSizeScale = 1;
+/** Physical size props for the open lightbox work (resting view). */
+let lightboxSizeProps = { physW: 1, physH: 1, scale: 1 };
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -163,12 +163,13 @@ function displayDimensions(value) {
 
 /**
  * Relative physical size for grid + lightbox (resting view).
- * Knobs live in style.css :root (--size-ref-cm, --size-min-scale).
- * Loupe ignores this scale (fills the well) so zoom isn’t inflated.
- * Skip px / unparseable → scale 1.
+ * Knobs: style.css :root (--size-ref-cm, --size-min-scale).
+ * Labels are FR hauteur × largeur → --phys-h / --phys-w as fractions of ref.
+ * CSS maps 1 cqmin ≈ ref cm so portrait/landscape compare fairly.
+ * Loupe ignores phys (fills the well).
  */
-const SIZE_REF_CM_FALLBACK = 42;
-const SIZE_MIN_SCALE_FALLBACK = 0.58;
+const SIZE_REF_CM_FALLBACK = 50;
+const SIZE_MIN_SCALE_FALLBACK = 0.2;
 
 function readCssNumber(name, fallback) {
   try {
@@ -201,8 +202,8 @@ function parseFrCmNumber(raw) {
   return Number.isFinite(n) && n > 0 ? n : NaN;
 }
 
-/** Largest edge in cm, or null if dimensions are missing / not in cm. */
-function parseMaxEdgeCm(raw) {
+/** { w, h } in cm (FR pair = hauteur × largeur), or null. */
+function parsePhysCm(raw) {
   const text = String(raw || "")
     .replace(/\u00a0/g, " ")
     .trim();
@@ -217,36 +218,66 @@ function parseMaxEdgeCm(raw) {
   );
   if (diam) {
     const d = parseFrCmNumber(diam[1]);
-    return Number.isFinite(d) ? d : null;
+    return Number.isFinite(d) ? { w: d, h: d } : null;
   }
 
   const pair = text.match(
     new RegExp(`([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`)
   );
   if (pair) {
-    const a = parseFrCmNumber(pair[1]);
-    const b = parseFrCmNumber(pair[2]);
-    if (Number.isFinite(a) && Number.isFinite(b)) return Math.max(a, b);
+    const h = parseFrCmNumber(pair[1]);
+    const w = parseFrCmNumber(pair[2]);
+    if (Number.isFinite(h) && Number.isFinite(w)) return { w, h };
   }
 
   const single = text.match(new RegExp(`([\\d\\s.,]+)\\s*${unit}`, "i"));
   if (single) {
     const n = parseFrCmNumber(single[1]);
-    return Number.isFinite(n) ? n : null;
+    return Number.isFinite(n) ? { w: n, h: n } : null;
   }
   return null;
 }
 
+function roundPhys(n) {
+  return Math.round(n * 1000) / 1000;
+}
+
+/** --phys-w/h + --size-scale for CSS; unknown dims → full cell. */
+function physicalSizeProps(raw) {
+  const dims = parsePhysCm(raw);
+  if (!dims) return { physW: 1, physH: 1, scale: 1 };
+  const ref = sizeRefCm();
+  let pw = dims.w / ref;
+  let ph = dims.h / ref;
+  const longest = Math.max(pw, ph);
+  if (longest > 1) {
+    pw /= longest;
+    ph /= longest;
+  }
+  const scale = Math.max(pw, ph);
+  const floor = sizeMinScale();
+  if (scale > 0 && scale < floor) {
+    const boost = floor / scale;
+    pw *= boost;
+    ph *= boost;
+  }
+  return {
+    physW: roundPhys(pw),
+    physH: roundPhys(ph),
+    scale: roundPhys(Math.max(pw, ph)),
+  };
+}
+
 function physicalSizeScale(raw) {
-  const cm = parseMaxEdgeCm(raw);
-  if (!(cm > 0)) return 1;
-  return Math.min(1, Math.max(sizeMinScale(), cm / sizeRefCm()));
+  return physicalSizeProps(raw).scale;
 }
 
 function applySizeScale(el, raw) {
   if (!el) return 1;
-  const scale = physicalSizeScale(raw);
-  el.style.setProperty("--size-scale", String(Math.round(scale * 1000) / 1000));
+  const { physW, physH, scale } = physicalSizeProps(raw);
+  el.style.setProperty("--phys-w", String(physW));
+  el.style.setProperty("--phys-h", String(physH));
+  el.style.setProperty("--size-scale", String(scale));
   return scale;
 }
 
@@ -1483,25 +1514,28 @@ function applyZoomTransform() {
 }
 
 /**
- * Plafond affichage = résolution native (jamais d’upscale).
- * Resting view: also apply physical size scale.
- * Loupe: ignore physical scale so 100 % = well fit (zoom stays sane on miniatures).
+ * Plafond natif (jamais d’upscale).
+ * Repos : --phys-w/h (CSS cqmin). Loupe : plein puits, phys ignoré.
  */
 function applyNativeSizeCap({ forLoupe = false } = {}) {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
   if (!(nw > 0 && nh > 0)) return;
   const inLoupe = forLoupe || lightboxZoomed || lightboxZoomLoading;
-  const scale = inLoupe
-    ? 1
-    : Math.min(1, Math.max(sizeMinScale(), lightboxSizeScale || 1));
-  const pct = `${Math.round(scale * 1000) / 10}%`;
   dialogImage.style.width = "";
   dialogImage.style.height = "";
-  dialogImage.style.maxWidth = `min(${pct}, ${nw}px)`;
-  dialogImage.style.maxHeight = `min(${pct}, ${nh}px)`;
-  if (dialogPhoto) {
-    dialogPhoto.style.setProperty("--size-scale", String(Math.round(scale * 1000) / 1000));
+  dialogImage.style.maxWidth = `min(100%, ${nw}px)`;
+  dialogImage.style.maxHeight = `min(100%, ${nh}px)`;
+  if (!dialogPhoto) return;
+  if (inLoupe) {
+    dialogPhoto.style.setProperty("--phys-w", "1");
+    dialogPhoto.style.setProperty("--phys-h", "1");
+    dialogPhoto.style.setProperty("--size-scale", "1");
+  } else {
+    const { physW, physH, scale } = lightboxSizeProps;
+    dialogPhoto.style.setProperty("--phys-w", String(physW));
+    dialogPhoto.style.setProperty("--phys-h", String(physH));
+    dialogPhoto.style.setProperty("--size-scale", String(scale));
   }
 }
 
@@ -1752,7 +1786,7 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   const rawOriginal = assetPath(data.original || "");
   lightboxOriginalSrc =
     rawOriginal && rawOriginal !== lightboxDisplaySrc ? rawOriginal : "";
-  lightboxSizeScale = physicalSizeScale(data.dimensions || "");
+  lightboxSizeProps = physicalSizeProps(data.dimensions || "");
   applySizeScale(dialogPhoto, data.dimensions || "");
   clearNativeSizeCap();
   dialogImage.src = lightboxDisplaySrc;
