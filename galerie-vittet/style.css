@@ -9,7 +9,8 @@
   --paper: #f5efe6;       /* page, collection, about — not hero letterbox */
   --paper-lift: color-mix(in srgb, var(--paper) 72%, white); /* chrome / hover */
   --shade: color-mix(in srgb, var(--paper) 88%, black);     /* skeleton ONLY */
-  --stage: color-mix(in srgb, var(--paper) 12%, black);     /* lightbox + hero contain letterbox */
+  --stage: color-mix(in srgb, var(--paper) 12%, black);     /* hero contain letterbox */
+  --lightbox-well: color-mix(in srgb, white 86%, var(--paper)); /* fond image lightbox */
 
   /* —— Ink —— */
   --ink-full: #2c261f;    /* footer wordmark / paper fields */
@@ -96,7 +97,7 @@ img { max-width: 100%; }
 
 section { scroll-margin-top: 48px; }
 
-/* —— Shared surfaces (paper field; hero letterbox + lightbox well use --stage) —— */
+/* —— Shared surfaces (paper field; hero letterbox = --stage; lightbox well = --lightbox-well) —— */
 .collection,
 .about,
 .art-open,
@@ -1342,7 +1343,7 @@ footer {
 
 .lightbox-photo {
   position: relative;
-  background: var(--stage);
+  background: var(--lightbox-well);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1366,7 +1367,7 @@ footer {
 }
 
 .lightbox-photo img.art-detail {
-  background: var(--stage);
+  background: var(--lightbox-well);
   width: auto;
   height: auto;
   max-width: 100%;
