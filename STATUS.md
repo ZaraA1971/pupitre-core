@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Crop169 — cadre carousel 16:9 (2026-11-21)
+
+- Cause : crop atelier en 16:10 alors que le hero plein écran est souvent ~16:9 → bandes noires latérales (contain)
+- Fix : hero desktop verrouillé 16:9 ; atelier `CAROUSEL_AR = 16/9` ; contain si crop≈stage, sinon cover (vieux 16:10 / mobile)
+- Cache-bust `?v=20261121-crop169`
+- Prod `771009a9` · preview `93c82893` · atelier `2fbe303c`
+- **À faire** : re-Valider les Recadré existants en 16:9 pour un affichage 1:1 exact
+
 ## Lbwell — fond lightbox blanc cassé (2026-11-21)
 
 - Puits image lightbox : `--lightbox-well` (blanc légèrement cassé) à la place de `--stage` sombre
