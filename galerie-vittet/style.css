@@ -10,7 +10,7 @@
   --paper-lift: color-mix(in srgb, var(--paper) 72%, white); /* chrome / hover */
   --shade: color-mix(in srgb, var(--paper) 88%, black);     /* skeleton ONLY */
   --stage: color-mix(in srgb, var(--paper) 12%, black);     /* hero contain letterbox */
-  --lightbox-well: color-mix(in srgb, white 86%, var(--paper)); /* fond image lightbox */
+  --lightbox-well: var(--paper); /* fond image lightbox = blanc cassé du site */
 
   /* —— Ink —— */
   --ink-full: #2c261f;    /* footer wordmark / paper fields */
