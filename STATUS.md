@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Navsec — sections en header (2026-11-21)
+
+- Menus Peintures / Miniatures / Aquarelles de J. V. Nicolle : retirés sous le carousel, placés en haut à droite à la place de Collection
+- Galerie + UK inchangés ; recherche reste dans la collection
+- Cache-bust `?v=20261121-navsec`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `92c942e4` · preview `3e4af5b8` · atelier `7f4bf930` · https://galerie-vittet-preview.pages.dev/
+
+
 ## Cropexact2 — crop carousel 1:1 sans re-zoom CSS (2026-11-19)
 
 - Cause : `.hero-slide img { object-fit: cover; width/height: 100% }` re-coupait le bitmap atelier
