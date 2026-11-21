@@ -5,8 +5,8 @@
 ## Lbwell — fond lightbox blanc cassé (2026-11-21)
 
 - Puits image lightbox : `--lightbox-well` (blanc légèrement cassé) à la place de `--stage` sombre
-- Cache-bust `?v=20261121-lbwell`
-- Prod `345500a0` · preview `499aa583` · atelier `732672e4` · https://galerie-vittet-preview.pages.dev/
+- Cache-bust `?v=20261121-lbwell2`
+- Prod `7b90d25e` · preview `22d2923b` · atelier `72b71573` (lbwell2 = --paper) · https://galerie-vittet-preview.pages.dev/
 
 ## Navsec — sections en header (2026-11-21)
 
