@@ -75,6 +75,16 @@
     contrast(var(--img-hero-contrast))
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
+
+  /*
+   * Physical size (grille + lightbox au repos) — main.js lit ces tokens.
+   * --size-ref-cm     : grand côté ≥ cette valeur (cm) → plein cadre (1)
+   * --size-min-scale  : plancher d’affichage des plus petites (0–1)
+   * Échelle = clamp(maxEdgeCm / ref, min, 1). Loupe = plein puits (ignore).
+   */
+  --size-ref-cm: 42;
+  --size-min-scale: 0.58;
+  --size-scale: 1; /* per-work, set inline by JS */
 }
 
 * { box-sizing: border-box; }

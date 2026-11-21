@@ -162,13 +162,35 @@ function displayDimensions(value) {
 }
 
 /**
- * Relative physical size for grid + lightbox.
- * Works with max edge ≥ SIZE_REF_CM fill the slot; smaller ones shrink
- * proportionally (floor SIZE_MIN_SCALE so miniatures stay readable).
- * Skip px / unparseable strings → scale 1 (no accidental shrink).
+ * Relative physical size for grid + lightbox (resting view).
+ * Knobs live in style.css :root (--size-ref-cm, --size-min-scale).
+ * Loupe ignores this scale (fills the well) so zoom isn’t inflated.
+ * Skip px / unparseable → scale 1.
  */
-const SIZE_REF_CM = 50;
-const SIZE_MIN_SCALE = 0.28;
+const SIZE_REF_CM_FALLBACK = 42;
+const SIZE_MIN_SCALE_FALLBACK = 0.58;
+
+function readCssNumber(name, fallback) {
+  try {
+    const raw = getComputedStyle(document.documentElement)
+      .getPropertyValue(name)
+      .trim();
+    const n = parseFloat(raw);
+    return Number.isFinite(n) ? n : fallback;
+  } catch (_) {
+    return fallback;
+  }
+}
+
+function sizeRefCm() {
+  const n = readCssNumber("--size-ref-cm", SIZE_REF_CM_FALLBACK);
+  return n > 0 ? n : SIZE_REF_CM_FALLBACK;
+}
+
+function sizeMinScale() {
+  const n = readCssNumber("--size-min-scale", SIZE_MIN_SCALE_FALLBACK);
+  return Math.min(1, Math.max(0.05, n));
+}
 
 function parseFrCmNumber(raw) {
   const n = parseFloat(
@@ -218,7 +240,7 @@ function parseMaxEdgeCm(raw) {
 function physicalSizeScale(raw) {
   const cm = parseMaxEdgeCm(raw);
   if (!(cm > 0)) return 1;
-  return Math.min(1, Math.max(SIZE_MIN_SCALE, cm / SIZE_REF_CM));
+  return Math.min(1, Math.max(sizeMinScale(), cm / sizeRefCm()));
 }
 
 function applySizeScale(el, raw) {
@@ -1460,17 +1482,27 @@ function applyZoomTransform() {
     : "";
 }
 
-/** Plafond affichage = résolution native × échelle physique (jamais d’upscale). */
-function applyNativeSizeCap() {
+/**
+ * Plafond affichage = résolution native (jamais d’upscale).
+ * Resting view: also apply physical size scale.
+ * Loupe: ignore physical scale so 100 % = well fit (zoom stays sane on miniatures).
+ */
+function applyNativeSizeCap({ forLoupe = false } = {}) {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
   if (!(nw > 0 && nh > 0)) return;
-  const scale = Math.min(1, Math.max(SIZE_MIN_SCALE, lightboxSizeScale || 1));
+  const inLoupe = forLoupe || lightboxZoomed || lightboxZoomLoading;
+  const scale = inLoupe
+    ? 1
+    : Math.min(1, Math.max(sizeMinScale(), lightboxSizeScale || 1));
   const pct = `${Math.round(scale * 1000) / 10}%`;
   dialogImage.style.width = "";
   dialogImage.style.height = "";
   dialogImage.style.maxWidth = `min(${pct}, ${nw}px)`;
   dialogImage.style.maxHeight = `min(${pct}, ${nh}px)`;
+  if (dialogPhoto) {
+    dialogPhoto.style.setProperty("--size-scale", String(Math.round(scale * 1000) / 1000));
+  }
 }
 
 function clearNativeSizeCap() {
@@ -1613,6 +1645,8 @@ async function enterZoom() {
   const token = ++lightboxZoomToken;
   lightboxZoomLoading = true;
   zoomLevel = LOUPE_ZOOM_MIN;
+  // Lift physical shrink before measuring fit — loupe 100 % = well contain.
+  applyNativeSizeCap({ forLoupe: true });
   captureLightboxDefaultFit();
   dialog.classList.add("is-loupe");
   dialogPhoto.classList.add("is-loading-zoom");
@@ -1636,10 +1670,12 @@ async function enterZoom() {
       dialogPhoto.classList.remove("is-loading-zoom");
       dialogPhoto.classList.add("is-zoomed");
       dialogImage.classList.add("is-zoomed");
-      // Après masquage de la fiche : laisser le layout s’étendre, puis plafond natif.
+      // Après masquage de la fiche : layout plein puits, puis plafond natif.
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           if (token !== lightboxZoomToken) return;
+          applyNativeSizeCap({ forLoupe: true });
+          captureLightboxDefaultFit();
           applyLoupeZoomMax(computeNativeZoomMax());
           zoomLevel = LOUPE_ZOOM_MIN;
           syncZoomGauge(100);
