@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbwell — fond lightbox blanc cassé (2026-11-21)
+
+- Puits image lightbox : `--lightbox-well` (blanc légèrement cassé) à la place de `--stage` sombre
+- Cache-bust `?v=20261121-lbwell`
+- Prod `345500a0` · preview `499aa583` · atelier `732672e4` · https://galerie-vittet-preview.pages.dev/
+
 ## Navsec — sections en header (2026-11-21)
 
 - Menus Peintures / Miniatures / Aquarelles de J. V. Nicolle : retirés sous le carousel, placés en haut à droite à la place de Collection
