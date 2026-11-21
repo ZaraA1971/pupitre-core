@@ -90,6 +90,8 @@ let lightboxOriginalSrc = "";
 let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
+/** Physical size scale (0.28–1) for the open lightbox work; 1 = full well. */
+let lightboxSizeScale = 1;
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -157,6 +159,73 @@ function displayDimensions(value) {
     return window.GalerieI18n.localizeDimensions(value);
   }
   return value || "";
+}
+
+/**
+ * Relative physical size for grid + lightbox.
+ * Works with max edge ≥ SIZE_REF_CM fill the slot; smaller ones shrink
+ * proportionally (floor SIZE_MIN_SCALE so miniatures stay readable).
+ * Skip px / unparseable strings → scale 1 (no accidental shrink).
+ */
+const SIZE_REF_CM = 50;
+const SIZE_MIN_SCALE = 0.28;
+
+function parseFrCmNumber(raw) {
+  const n = parseFloat(
+    String(raw || "")
+      .replace(/\s+/g, "")
+      .replace(",", ".")
+  );
+  return Number.isFinite(n) && n > 0 ? n : NaN;
+}
+
+/** Largest edge in cm, or null if dimensions are missing / not in cm. */
+function parseMaxEdgeCm(raw) {
+  const text = String(raw || "")
+    .replace(/\u00a0/g, " ")
+    .trim();
+  if (!text || /\bpx\b/i.test(text)) return null;
+  const unit = "(?:cm|centim[eè]tres?)\\b";
+
+  const diam = text.match(
+    new RegExp(
+      `(?:diam[eè]tre|ø|diameter)\\s*:?\\s*([\\d\\s.,]+)\\s*${unit}`,
+      "i"
+    )
+  );
+  if (diam) {
+    const d = parseFrCmNumber(diam[1]);
+    return Number.isFinite(d) ? d : null;
+  }
+
+  const pair = text.match(
+    new RegExp(`([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`)
+  );
+  if (pair) {
+    const a = parseFrCmNumber(pair[1]);
+    const b = parseFrCmNumber(pair[2]);
+    if (Number.isFinite(a) && Number.isFinite(b)) return Math.max(a, b);
+  }
+
+  const single = text.match(new RegExp(`([\\d\\s.,]+)\\s*${unit}`, "i"));
+  if (single) {
+    const n = parseFrCmNumber(single[1]);
+    return Number.isFinite(n) ? n : null;
+  }
+  return null;
+}
+
+function physicalSizeScale(raw) {
+  const cm = parseMaxEdgeCm(raw);
+  if (!(cm > 0)) return 1;
+  return Math.min(1, Math.max(SIZE_MIN_SCALE, cm / SIZE_REF_CM));
+}
+
+function applySizeScale(el, raw) {
+  if (!el) return 1;
+  const scale = physicalSizeScale(raw);
+  el.style.setProperty("--size-scale", String(Math.round(scale * 1000) / 1000));
+  return scale;
 }
 
 /**
@@ -321,6 +390,7 @@ function makeCard(work, { source = "grid" } = {}) {
   button.dataset.support = work.support || "";
   button.dataset.dimensions = work.dimensions || "";
   button.dataset.note = work.note || "";
+  applySizeScale(button, work.dimensions || "");
   button.setAttribute(
     "aria-label",
     t("enlarge", { title: work.title || t("theWork") })
@@ -1390,15 +1460,17 @@ function applyZoomTransform() {
     : "";
 }
 
-/** Plafond affichage = résolution native (jamais d’upscale au-delà de natural*). */
+/** Plafond affichage = résolution native × échelle physique (jamais d’upscale). */
 function applyNativeSizeCap() {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
   if (!(nw > 0 && nh > 0)) return;
+  const scale = Math.min(1, Math.max(SIZE_MIN_SCALE, lightboxSizeScale || 1));
+  const pct = `${Math.round(scale * 1000) / 10}%`;
   dialogImage.style.width = "";
   dialogImage.style.height = "";
-  dialogImage.style.maxWidth = `min(100%, ${nw}px)`;
-  dialogImage.style.maxHeight = `min(100%, ${nh}px)`;
+  dialogImage.style.maxWidth = `min(${pct}, ${nw}px)`;
+  dialogImage.style.maxHeight = `min(${pct}, ${nh}px)`;
 }
 
 function clearNativeSizeCap() {
@@ -1644,6 +1716,8 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   const rawOriginal = assetPath(data.original || "");
   lightboxOriginalSrc =
     rawOriginal && rawOriginal !== lightboxDisplaySrc ? rawOriginal : "";
+  lightboxSizeScale = physicalSizeScale(data.dimensions || "");
+  applySizeScale(dialogPhoto, data.dimensions || "");
   clearNativeSizeCap();
   dialogImage.src = lightboxDisplaySrc;
   dialogImage.alt = imageAlt;

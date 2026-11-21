@@ -1036,11 +1036,15 @@ html.collection-page-deep .art-grid {
   cursor: zoom-in;
 }
 
+/* Centered in the 4:3 cell; --size-scale (JS) shrinks small physical works. */
 .art-open .art-preview {
   position: absolute;
   inset: 6px;
-  width: calc(100% - 12px);
-  height: calc(100% - 12px);
+  width: auto;
+  height: auto;
+  max-width: calc((100% - 12px) * var(--size-scale, 1));
+  max-height: calc((100% - 12px) * var(--size-scale, 1));
+  margin: auto;
   object-fit: contain;
   filter: var(--img-enhance);
   transition: transform .45s ease, box-shadow .45s ease;
@@ -1389,8 +1393,9 @@ footer {
   background: var(--lightbox-well);
   width: auto;
   height: auto;
-  max-width: 100%;
-  max-height: 100%;
+  /* --size-scale from JS; inline max* from applyNativeSizeCap may override. */
+  max-width: calc(100% * var(--size-scale, 1));
+  max-height: calc(100% * var(--size-scale, 1));
   object-fit: contain;
   object-position: center;
   opacity: 1;
@@ -2011,23 +2016,36 @@ footer {
     gap: 28px 0;
     min-height: 240px;
   }
-  /* Image flows — caption sits under the painting, no tall empty frame. */
+  /* Image flows — caption under the painting; scale keeps tiny works small. */
   .art-open {
     aspect-ratio: unset;
     height: auto;
     min-height: 0;
-    display: block;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     overflow: visible;
   }
   .art-open .art-preview {
     position: static;
     inset: auto;
+    left: auto;
+    top: auto;
     display: block;
-    width: 100%;
+    width: auto;
     height: auto;
-    max-height: min(78vw, 560px);
-    margin: 0;
+    max-width: calc(100% * var(--size-scale, 1));
+    max-height: min(
+      calc(78vw * var(--size-scale, 1)),
+      calc(560px * var(--size-scale, 1))
+    );
+    margin: 0 auto;
     object-fit: contain;
+    transform: none;
+  }
+  .art-open:hover .art-preview,
+  .art-open:focus-visible .art-preview {
+    transform: translateY(-3px);
   }
   .art-meta { padding-top: 6px; }
   .art-meta h3 { margin: 0; }
