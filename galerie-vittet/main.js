@@ -91,7 +91,7 @@ let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
 /** Physical size props for the open lightbox work (resting view). */
-let lightboxSizeProps = { physW: 1, physH: 1, scale: 1 };
+let lightboxSizeProps = { physW: 1, physH: 1, scale: 1, edgeCm: 0 };
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -171,6 +171,8 @@ function displayDimensions(value) {
 const SIZE_REF_CM_FALLBACK = 50;
 const SIZE_LOG_K_FALLBACK = 0.08;
 const SIZE_MIN_SCALE_FALLBACK = 0.18;
+const LOUPE_MAX_FALLBACK = 3;
+const LOUPE_SMALL_MAX_FALLBACK = 1.8;
 
 function readCssNumber(name, fallback) {
   try {
@@ -263,19 +265,43 @@ function roundPhys(n) {
 /** --phys-w/h + --size-scale for CSS; unknown dims → full cell. */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
-  if (!dims) return { physW: 1, physH: 1, scale: 1 };
+  if (!dims) return { physW: 1, physH: 1, scale: 1, edgeCm: 0 };
   const edge = Math.max(dims.w, dims.h);
   let soft = softSizeScale(edge);
   const floor = sizeMinScale();
   if (soft > 0 && soft < floor) soft = floor;
   // Keep aspect; longest edge = soft scale (log-softened vs ref).
-  let pw = (dims.w / edge) * soft;
-  let ph = (dims.h / edge) * soft;
+  const pw = (dims.w / edge) * soft;
+  const ph = (dims.h / edge) * soft;
   return {
     physW: roundPhys(pw),
     physH: roundPhys(ph),
     scale: roundPhys(soft),
+    edgeCm: roundPhys(edge),
   };
+}
+
+function loupeMaxCap() {
+  return Math.max(1, readCssNumber("--loupe-max", LOUPE_MAX_FALLBACK));
+}
+
+function loupeSmallMaxCap() {
+  const hi = loupeMaxCap();
+  const lo = readCssNumber("--loupe-small-max", LOUPE_SMALL_MAX_FALLBACK);
+  return Math.min(hi, Math.max(1, lo));
+}
+
+/**
+ * Plafond loupe selon taille réelle : petites → --loupe-small-max,
+ * grandes → --loupe-max (interpolé via soft scale).
+ */
+function loupePhysCap() {
+  const hi = loupeMaxCap();
+  const lo = loupeSmallMaxCap();
+  const edge = lightboxSizeProps && lightboxSizeProps.edgeCm;
+  if (!(edge > 0)) return hi;
+  const soft = Math.min(1, Math.max(0, softSizeScale(edge)));
+  return lo + (hi - lo) * soft;
 }
 
 function physicalSizeScale(raw) {
@@ -1476,7 +1502,7 @@ function pokeLoupeChrome() {
   }, LOUPE_CHROME_IDLE_MS);
 }
 
-/** maxZoom = min(natural/display) ; < 1 → pas de zoom utile (reste à 100 %, jauge off). */
+/** maxZoom natif = min(natural/display) ; < 1 → pas de zoom utile. */
 function computeNativeZoomMax() {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
@@ -1486,6 +1512,14 @@ function computeNativeZoomMax() {
   const z = Math.min(nw / baseW, nh / baseH);
   if (!Number.isFinite(z) || z <= 0) return 1;
   return z;
+}
+
+/** Natif ∩ plafond physique (évite 300 %+ sur miniatures HD). */
+function computeLoupeZoomMax() {
+  const native = computeNativeZoomMax();
+  const phys = loupePhysCap();
+  const z = Math.min(native, phys);
+  return Number.isFinite(z) && z > 0 ? z : 1;
 }
 
 function loupeZoomMaxPercent() {
@@ -1720,7 +1754,7 @@ async function enterZoom() {
           if (token !== lightboxZoomToken) return;
           applyNativeSizeCap({ forLoupe: true });
           captureLightboxDefaultFit();
-          applyLoupeZoomMax(computeNativeZoomMax());
+          applyLoupeZoomMax(computeLoupeZoomMax());
           zoomLevel = LOUPE_ZOOM_MIN;
           syncZoomGauge(100);
           // Défaut 100 % = fit lightbox ; jauge jusqu’au coeff. natif (sans pixelisation).
