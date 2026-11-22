@@ -82,15 +82,17 @@
    * --size-log-k      : adoucit les petites (log) ; ↑k → petites plus grandes
    * --size-min-scale  : plancher de sécurité du plus grand côté (0–1)
    * Courbe : soft = ln(1+k·cm) / ln(1+k·ref) ; aspect H×W conservé.
-   * Loupe (plein puits) — plafond zoom selon la taille réelle :
-   * --loupe-max       : plafond × pour les grandes (≥ ref)
-   * --loupe-small-max : plafond × pour les toutes petites (interpolé via soft)
+   * Loupe (plein puits) — plafond zoom selon grand côté réel :
+   * --loupe-small-edge-cm : seuil (cm) ; en dessous → --loupe-small-max
+   * --loupe-small-max     : plafond × pour < seuil (ex. 1.2 = 120 %)
+   * --loupe-max           : plafond × pour ≥ seuil (ex. 1.8 = 180 %)
    */
   --size-ref-cm: 50;
   --size-log-k: 0.25;
   --size-min-scale: 0.32;
-  --loupe-max: 3;
-  --loupe-small-max: 1.8;
+  --loupe-small-edge-cm: 15;
+  --loupe-small-max: 1.2;
+  --loupe-max: 1.8;
   --phys-w: 1;
   --phys-h: 1;
   --size-scale: 1; /* max(--phys-w, --phys-h) — repli / loupe */

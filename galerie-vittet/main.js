@@ -171,8 +171,9 @@ function displayDimensions(value) {
 const SIZE_REF_CM_FALLBACK = 50;
 const SIZE_LOG_K_FALLBACK = 0.25;
 const SIZE_MIN_SCALE_FALLBACK = 0.32;
-const LOUPE_MAX_FALLBACK = 3;
-const LOUPE_SMALL_MAX_FALLBACK = 1.8;
+const LOUPE_MAX_FALLBACK = 1.8;
+const LOUPE_SMALL_MAX_FALLBACK = 1.2;
+const LOUPE_SMALL_EDGE_CM_FALLBACK = 15;
 
 function readCssNumber(name, fallback) {
   try {
@@ -286,22 +287,24 @@ function loupeMaxCap() {
 }
 
 function loupeSmallMaxCap() {
-  const hi = loupeMaxCap();
-  const lo = readCssNumber("--loupe-small-max", LOUPE_SMALL_MAX_FALLBACK);
-  return Math.min(hi, Math.max(1, lo));
+  return Math.max(1, readCssNumber("--loupe-small-max", LOUPE_SMALL_MAX_FALLBACK));
+}
+
+function loupeSmallEdgeCm() {
+  const n = readCssNumber("--loupe-small-edge-cm", LOUPE_SMALL_EDGE_CM_FALLBACK);
+  return n > 0 ? n : LOUPE_SMALL_EDGE_CM_FALLBACK;
 }
 
 /**
- * Plafond loupe selon taille réelle : petites → --loupe-small-max,
- * grandes → --loupe-max (interpolé via soft scale).
+ * Plafond loupe : grand côté < seuil → --loupe-small-max (120 %),
+ * sinon → --loupe-max (180 %). Pas d’interpolation.
  */
 function loupePhysCap() {
   const hi = loupeMaxCap();
-  const lo = loupeSmallMaxCap();
+  const lo = Math.min(hi, loupeSmallMaxCap());
   const edge = lightboxSizeProps && lightboxSizeProps.edgeCm;
   if (!(edge > 0)) return hi;
-  const soft = Math.min(1, Math.max(0, softSizeScale(edge)));
-  return lo + (hi - lo) * soft;
+  return edge < loupeSmallEdgeCm() ? lo : hi;
 }
 
 function physicalSizeScale(raw) {
