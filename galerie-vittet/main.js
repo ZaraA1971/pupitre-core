@@ -169,8 +169,8 @@ function displayDimensions(value) {
  * Loupe ignores phys (fills the well).
  */
 const SIZE_REF_CM_FALLBACK = 50;
-const SIZE_LOG_K_FALLBACK = 0.08;
-const SIZE_MIN_SCALE_FALLBACK = 0.18;
+const SIZE_LOG_K_FALLBACK = 0.25;
+const SIZE_MIN_SCALE_FALLBACK = 0.32;
 const LOUPE_MAX_FALLBACK = 3;
 const LOUPE_SMALL_MAX_FALLBACK = 1.8;
 
