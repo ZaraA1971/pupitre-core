@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Physclean1 — nettoyage code échelle physique (2026-11-23)
+
+- Mort retiré : `physicalSizeScale`, `--size-scale`, wrappers CSS token
+- Helpers unifiés (`cssNum`, `setPhysCss`) ; parse lightbox une seule fois
+- Comportement inchangé (avec cadre, log, loupe 120 % / 180 %)
+- Cache-bust `?v=20261123-physclean1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `97dbc38f` · preview `9ac12b13` · atelier `6e62c2d7` · https://galerie-vittet-preview.pages.dev/
+
 ## Crop169 — cadre carousel 16:9 (2026-11-21)
 
 - Cause : crop atelier en 16:10 alors que le hero plein écran est souvent ~16:9 → bandes noires latérales (contain)
