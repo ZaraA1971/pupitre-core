@@ -91,7 +91,7 @@ function metaMax(key) {
   return field ? field.max : 400;
 }
 
-/* —— Taille normée (source FR/cm) + convertisseur inch —— */
+/* —— Taille normée (source FR/cm) + aperçu inch (cm → in seulement) —— */
 let dimsEditorSeq = 0;
 
 function parseDimsNumber(raw) {
@@ -115,11 +115,6 @@ function formatInchesFromCm(cm) {
   if (!Number.isFinite(cm) || !(cm > 0)) return "";
   const inches = Math.round((cm / 2.54) * 10) / 10;
   return Number.isInteger(inches) ? String(inches) : inches.toFixed(1);
-}
-
-function inchesToCm(inch) {
-  if (!Number.isFinite(inch) || !(inch > 0)) return NaN;
-  return Math.round(inch * 2.54 * 10) / 10;
 }
 
 function formatPairCm(h, w) {
@@ -248,7 +243,7 @@ function inchPairLabel(h, w) {
 }
 
 /**
- * Éditeur taille : H×L cm (option cadre) ou diamètre + aperçu inch + inch→cm.
+ * Éditeur taille : H×L cm (option cadre) ou diamètre + aperçu inch (cm → in).
  * Écrit la chaîne canon dans un input caché (data-edit / data-field = dimensions).
  */
 function mountDimensionsEditor({
@@ -375,36 +370,6 @@ function mountDimensionsEditor({
   diamBox.append(diamRow);
   wrap.append(diamBox);
 
-  const convert = document.createElement("div");
-  convert.className = "dims-convert";
-  const convertLead = document.createElement("span");
-  convertLead.className = "dims-convert-lead";
-  convertLead.textContent = "Depuis inch";
-  const inchH = document.createElement("input");
-  inchH.type = "text";
-  inchH.inputMode = "decimal";
-  inchH.dataset.inch = "h";
-  inchH.setAttribute("aria-label", "Hauteur inches");
-  inchH.placeholder = "H";
-  const inchTimes = document.createElement("span");
-  inchTimes.className = "dims-times";
-  inchTimes.textContent = "×";
-  const inchW = document.createElement("input");
-  inchW.type = "text";
-  inchW.inputMode = "decimal";
-  inchW.dataset.inch = "w";
-  inchW.setAttribute("aria-label", "Largeur inches");
-  inchW.placeholder = "L";
-  const inchUnit = document.createElement("span");
-  inchUnit.className = "dims-unit";
-  inchUnit.textContent = "in";
-  const inchApply = document.createElement("button");
-  inchApply.type = "button";
-  inchApply.className = "button button-quiet dims-convert-btn";
-  inchApply.textContent = "→ cm";
-  convert.append(convertLead, inchH, inchTimes, inchW, inchUnit, inchApply);
-  wrap.append(convert);
-
   const preview = document.createElement("p");
   preview.className = "dims-preview";
   preview.dataset.dimsPreview = "1";
@@ -502,21 +467,6 @@ function mountDimensionsEditor({
   frameCheck.addEventListener("change", () => sync());
   [inputH, inputW, inputFH, inputFW, inputDiam].forEach((el) => {
     el.addEventListener("input", () => sync());
-  });
-
-  inchApply.addEventListener("click", () => {
-    const ih = parseDimsNumber(inchH.value);
-    const iw = parseDimsNumber(inchW.value);
-    if (modeDiamInput.checked) {
-      const d = inchesToCm(ih);
-      if (Number.isFinite(d)) setInputCm(inputDiam, d);
-    } else {
-      const ch = inchesToCm(ih);
-      const cw = inchesToCm(iw);
-      if (Number.isFinite(ch)) setInputCm(inputH, ch);
-      if (Number.isFinite(cw)) setInputCm(inputW, cw);
-    }
-    sync();
   });
 
   loadFromValue(value);

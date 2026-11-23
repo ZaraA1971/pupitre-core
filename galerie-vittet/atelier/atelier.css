@@ -163,7 +163,7 @@
   min-height: 96px;
 }
 
-/* Taille normée H×L / diamètre + aperçu inch */
+/* Taille normée H×L / diamètre + aperçu inch (cm → in) */
 .dims-editor,
 .upload-dims {
   display: grid;
@@ -198,8 +198,7 @@
   align-items: center;
   gap: 8px;
 }
-.dims-row input[type="text"],
-.dims-convert input[type="text"] {
+.dims-row input[type="text"] {
   width: 5.5rem;
   min-height: 40px;
   border: 1px solid var(--line);
@@ -224,23 +223,6 @@
   letter-spacing: 0;
   text-transform: none;
   white-space: nowrap;
-}
-.dims-convert {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  padding-top: 2px;
-}
-.dims-convert-lead {
-  font-size: 12px;
-  letter-spacing: 0;
-  text-transform: none;
-  color: var(--atelier-hint);
-}
-.dims-convert-btn {
-  min-height: 36px;
-  padding: 0 10px;
 }
 .dims-preview {
   margin: 0;
