@@ -2,10 +2,18 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Taille2 — aperçu inch cm→in seulement (2026-11-23)
+
+- Saisie cm uniquement ; retrait du convertisseur inch → cm
+- Aperçu `≈ … in` conservé
+- Cache-bust `?v=20261123-taille2`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `0d25a5d4` · preview `160788d3` · atelier `2af1e076` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Taille1 — champ taille Atelier normé + inch (2026-11-23)
 
 - Éditeur H×L cm (cadre optionnel) ou diamètre ; canon FR enregistré
-- Aperçu inch live + convertisseur inch → cm
+- Aperçu inch live (+ convertisseur inverse retiré en taille2)
 - Cache-bust `?v=20261123-taille1`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
 - Prod `3337d4d9` · preview `a0f70952` · atelier `366a38e2` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
