@@ -223,13 +223,30 @@ function parseFrCmNumber(raw) {
   return Number.isFinite(n) && n > 0 ? n : NaN;
 }
 
-/** { w, h } in cm (FR pair = hauteur × largeur), or null. */
+/**
+ * { w, h } in cm from Atelier `dimensions` (FR = hauteur × largeur).
+ * If « avec cadre : H x W » is present, that size wins for display scale —
+ * the photo usually shows the framed object, not the plaque alone.
+ */
 function parsePhysCm(raw) {
   const text = String(raw || "")
     .replace(/\u00a0/g, " ")
     .trim();
   if (!text || /\bpx\b/i.test(text)) return null;
   const unit = "(?:cm|centim[eè]tres?)\\b";
+  const pairRe = `([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`;
+
+  const withFrame = text.match(
+    new RegExp(
+      `(?:avec\\s+cadre|with\\s+frame|cadre)\\s*:?\\s*${pairRe}`,
+      "i"
+    )
+  );
+  if (withFrame) {
+    const h = parseFrCmNumber(withFrame[1]);
+    const w = parseFrCmNumber(withFrame[2]);
+    if (Number.isFinite(h) && Number.isFinite(w)) return { w, h };
+  }
 
   const diam = text.match(
     new RegExp(
@@ -242,9 +259,7 @@ function parsePhysCm(raw) {
     return Number.isFinite(d) ? { w: d, h: d } : null;
   }
 
-  const pair = text.match(
-    new RegExp(`([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`)
-  );
+  const pair = text.match(new RegExp(pairRe));
   if (pair) {
     const h = parseFrCmNumber(pair[1]);
     const w = parseFrCmNumber(pair[2]);
