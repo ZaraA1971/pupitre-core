@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Taille1 — champ taille Atelier normé + inch (2026-11-23)
+
+- Éditeur H×L cm (cadre optionnel) ou diamètre ; canon FR enregistré
+- Aperçu inch live + convertisseur inch → cm
+- Cache-bust `?v=20261123-taille1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `3337d4d9` · preview `a0f70952` · atelier `366a38e2` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Physreal1 — lightbox taille réelle des petites (2026-11-23)
 
 - Petites (grand côté `< 30 cm`) : cm Atelier → px écran (`1cm` CSS mesuré)
