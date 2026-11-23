@@ -76,26 +76,15 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /*
-   * Physical size (grille + lightbox au repos) — main.js lit ces tokens.
-   * --size-ref-cm     : cm mappés sur le petit côté de la cellule (cqmin)
-   * --size-log-k      : adoucit les petites (log) ; ↑k → petites plus grandes
-   * --size-min-scale  : plancher de sécurité du plus grand côté (0–1)
-   * Courbe : soft = ln(1+k·cm) / ln(1+k·ref) ; aspect H×W conservé.
-   * Loupe (plein puits) — plafond zoom selon grand côté réel :
-   * --loupe-small-edge-cm : seuil (cm) ; en dessous → --loupe-small-max
-   * --loupe-small-max     : plafond × pour < seuil (ex. 1.2 = 120 %)
-   * --loupe-max           : plafond × pour ≥ seuil (ex. 1.8 = 180 %)
-   */
-  --size-ref-cm: 50;
-  --size-log-k: 0.25;
-  --size-min-scale: 0.32;
-  --loupe-small-edge-cm: 15;
-  --loupe-small-max: 1.2;
-  --loupe-max: 1.8;
+  /* Phys size (grille + lightbox repos) — lus par main.js */
+  --size-ref-cm: 50;          /* cm ≈ 100cqmin */
+  --size-log-k: 0.25;         /* ↑k → petites plus grandes */
+  --size-min-scale: 0.32;     /* plancher grand côté */
+  --loupe-small-edge-cm: 15;  /* seuil loupe */
+  --loupe-small-max: 1.2;     /* plafond < seuil */
+  --loupe-max: 1.8;           /* plafond ≥ seuil */
   --phys-w: 1;
   --phys-h: 1;
-  --size-scale: 1; /* max(--phys-w, --phys-h) — repli / loupe */
 }
 
 * { box-sizing: border-box; }
@@ -1058,10 +1047,7 @@ html.collection-page-deep .art-grid {
   container-type: size;
 }
 
-/*
- * Vraie proportion cm : 1 cqmin ≈ --size-ref-cm.
- * --phys-w / --phys-h (JS) = largeur / hauteur en fractions de la ref.
- */
+/* Proportion cm : 1 cqmin ≈ --size-ref-cm ; --phys-* = fractions de la ref. */
 .art-open .art-preview {
   position: absolute;
   inset: 6px;
@@ -1432,7 +1418,7 @@ footer {
   -webkit-user-drag: none;
 }
 
-/* Loupe : plein puits (plus de phys cm) — inline max* via applyNativeSizeCap. */
+/* Loupe : plein puits (phys ignoré) ; max* inline via applyNativeSizeCap. */
 .lightbox.is-loupe .lightbox-photo img.art-detail,
 .lightbox-photo.is-zoomed img.art-detail,
 .lightbox-photo.is-loading-zoom img.art-detail {

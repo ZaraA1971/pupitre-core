@@ -90,8 +90,8 @@ let lightboxOriginalSrc = "";
 let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
-/** Physical size props for the open lightbox work (resting view). */
-let lightboxSizeProps = { physW: 1, physH: 1, scale: 1, edgeCm: 0 };
+/** Phys props of the open lightbox work (resting view). */
+let lightboxSizeProps = { physW: 1, physH: 1, edgeCm: 0 };
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -161,52 +161,34 @@ function displayDimensions(value) {
   return value || "";
 }
 
-/**
- * Relative physical size for grid + lightbox (resting view).
- * Knobs: style.css :root (--size-ref-cm, --size-log-k, --size-min-scale).
- * Labels FR hauteur × largeur → --phys-h / --phys-w.
- * soft(edge) = ln(1+k·cm) / ln(1+k·ref) — adoucit les petites, garde l’écart.
- * Loupe ignores phys (fills the well).
- */
-const SIZE_REF_CM_FALLBACK = 50;
-const SIZE_LOG_K_FALLBACK = 0.25;
-const SIZE_MIN_SCALE_FALLBACK = 0.32;
-const LOUPE_MAX_FALLBACK = 1.8;
-const LOUPE_SMALL_MAX_FALLBACK = 1.2;
-const LOUPE_SMALL_EDGE_CM_FALLBACK = 15;
+/* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
+const SIZE_CSS_FALLBACKS = {
+  "--size-ref-cm": 50,
+  "--size-log-k": 0.25,
+  "--size-min-scale": 0.32,
+  "--loupe-max": 1.8,
+  "--loupe-small-max": 1.2,
+  "--loupe-small-edge-cm": 15,
+};
 
-function readCssNumber(name, fallback) {
+function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
   try {
-    const raw = getComputedStyle(document.documentElement)
-      .getPropertyValue(name)
-      .trim();
-    const n = parseFloat(raw);
+    const n = parseFloat(
+      getComputedStyle(document.documentElement).getPropertyValue(name).trim()
+    );
     return Number.isFinite(n) ? n : fallback;
   } catch (_) {
     return fallback;
   }
 }
 
-function sizeRefCm() {
-  const n = readCssNumber("--size-ref-cm", SIZE_REF_CM_FALLBACK);
-  return n > 0 ? n : SIZE_REF_CM_FALLBACK;
-}
-
-function sizeLogK() {
-  const n = readCssNumber("--size-log-k", SIZE_LOG_K_FALLBACK);
-  return n > 0 ? n : SIZE_LOG_K_FALLBACK;
-}
-
-function sizeMinScale() {
-  const n = readCssNumber("--size-min-scale", SIZE_MIN_SCALE_FALLBACK);
-  return Math.min(1, Math.max(0.05, n));
-}
-
-/** Log soften: small works lift up; ≥ ref → 1. Aspect applied separately. */
+/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1. */
 function softSizeScale(edgeCm) {
-  const ref = sizeRefCm();
-  const k = sizeLogK();
-  if (!(edgeCm > 0) || !(ref > 0)) return 1;
+  const refRaw = cssNum("--size-ref-cm");
+  const kRaw = cssNum("--size-log-k");
+  const ref = refRaw > 0 ? refRaw : SIZE_CSS_FALLBACKS["--size-ref-cm"];
+  const k = kRaw > 0 ? kRaw : SIZE_CSS_FALLBACKS["--size-log-k"];
+  if (!(edgeCm > 0)) return 1;
   if (edgeCm >= ref) return 1;
   const num = Math.log(1 + k * edgeCm);
   const den = Math.log(1 + k * ref);
@@ -223,10 +205,16 @@ function parseFrCmNumber(raw) {
   return Number.isFinite(n) && n > 0 ? n : NaN;
 }
 
+function pairFromMatch(match) {
+  if (!match) return null;
+  const h = parseFrCmNumber(match[1]);
+  const w = parseFrCmNumber(match[2]);
+  return Number.isFinite(h) && Number.isFinite(w) ? { w, h } : null;
+}
+
 /**
- * { w, h } in cm from Atelier `dimensions` (FR = hauteur × largeur).
- * If « avec cadre : H x W » is present, that size wins for display scale —
- * the photo usually shows the framed object, not the plaque alone.
+ * { w, h } cm from Atelier `dimensions` (FR = H × W).
+ * « avec cadre » wins — photo usually shows the framed object.
  */
 function parsePhysCm(raw) {
   const text = String(raw || "")
@@ -236,35 +224,23 @@ function parsePhysCm(raw) {
   const unit = "(?:cm|centim[eè]tres?)\\b";
   const pairRe = `([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`;
 
-  const withFrame = text.match(
-    new RegExp(
-      `(?:avec\\s+cadre|with\\s+frame|cadre)\\s*:?\\s*${pairRe}`,
-      "i"
+  const framed = pairFromMatch(
+    text.match(
+      new RegExp(`(?:avec\\s+cadre|with\\s+frame|cadre)\\s*:?\\s*${pairRe}`, "i")
     )
   );
-  if (withFrame) {
-    const h = parseFrCmNumber(withFrame[1]);
-    const w = parseFrCmNumber(withFrame[2]);
-    if (Number.isFinite(h) && Number.isFinite(w)) return { w, h };
-  }
+  if (framed) return framed;
 
   const diam = text.match(
-    new RegExp(
-      `(?:diam[eè]tre|ø|diameter)\\s*:?\\s*([\\d\\s.,]+)\\s*${unit}`,
-      "i"
-    )
+    new RegExp(`(?:diam[eè]tre|ø|diameter)\\s*:?\\s*([\\d\\s.,]+)\\s*${unit}`, "i")
   );
   if (diam) {
     const d = parseFrCmNumber(diam[1]);
     return Number.isFinite(d) ? { w: d, h: d } : null;
   }
 
-  const pair = text.match(new RegExp(pairRe));
-  if (pair) {
-    const h = parseFrCmNumber(pair[1]);
-    const w = parseFrCmNumber(pair[2]);
-    if (Number.isFinite(h) && Number.isFinite(w)) return { w, h };
-  }
+  const pair = pairFromMatch(text.match(new RegExp(pairRe)));
+  if (pair) return pair;
 
   const single = text.match(new RegExp(`([\\d\\s.,]+)\\s*${unit}`, "i"));
   if (single) {
@@ -278,61 +254,41 @@ function roundPhys(n) {
   return Math.round(n * 1000) / 1000;
 }
 
-/** --phys-w/h + --size-scale for CSS; unknown dims → full cell. */
+/** --phys-w/h for CSS; unknown dims → full cell. */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
-  if (!dims) return { physW: 1, physH: 1, scale: 1, edgeCm: 0 };
+  if (!dims) return { physW: 1, physH: 1, edgeCm: 0 };
   const edge = Math.max(dims.w, dims.h);
   let soft = softSizeScale(edge);
-  const floor = sizeMinScale();
+  const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
   if (soft > 0 && soft < floor) soft = floor;
-  // Keep aspect; longest edge = soft scale (log-softened vs ref).
-  const pw = (dims.w / edge) * soft;
-  const ph = (dims.h / edge) * soft;
   return {
-    physW: roundPhys(pw),
-    physH: roundPhys(ph),
-    scale: roundPhys(soft),
+    physW: roundPhys((dims.w / edge) * soft),
+    physH: roundPhys((dims.h / edge) * soft),
     edgeCm: roundPhys(edge),
   };
 }
 
-function loupeMaxCap() {
-  return Math.max(1, readCssNumber("--loupe-max", LOUPE_MAX_FALLBACK));
-}
-
-function loupeSmallMaxCap() {
-  return Math.max(1, readCssNumber("--loupe-small-max", LOUPE_SMALL_MAX_FALLBACK));
-}
-
-function loupeSmallEdgeCm() {
-  const n = readCssNumber("--loupe-small-edge-cm", LOUPE_SMALL_EDGE_CM_FALLBACK);
-  return n > 0 ? n : LOUPE_SMALL_EDGE_CM_FALLBACK;
-}
-
-/**
- * Plafond loupe : grand côté < seuil → --loupe-small-max (120 %),
- * sinon → --loupe-max (180 %). Pas d’interpolation.
- */
+/** Loupe zoom cap: edge < seuil → small-max, else max. */
 function loupePhysCap() {
-  const hi = loupeMaxCap();
-  const lo = Math.min(hi, loupeSmallMaxCap());
-  const edge = lightboxSizeProps && lightboxSizeProps.edgeCm;
+  const hi = Math.max(1, cssNum("--loupe-max"));
+  const lo = Math.min(hi, Math.max(1, cssNum("--loupe-small-max")));
+  const edge = lightboxSizeProps?.edgeCm;
   if (!(edge > 0)) return hi;
-  return edge < loupeSmallEdgeCm() ? lo : hi;
+  const threshold = cssNum("--loupe-small-edge-cm");
+  return edge < (threshold > 0 ? threshold : 15) ? lo : hi;
 }
 
-function physicalSizeScale(raw) {
-  return physicalSizeProps(raw).scale;
+function setPhysCss(el, { physW = 1, physH = 1 } = {}) {
+  if (!el) return;
+  el.style.setProperty("--phys-w", String(physW));
+  el.style.setProperty("--phys-h", String(physH));
 }
 
 function applySizeScale(el, raw) {
-  if (!el) return 1;
-  const { physW, physH, scale } = physicalSizeProps(raw);
-  el.style.setProperty("--phys-w", String(physW));
-  el.style.setProperty("--phys-h", String(physH));
-  el.style.setProperty("--size-scale", String(scale));
-  return scale;
+  const props = physicalSizeProps(raw);
+  setPhysCss(el, props);
+  return props;
 }
 
 /**
@@ -1575,10 +1531,7 @@ function applyZoomTransform() {
     : "";
 }
 
-/**
- * Plafond natif (jamais d’upscale).
- * Repos : --phys-w/h (CSS cqmin). Loupe : plein puits, phys ignoré.
- */
+/** Plafond natif (jamais d’upscale). Repos : phys cm ; loupe : plein puits. */
 function applyNativeSizeCap({ forLoupe = false } = {}) {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
@@ -1589,16 +1542,10 @@ function applyNativeSizeCap({ forLoupe = false } = {}) {
   dialogImage.style.maxWidth = `min(100%, ${nw}px)`;
   dialogImage.style.maxHeight = `min(100%, ${nh}px)`;
   if (!dialogPhoto) return;
-  if (inLoupe) {
-    dialogPhoto.style.setProperty("--phys-w", "1");
-    dialogPhoto.style.setProperty("--phys-h", "1");
-    dialogPhoto.style.setProperty("--size-scale", "1");
-  } else {
-    const { physW, physH, scale } = lightboxSizeProps;
-    dialogPhoto.style.setProperty("--phys-w", String(physW));
-    dialogPhoto.style.setProperty("--phys-h", String(physH));
-    dialogPhoto.style.setProperty("--size-scale", String(scale));
-  }
+  setPhysCss(
+    dialogPhoto,
+    inLoupe ? { physW: 1, physH: 1 } : lightboxSizeProps
+  );
 }
 
 function clearNativeSizeCap() {
@@ -1848,8 +1795,7 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   const rawOriginal = assetPath(data.original || "");
   lightboxOriginalSrc =
     rawOriginal && rawOriginal !== lightboxDisplaySrc ? rawOriginal : "";
-  lightboxSizeProps = physicalSizeProps(data.dimensions || "");
-  applySizeScale(dialogPhoto, data.dimensions || "");
+  lightboxSizeProps = applySizeScale(dialogPhoto, data.dimensions || "");
   clearNativeSizeCap();
   dialogImage.src = lightboxDisplaySrc;
   dialogImage.alt = imageAlt;
