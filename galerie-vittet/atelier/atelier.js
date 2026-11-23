@@ -81,7 +81,7 @@ const META_FIELDS = [
   { key: "note", label: "note", max: 4000, multiline: true, rows: 4 },
   { key: "signed_dated", label: "signé et date", max: 400, multiline: true, rows: 2 },
   { key: "support", label: "support", max: 800, multiline: true, rows: 2 },
-  { key: "dimensions", label: "dimensions", max: 400 },
+  { key: "dimensions", label: "taille", max: 400 },
   { key: "editions", label: "éditions", max: 800, multiline: true, rows: 2 },
 ];
 const META_ALT_MAX = 500;
@@ -89,6 +89,438 @@ const META_ALT_MAX = 500;
 function metaMax(key) {
   const field = META_FIELDS.find((item) => item.key === key);
   return field ? field.max : 400;
+}
+
+/* —— Taille normée (source FR/cm) + convertisseur inch —— */
+let dimsEditorSeq = 0;
+
+function parseDimsNumber(raw) {
+  const n = parseFloat(
+    String(raw || "")
+      .replace(/\s+/g, "")
+      .replace(",", ".")
+  );
+  return Number.isFinite(n) && n > 0 ? n : NaN;
+}
+
+/** Affichage FR : virgule, sans .0 superflu. */
+function formatFrCm(n) {
+  if (!Number.isFinite(n) || !(n > 0)) return "";
+  const rounded = Math.round(n * 10) / 10;
+  if (Number.isInteger(rounded)) return String(rounded);
+  return String(rounded).replace(".", ",");
+}
+
+function formatInchesFromCm(cm) {
+  if (!Number.isFinite(cm) || !(cm > 0)) return "";
+  const inches = Math.round((cm / 2.54) * 10) / 10;
+  return Number.isInteger(inches) ? String(inches) : inches.toFixed(1);
+}
+
+function inchesToCm(inch) {
+  if (!Number.isFinite(inch) || !(inch > 0)) return NaN;
+  return Math.round(inch * 2.54 * 10) / 10;
+}
+
+function formatPairCm(h, w) {
+  const fh = formatFrCm(h);
+  const fw = formatFrCm(w);
+  if (!fh || !fw) return "";
+  return `${fh} x ${fw} cm`;
+}
+
+/**
+ * Parse free-text / legacy dimensions into structured parts.
+ * Canon : « H x L cm », « H x L cm avec cadre : H x L cm », « Diamètre : D cm ».
+ */
+function parseDimensionsParts(raw) {
+  const empty = {
+    mode: "pair",
+    h: NaN,
+    w: NaN,
+    frameH: NaN,
+    frameW: NaN,
+    diam: NaN,
+    warn: "",
+  };
+  const text = String(raw || "")
+    .replace(/\u00a0/g, " ")
+    .trim();
+  if (!text) return empty;
+  if (/\bpx\b/i.test(text)) return { ...empty, warn: "px" };
+
+  const unit = "(?:cm|centim[eè]tres?)\\b";
+  const pairRe = `([\\d\\s.,]+)\\s*[x×X]\\s*([\\d\\s.,]+)\\s*${unit}`;
+
+  const diam = text.match(
+    new RegExp(`(?:diam[eè]tre|ø|diameter)\\s*:?\\s*([\\d\\s.,]+)\\s*${unit}`, "i")
+  );
+  if (diam) {
+    return { ...empty, mode: "diam", diam: parseDimsNumber(diam[1]) };
+  }
+
+  const framed = text.match(
+    new RegExp(
+      `${pairRe}\\s*(?:avec\\s+cadre|with\\s+frame|cadre)\\s*:?\\s*${pairRe}`,
+      "i"
+    )
+  );
+  if (framed) {
+    return {
+      ...empty,
+      mode: "pair",
+      h: parseDimsNumber(framed[1]),
+      w: parseDimsNumber(framed[2]),
+      frameH: parseDimsNumber(framed[3]),
+      frameW: parseDimsNumber(framed[4]),
+    };
+  }
+
+  const frameOnly = text.match(
+    new RegExp(`(?:avec\\s+cadre|with\\s+frame|cadre)\\s*:?\\s*${pairRe}`, "i")
+  );
+  const pair = text.match(new RegExp(pairRe, "i"));
+  if (pair && frameOnly && frameOnly.index > (pair.index || 0)) {
+    return {
+      ...empty,
+      mode: "pair",
+      h: parseDimsNumber(pair[1]),
+      w: parseDimsNumber(pair[2]),
+      frameH: parseDimsNumber(frameOnly[1]),
+      frameW: parseDimsNumber(frameOnly[2]),
+    };
+  }
+  if (frameOnly && !pair) {
+    return {
+      ...empty,
+      mode: "pair",
+      h: parseDimsNumber(frameOnly[1]),
+      w: parseDimsNumber(frameOnly[2]),
+      frameH: parseDimsNumber(frameOnly[1]),
+      frameW: parseDimsNumber(frameOnly[2]),
+    };
+  }
+  if (pair) {
+    return {
+      ...empty,
+      mode: "pair",
+      h: parseDimsNumber(pair[1]),
+      w: parseDimsNumber(pair[2]),
+    };
+  }
+
+  const single = text.match(new RegExp(`([\\d\\s.,]+)\\s*${unit}`, "i"));
+  if (single) {
+    const d = parseDimsNumber(single[1]);
+    return { ...empty, mode: "diam", diam: d };
+  }
+  return { ...empty, warn: "format" };
+}
+
+function formatDimensionsParts(parts) {
+  if (!parts) return "";
+  if (parts.mode === "diam") {
+    const d = formatFrCm(parts.diam);
+    return d ? `Diamètre : ${d} cm` : "";
+  }
+  const pair = formatPairCm(parts.h, parts.w);
+  if (!pair) return "";
+  const frame = formatPairCm(parts.frameH, parts.frameW);
+  if (frame) return `${pair} avec cadre : ${frame}`;
+  return pair;
+}
+
+/** Norme une chaîne libre vers le canon Atelier (inchangée si vide / px). */
+function normalizeDimensionsText(raw) {
+  const text = String(raw || "").trim();
+  if (!text) return "";
+  if (/\bpx\b/i.test(text)) return text;
+  const parts = parseDimensionsParts(text);
+  const out = formatDimensionsParts(parts);
+  return out || text;
+}
+
+function inchPairLabel(h, w) {
+  const ih = formatInchesFromCm(h);
+  const iw = formatInchesFromCm(w);
+  if (!ih || !iw) return "";
+  return `≈ ${ih} × ${iw} in`;
+}
+
+/**
+ * Éditeur taille : H×L cm (option cadre) ou diamètre + aperçu inch + inch→cm.
+ * Écrit la chaîne canon dans un input caché (data-edit / data-field = dimensions).
+ */
+function mountDimensionsEditor({
+  value = "",
+  nameAttr = "data-edit",
+  onChange = null,
+  className = "edit-field",
+} = {}) {
+  const uid = `dims-${++dimsEditorSeq}`;
+  const wrap = document.createElement("div");
+  wrap.className = `${className} dims-editor`;
+  wrap.dataset.dimsEditor = "1";
+
+  const title = document.createElement("span");
+  title.className = "dims-editor-label";
+  title.textContent = "taille";
+  wrap.append(title);
+
+  const hidden = document.createElement("input");
+  hidden.type = "hidden";
+  hidden.setAttribute(nameAttr, "dimensions");
+  hidden.maxLength = metaMax("dimensions");
+  wrap.append(hidden);
+
+  const modeRow = document.createElement("div");
+  modeRow.className = "dims-mode";
+  const modePair = document.createElement("label");
+  const modePairInput = document.createElement("input");
+  modePairInput.type = "radio";
+  modePairInput.name = `${uid}-mode`;
+  modePairInput.value = "pair";
+  modePair.append(modePairInput, document.createTextNode(" H × L"));
+  const modeDiam = document.createElement("label");
+  const modeDiamInput = document.createElement("input");
+  modeDiamInput.type = "radio";
+  modeDiamInput.name = `${uid}-mode`;
+  modeDiamInput.value = "diam";
+  modeDiam.append(modeDiamInput, document.createTextNode(" Diamètre"));
+  modeRow.append(modePair, modeDiam);
+  wrap.append(modeRow);
+
+  const pairBox = document.createElement("div");
+  pairBox.className = "dims-pair";
+  const pairRow = document.createElement("div");
+  pairRow.className = "dims-row";
+  const inputH = document.createElement("input");
+  inputH.type = "text";
+  inputH.inputMode = "decimal";
+  inputH.dataset.dims = "h";
+  inputH.setAttribute("aria-label", "Hauteur cm");
+  inputH.placeholder = "H";
+  const times = document.createElement("span");
+  times.className = "dims-times";
+  times.textContent = "×";
+  const inputW = document.createElement("input");
+  inputW.type = "text";
+  inputW.inputMode = "decimal";
+  inputW.dataset.dims = "w";
+  inputW.setAttribute("aria-label", "Largeur cm");
+  inputW.placeholder = "L";
+  const unitCm = document.createElement("span");
+  unitCm.className = "dims-unit";
+  unitCm.textContent = "cm";
+  const inchPair = document.createElement("span");
+  inchPair.className = "dims-inch";
+  inchPair.dataset.dimsInch = "pair";
+  pairRow.append(inputH, times, inputW, unitCm, inchPair);
+  pairBox.append(pairRow);
+
+  const frameToggle = document.createElement("label");
+  frameToggle.className = "dims-frame-toggle";
+  const frameCheck = document.createElement("input");
+  frameCheck.type = "checkbox";
+  frameCheck.dataset.dimsFrame = "1";
+  frameToggle.append(frameCheck, document.createTextNode(" avec cadre"));
+  pairBox.append(frameToggle);
+
+  const frameRow = document.createElement("div");
+  frameRow.className = "dims-row";
+  frameRow.hidden = true;
+  const inputFH = document.createElement("input");
+  inputFH.type = "text";
+  inputFH.inputMode = "decimal";
+  inputFH.dataset.dims = "frameH";
+  inputFH.setAttribute("aria-label", "Hauteur avec cadre cm");
+  inputFH.placeholder = "H";
+  const timesF = document.createElement("span");
+  timesF.className = "dims-times";
+  timesF.textContent = "×";
+  const inputFW = document.createElement("input");
+  inputFW.type = "text";
+  inputFW.inputMode = "decimal";
+  inputFW.dataset.dims = "frameW";
+  inputFW.setAttribute("aria-label", "Largeur avec cadre cm");
+  inputFW.placeholder = "L";
+  const unitF = document.createElement("span");
+  unitF.className = "dims-unit";
+  unitF.textContent = "cm";
+  const inchFrame = document.createElement("span");
+  inchFrame.className = "dims-inch";
+  inchFrame.dataset.dimsInch = "frame";
+  frameRow.append(inputFH, timesF, inputFW, unitF, inchFrame);
+  pairBox.append(frameRow);
+  wrap.append(pairBox);
+
+  const diamBox = document.createElement("div");
+  diamBox.className = "dims-diam";
+  diamBox.hidden = true;
+  const diamRow = document.createElement("div");
+  diamRow.className = "dims-row";
+  const inputDiam = document.createElement("input");
+  inputDiam.type = "text";
+  inputDiam.inputMode = "decimal";
+  inputDiam.dataset.dims = "diam";
+  inputDiam.setAttribute("aria-label", "Diamètre cm");
+  inputDiam.placeholder = "Ø";
+  const unitD = document.createElement("span");
+  unitD.className = "dims-unit";
+  unitD.textContent = "cm";
+  const inchDiam = document.createElement("span");
+  inchDiam.className = "dims-inch";
+  inchDiam.dataset.dimsInch = "diam";
+  diamRow.append(inputDiam, unitD, inchDiam);
+  diamBox.append(diamRow);
+  wrap.append(diamBox);
+
+  const convert = document.createElement("div");
+  convert.className = "dims-convert";
+  const convertLead = document.createElement("span");
+  convertLead.className = "dims-convert-lead";
+  convertLead.textContent = "Depuis inch";
+  const inchH = document.createElement("input");
+  inchH.type = "text";
+  inchH.inputMode = "decimal";
+  inchH.dataset.inch = "h";
+  inchH.setAttribute("aria-label", "Hauteur inches");
+  inchH.placeholder = "H";
+  const inchTimes = document.createElement("span");
+  inchTimes.className = "dims-times";
+  inchTimes.textContent = "×";
+  const inchW = document.createElement("input");
+  inchW.type = "text";
+  inchW.inputMode = "decimal";
+  inchW.dataset.inch = "w";
+  inchW.setAttribute("aria-label", "Largeur inches");
+  inchW.placeholder = "L";
+  const inchUnit = document.createElement("span");
+  inchUnit.className = "dims-unit";
+  inchUnit.textContent = "in";
+  const inchApply = document.createElement("button");
+  inchApply.type = "button";
+  inchApply.className = "button button-quiet dims-convert-btn";
+  inchApply.textContent = "→ cm";
+  convert.append(convertLead, inchH, inchTimes, inchW, inchUnit, inchApply);
+  wrap.append(convert);
+
+  const preview = document.createElement("p");
+  preview.className = "dims-preview";
+  preview.dataset.dimsPreview = "1";
+  wrap.append(preview);
+
+  const warn = document.createElement("p");
+  warn.className = "dims-warn";
+  warn.hidden = true;
+  wrap.append(warn);
+
+  const setInputCm = (el, n) => {
+    el.value = Number.isFinite(n) && n > 0 ? formatFrCm(n) : "";
+  };
+
+  const readParts = () => {
+    const mode = modeDiamInput.checked ? "diam" : "pair";
+    if (mode === "diam") {
+      return {
+        mode: "diam",
+        h: NaN,
+        w: NaN,
+        frameH: NaN,
+        frameW: NaN,
+        diam: parseDimsNumber(inputDiam.value),
+        warn: "",
+      };
+    }
+    return {
+      mode: "pair",
+      h: parseDimsNumber(inputH.value),
+      w: parseDimsNumber(inputW.value),
+      frameH: frameCheck.checked ? parseDimsNumber(inputFH.value) : NaN,
+      frameW: frameCheck.checked ? parseDimsNumber(inputFW.value) : NaN,
+      diam: NaN,
+      warn: "",
+    };
+  };
+
+  const sync = ({ emit = true } = {}) => {
+    const parts = readParts();
+    const canon = formatDimensionsParts(parts).slice(0, metaMax("dimensions"));
+    hidden.value = canon;
+    preview.textContent = canon ? `Enregistré : ${canon}` : "Enregistré : (vide)";
+    if (parts.mode === "diam") {
+      const id = formatInchesFromCm(parts.diam);
+      inchDiam.textContent = id ? `≈ ${id} in` : "";
+      inchPair.textContent = "";
+      inchFrame.textContent = "";
+    } else {
+      inchPair.textContent = inchPairLabel(parts.h, parts.w);
+      inchFrame.textContent = frameCheck.checked
+        ? inchPairLabel(parts.frameH, parts.frameW)
+        : "";
+      inchDiam.textContent = "";
+    }
+    pairBox.hidden = parts.mode === "diam";
+    diamBox.hidden = parts.mode !== "diam";
+    frameRow.hidden = parts.mode !== "pair" || !frameCheck.checked;
+    if (emit && typeof onChange === "function") onChange(canon);
+  };
+
+  const loadFromValue = (raw) => {
+    const parts = parseDimensionsParts(raw);
+    if (parts.warn === "px") {
+      warn.hidden = false;
+      warn.textContent =
+        "Valeur en pixels (ignorée pour l’échelle). Saisir la taille réelle en cm.";
+      hidden.value = String(raw || "").trim();
+      preview.textContent = `Brut : ${hidden.value}`;
+    } else if (parts.warn === "format" && String(raw || "").trim()) {
+      warn.hidden = false;
+      warn.textContent = "Format non reconnu — saisir H × L ou diamètre en cm.";
+    } else {
+      warn.hidden = true;
+      warn.textContent = "";
+    }
+    if (parts.mode === "diam" && Number.isFinite(parts.diam)) {
+      modeDiamInput.checked = true;
+      setInputCm(inputDiam, parts.diam);
+    } else {
+      modePairInput.checked = true;
+      setInputCm(inputH, parts.h);
+      setInputCm(inputW, parts.w);
+      const hasFrame =
+        Number.isFinite(parts.frameH) && Number.isFinite(parts.frameW);
+      frameCheck.checked = hasFrame;
+      setInputCm(inputFH, parts.frameH);
+      setInputCm(inputFW, parts.frameW);
+    }
+    sync({ emit: false });
+  };
+
+  modePairInput.addEventListener("change", () => sync());
+  modeDiamInput.addEventListener("change", () => sync());
+  frameCheck.addEventListener("change", () => sync());
+  [inputH, inputW, inputFH, inputFW, inputDiam].forEach((el) => {
+    el.addEventListener("input", () => sync());
+  });
+
+  inchApply.addEventListener("click", () => {
+    const ih = parseDimsNumber(inchH.value);
+    const iw = parseDimsNumber(inchW.value);
+    if (modeDiamInput.checked) {
+      const d = inchesToCm(ih);
+      if (Number.isFinite(d)) setInputCm(inputDiam, d);
+    } else {
+      const ch = inchesToCm(ih);
+      const cw = inchesToCm(iw);
+      if (Number.isFinite(ch)) setInputCm(inputH, ch);
+      if (Number.isFinite(cw)) setInputCm(inputW, cw);
+    }
+    sync();
+  });
+
+  loadFromValue(value);
+  return wrap;
 }
 
 function workCaption(work) {
@@ -447,7 +879,9 @@ function syncQueueFromDom() {
     if (!item) return;
     META_FIELDS.forEach(({ key }) => {
       const input = row.querySelector(`[data-field="${key}"]`);
-      if (input) item[key] = input.value.trim();
+      if (!input) return;
+      const raw = input.value.trim();
+      item[key] = key === "dimensions" ? normalizeDimensionsText(raw) : raw;
     });
     const altInput = row.querySelector("[data-field=alt]");
     if (altInput) item.alt = altInput.value.trim();
@@ -495,6 +929,17 @@ function renderUploadQueue() {
     };
 
     META_FIELDS.forEach(({ key, label, max, multiline, rows }) => {
+      if (key === "dimensions") {
+        fields.append(
+          mountDimensionsEditor({
+            value: item[key] || "",
+            nameAttr: "data-field",
+            className: "upload-dims",
+            onChange: () => markStale(),
+          })
+        );
+        return;
+      }
       fields.append(
         makeLabel(label, key, item[key] || "", max, !!multiline, rows || 4)
       );
@@ -590,7 +1035,7 @@ async function setPendingFromFiles(fileList) {
       note: exif.note || "",
       signed_dated: exif.signed_dated || "",
       support: exif.support || "",
-      dimensions: exif.dimensions || "",
+      dimensions: normalizeDimensionsText(exif.dimensions || ""),
       editions: exif.editions || "",
       alt: title,
       categories: defaults.length ? defaults.slice() : ["peinture"],
@@ -757,7 +1202,7 @@ async function publish() {
       body.set("note", item.note || "");
       body.set("signed_dated", item.signed_dated || "");
       body.set("support", item.support || "");
-      body.set("dimensions", item.dimensions || "");
+      body.set("dimensions", normalizeDimensionsText(item.dimensions || ""));
       body.set("editions", item.editions || "");
       body.set("alt", item.alt || item.title);
       body.set("categories", item.categories.join(" "));
@@ -1234,6 +1679,7 @@ function readEditorFields(itemEl) {
     const input = itemEl.querySelector(`[data-edit="${key}"]`);
     fields[key] = input ? input.value.trim() : "";
   });
+  fields.dimensions = normalizeDimensionsText(fields.dimensions || "");
   const altInput = itemEl.querySelector("[data-edit=alt]");
   fields.alt = altInput ? altInput.value.trim() : "";
   fields.categories = [...itemEl.querySelectorAll("input[data-edit-cat]:checked")].map((el) => el.value);
@@ -1867,6 +2313,16 @@ function workItem(work) {
   };
 
   META_FIELDS.forEach(({ key, label, max, multiline, rows }) => {
+    if (key === "dimensions") {
+      editor.append(
+        mountDimensionsEditor({
+          value: work[key] || "",
+          nameAttr: "data-edit",
+          className: "edit-field",
+        })
+      );
+      return;
+    }
     editor.append(
       makeEdit(label, key, work[key] || "", max, !!multiline, rows || 4)
     );
