@@ -1095,7 +1095,10 @@ html.collection-page-deep .art-grid {
 
 .art-meta {
   padding-top: 14px;
-  text-align: center;
+  width: fit-content;
+  max-width: 100%;
+  margin-inline: auto;
+  text-align: left;
 }
 
 /* Ordre DOM: titre → auteur → taille — type via shared patterns */
@@ -2087,7 +2090,6 @@ footer {
   }
   .art-meta {
     padding-top: 6px;
-    text-align: center;
   }
   .art-meta h3 { margin: 0; }
   .art-meta .art-artist {
