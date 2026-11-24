@@ -76,16 +76,14 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /* Phys size grille — lus par main.js.
-   * ≥ --size-ref-cm → pleine cellule.
-   * < ref → soft log ln(1+k·cm)/ln(1+k·ref) ; plancher --size-min-scale. */
-  --size-ref-cm: 24;          /* plein cadre dès ~24 cm (grand côté) */
+  /* Phys size — lus par main.js (grille soft log ; lightbox true-size). */
+  --size-ref-cm: 24;          /* plein cadre dès grand côté ≥ ref */
   --size-log-k: 0.8;          /* ↑k → petites plus proches du max */
-  --size-min-scale: 0.9;      /* plancher (~90 %) */
+  --size-min-scale: 0.9;      /* plancher soft (~90 %) */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */
-  --true-size-max-cm: 30;     /* lightbox : taille réelle si grand côté < seuil */
+  --true-size-max-cm: 30;     /* lightbox : cm→px si grand côté < seuil */
   --phys-w: 1;
   --phys-h: 1;
   --phys-soft: 1;
@@ -1053,7 +1051,7 @@ html.collection-page-deep .art-grid {
   container-type: size;
 }
 
-/* Taille max = fit cellule × --phys-soft (aspect --phys-w/h, long côté = 1). */
+/* Fit cellule (cqi/cqb) × --phys-soft ; aspect --phys-w/h (long = 1). */
 .art-open .art-preview {
   --fit: min(
     calc(100cqi / max(var(--phys-w, 1), 0.001)),
@@ -2058,7 +2056,7 @@ footer {
     gap: 28px 0;
     min-height: 240px;
   }
-  /* Image flows — caption under; phys cm vs ref length min(78vw, 560px). */
+  /* Image flows — caption under; soft × min(92vw, 640px). */
   .art-open {
     aspect-ratio: unset;
     height: auto;

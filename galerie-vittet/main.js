@@ -161,7 +161,9 @@ function displayDimensions(value) {
   return value || "";
 }
 
-/* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
+/* Phys size — knobs in style.css :root.
+ * Guides: FR H×W (« avec cadre » wins); grille = aspect × soft log
+ * (plein cadre si edge ≥ ref); lightbox < --true-size-max-cm = cm→px. */
 const SIZE_CSS_FALLBACKS = {
   "--size-ref-cm": 24,
   "--size-log-k": 0.8,
@@ -171,19 +173,6 @@ const SIZE_CSS_FALLBACKS = {
   "--loupe-small-edge-cm": 15,
   "--true-size-max-cm": 30,
 };
-
-/** Aspect (long=1) + soft ; CSS fait le fit cellule × soft. */
-function physBox(dims, soft) {
-  const edge = Math.max(dims.w, dims.h);
-  return {
-    physW: roundPhys(dims.w / edge),
-    physH: roundPhys(dims.h / edge),
-    soft: roundPhys(soft),
-    edgeCm: roundPhys(edge),
-    wCm: roundPhys(dims.w),
-    hCm: roundPhys(dims.h),
-  };
-}
 
 function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
   try {
@@ -212,10 +201,7 @@ function pairFromMatch(match) {
   return Number.isFinite(h) && Number.isFinite(w) ? { w, h } : null;
 }
 
-/**
- * { w, h } cm from Atelier `dimensions` (FR = H × W).
- * « avec cadre » wins — photo usually shows the framed object.
- */
+/** { w, h } cm from Atelier `dimensions` (FR = H × W). « avec cadre » wins. */
 function parsePhysCm(raw) {
   const text = String(raw || "")
     .replace(/\u00a0/g, " ")
@@ -254,35 +240,42 @@ function roundPhys(n) {
   return Math.round(n * 1000) / 1000;
 }
 
-/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1. Adoucit les &lt;16 cm. */
+/** soft log : ≥ ref → 1 ; sinon ln(1+k·cm)/ln(1+k·ref), plancher --size-min-scale. */
 function softSizeScale(edgeCm) {
   const refRaw = cssNum("--size-ref-cm");
   const kRaw = cssNum("--size-log-k");
+  const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
   const ref = refRaw > 0 ? refRaw : SIZE_CSS_FALLBACKS["--size-ref-cm"];
   const k = kRaw > 0 ? kRaw : SIZE_CSS_FALLBACKS["--size-log-k"];
-  if (!(edgeCm > 0)) return 1;
-  if (edgeCm >= ref) return 1;
-  const num = Math.log(1 + k * edgeCm);
+  if (!(edgeCm > 0) || edgeCm >= ref) return 1;
   const den = Math.log(1 + k * ref);
-  if (!(den > 0) || !Number.isFinite(num)) return Math.min(1, edgeCm / ref);
-  return Math.min(1, Math.max(0, num / den));
+  const num = Math.log(1 + k * edgeCm);
+  let soft =
+    den > 0 && Number.isFinite(num) ? num / den : Math.min(1, edgeCm / ref);
+  soft = Math.min(1, Math.max(0, soft));
+  return soft > 0 && soft < floor ? floor : soft;
 }
 
-/**
- * Grille : aspect H×W + soft log (1 = taille max cellule).
- * Plancher --size-min-scale pour ne pas trop marquer les miniatures.
- */
+/** Aspect (long côté = 1) + soft pour CSS grille. */
+function physBox(dims, soft) {
+  const edge = Math.max(dims.w, dims.h);
+  return {
+    physW: roundPhys(dims.w / edge),
+    physH: roundPhys(dims.h / edge),
+    soft: roundPhys(soft),
+    edgeCm: roundPhys(edge),
+    wCm: roundPhys(dims.w),
+    hCm: roundPhys(dims.h),
+  };
+}
+
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
   if (!dims) return { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
-  const edge = Math.max(dims.w, dims.h);
-  const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
-  let soft = softSizeScale(edge);
-  if (soft > 0 && soft < floor) soft = floor;
-  return physBox(dims, soft);
+  return physBox(dims, softSizeScale(Math.max(dims.w, dims.h)));
 }
 
-/** Loupe zoom cap: edge < seuil → small-max, else max. */
+/** Loupe : edge < seuil → small-max, sinon max. */
 function loupePhysCap() {
   const hi = Math.max(1, cssNum("--loupe-max"));
   const lo = Math.min(hi, Math.max(1, cssNum("--loupe-small-max")));
@@ -292,10 +285,7 @@ function loupePhysCap() {
   return edge < (threshold > 0 ? threshold : 15) ? lo : hi;
 }
 
-/**
- * CSS px for 1 cm on this screen (browser reference pixel, ~96 dpi).
- * Not a calibrated ruler, but the standard web mapping of cm → screen pixels.
- */
+/** CSS px for 1 cm (browser reference pixel ≈ 96 dpi). */
 function measureCssPxPerCm() {
   if (typeof document === "undefined" || !document.body) return 96 / 2.54;
   const probe = document.createElement("div");
@@ -315,7 +305,6 @@ function trueSizeMaxCm() {
   return loupe > 0 ? loupe : SIZE_CSS_FALLBACKS["--true-size-max-cm"];
 }
 
-/** Lightbox only: true cm size when grand côté < --true-size-max-cm. */
 function wantsLightboxTrueSize(edgeCm) {
   return edgeCm > 0 && edgeCm < trueSizeMaxCm();
 }
@@ -335,19 +324,19 @@ function setPhysCss(el, { physW = 1, physH = 1, soft = 1 } = {}) {
 }
 
 /**
- * Lightbox resting size: true cm→px for small works, else relative phys.
- * Caps to the photo well and natural resolution (no bitmap upscale).
+ * Lightbox repos : true cm→px si petite, sinon aspect phys.
+ * Cap puits + natif (pas d’upscale). Loupe → plein puits.
  */
 function applyLightboxPhysDisplay({ forLoupe = false } = {}) {
   if (!dialogPhoto) return;
   const inLoupe = forLoupe || lightboxZoomed || lightboxZoomLoading;
   if (inLoupe) {
     clearTrueSizeCss(dialogPhoto);
-    setPhysCss(dialogPhoto, { physW: 1, physH: 1 });
+    setPhysCss(dialogPhoto, { physW: 1, physH: 1, soft: 1 });
     return;
   }
 
-  const { edgeCm, wCm, hCm, physW, physH } = lightboxSizeProps || {};
+  const { edgeCm, wCm, hCm, physW, physH, soft } = lightboxSizeProps || {};
   if (wantsLightboxTrueSize(edgeCm) && wCm > 0 && hCm > 0) {
     const pxPerCm = measureCssPxPerCm();
     let wPx = wCm * pxPerCm;
@@ -368,7 +357,7 @@ function applyLightboxPhysDisplay({ forLoupe = false } = {}) {
     dialogPhoto.classList.add("is-true-size");
     dialogPhoto.style.setProperty("--true-w-px", `${Math.round(wPx)}px`);
     dialogPhoto.style.setProperty("--true-h-px", `${Math.round(hPx)}px`);
-    setPhysCss(dialogPhoto, { physW: 1, physH: 1 });
+    setPhysCss(dialogPhoto, { physW: 1, physH: 1, soft: 1 });
     return;
   }
 
@@ -376,6 +365,7 @@ function applyLightboxPhysDisplay({ forLoupe = false } = {}) {
   setPhysCss(dialogPhoto, {
     physW: physW > 0 ? physW : 1,
     physH: physH > 0 ? physH : 1,
+    soft: soft > 0 ? soft : 1,
   });
 }
 
