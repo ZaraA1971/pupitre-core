@@ -163,9 +163,8 @@ function displayDimensions(value) {
 
 /* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
 const SIZE_CSS_FALLBACKS = {
-  "--size-ref-cm": 15,
-  "--size-log-k": 0.55,
-  "--size-min-scale": 0.90,
+  "--size-ref-cm": 40,
+  "--size-min-scale": 0.4,
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
@@ -181,20 +180,6 @@ function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
   } catch (_) {
     return fallback;
   }
-}
-
-/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1 (pleine cellule). */
-function softSizeScale(edgeCm) {
-  const refRaw = cssNum("--size-ref-cm");
-  const kRaw = cssNum("--size-log-k");
-  const ref = refRaw > 0 ? refRaw : SIZE_CSS_FALLBACKS["--size-ref-cm"];
-  const k = kRaw > 0 ? kRaw : SIZE_CSS_FALLBACKS["--size-log-k"];
-  if (!(edgeCm > 0)) return 1;
-  if (edgeCm >= ref) return 1;
-  const num = Math.log(1 + k * edgeCm);
-  const den = Math.log(1 + k * ref);
-  if (!(den > 0) || !Number.isFinite(num)) return Math.min(1, edgeCm / ref);
-  return Math.min(1, Math.max(0, num / den));
 }
 
 function parseFrCmNumber(raw) {
@@ -255,17 +240,29 @@ function roundPhys(n) {
   return Math.round(n * 1000) / 1000;
 }
 
-/** --phys-w/h for CSS; unknown dims → full cell. */
+/**
+ * --phys-w/h : cm absolus / --size-ref-cm (même échelle pour toute la grille).
+ * Cap à la cellule ; plancher --size-min-scale pour les miniatures (aspect gardé).
+ */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
   if (!dims) return { physW: 1, physH: 1, edgeCm: 0, wCm: 0, hCm: 0 };
-  const edge = Math.max(dims.w, dims.h);
-  let soft = softSizeScale(edge);
+  const ref = Math.max(1, cssNum("--size-ref-cm") || SIZE_CSS_FALLBACKS["--size-ref-cm"]);
   const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
-  if (soft > 0 && soft < floor) soft = floor;
+  let pw = dims.w / ref;
+  let ph = dims.h / ref;
+  const long = Math.max(pw, ph);
+  if (long > 1) {
+    pw /= long;
+    ph /= long;
+  } else if (long > 0 && long < floor) {
+    pw *= floor / long;
+    ph *= floor / long;
+  }
+  const edge = Math.max(dims.w, dims.h);
   return {
-    physW: roundPhys((dims.w / edge) * soft),
-    physH: roundPhys((dims.h / edge) * soft),
+    physW: roundPhys(pw),
+    physH: roundPhys(ph),
     edgeCm: roundPhys(edge),
     wCm: roundPhys(dims.w),
     hCm: roundPhys(dims.h),
