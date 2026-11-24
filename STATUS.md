@@ -2,14 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
-## Physmax1 — tailles max grille + léger retrait petites (2026-11-24)
+## Physmax2 — seuil petites = grand côté 24 cm (2026-11-24)
 
-- Annule physabs1 (échelle absolue trop petite)
-- ≥ 16 cm → pleine cellule ; &lt; 16 cm → retrait léger (plancher 85 %)
-- Ex. Bardellino/Troie soft=1 ; Ø10,5 soft≈0,95
-- Cache-bust `?v=20261124-physmax1`
+- Bug physmax1 : 16×19 cm avait grand côté 19 ≥ 16 → plein cadre (Philippe II trop grand)
+- soft = min(1, edge/24) ; ≥24 cm → taille max ; plancher 75 %
+- Ex. Cathédrale/Raisins soft=1 ; Philippe soft≈0,79
+- Cache-bust `?v=20261124-physmax2`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
-- Prod `7a3dbcaf` · preview `538e70b2` · atelier `14ef37e4` · https://galerie-vittet-preview.pages.dev/
+- Prod `24d05b34` · preview `4b5bdc16` · atelier `ba5f48b2` · https://galerie-vittet-preview.pages.dev/
 
 ## Physgrid1 — grille quasi pleine taille (2026-11-24)
 
