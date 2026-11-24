@@ -164,7 +164,8 @@ function displayDimensions(value) {
 /* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
 const SIZE_CSS_FALLBACKS = {
   "--size-ref-cm": 24,
-  "--size-min-scale": 0.75,
+  "--size-log-k": 0.8,
+  "--size-min-scale": 0.9,
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
@@ -253,17 +254,30 @@ function roundPhys(n) {
   return Math.round(n * 1000) / 1000;
 }
 
+/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1. Adoucit les &lt;16 cm. */
+function softSizeScale(edgeCm) {
+  const refRaw = cssNum("--size-ref-cm");
+  const kRaw = cssNum("--size-log-k");
+  const ref = refRaw > 0 ? refRaw : SIZE_CSS_FALLBACKS["--size-ref-cm"];
+  const k = kRaw > 0 ? kRaw : SIZE_CSS_FALLBACKS["--size-log-k"];
+  if (!(edgeCm > 0)) return 1;
+  if (edgeCm >= ref) return 1;
+  const num = Math.log(1 + k * edgeCm);
+  const den = Math.log(1 + k * ref);
+  if (!(den > 0) || !Number.isFinite(num)) return Math.min(1, edgeCm / ref);
+  return Math.min(1, Math.max(0, num / den));
+}
+
 /**
- * Grille : aspect H×W + soft (1 = taille max cellule).
- * soft = min(1, edge/ref) si grand côté < --size-ref-cm.
+ * Grille : aspect H×W + soft log (1 = taille max cellule).
+ * Plancher --size-min-scale pour ne pas trop marquer les miniatures.
  */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
   if (!dims) return { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
   const edge = Math.max(dims.w, dims.h);
-  const ref = Math.max(1, cssNum("--size-ref-cm") || SIZE_CSS_FALLBACKS["--size-ref-cm"]);
   const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
-  let soft = edge > 0 ? Math.min(1, edge / ref) : 1;
+  let soft = softSizeScale(edge);
   if (soft > 0 && soft < floor) soft = floor;
   return physBox(dims, soft);
 }
