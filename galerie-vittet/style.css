@@ -77,10 +77,10 @@
     saturate(var(--img-saturate));
 
   /* Phys size grille — lus par main.js.
-   * ≥ --size-ref-cm → pleine cellule (taille max).
-   * < ref → léger retrait (plancher --size-min-scale). */
-  --size-ref-cm: 16;          /* seuil « petite » */
-  --size-min-scale: 0.85;     /* miniatures ≈ 85 % */
+   * grand côté ≥ --size-ref-cm → pleine cellule.
+   * < ref → soft = edge/ref (plancher --size-min-scale). */
+  --size-ref-cm: 24;          /* plein cadre dès ~24 cm (grand côté) */
+  --size-min-scale: 0.75;     /* plancher miniatures */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */

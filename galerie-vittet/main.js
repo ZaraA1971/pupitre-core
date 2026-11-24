@@ -163,8 +163,8 @@ function displayDimensions(value) {
 
 /* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
 const SIZE_CSS_FALLBACKS = {
-  "--size-ref-cm": 16,
-  "--size-min-scale": 0.85,
+  "--size-ref-cm": 24,
+  "--size-min-scale": 0.75,
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
@@ -241,8 +241,8 @@ function roundPhys(n) {
 }
 
 /**
- * Grille : taille max (grand côté → 100cqmin).
- * Seulement si edge < --size-ref-cm : léger retrait vers --size-min-scale.
+ * Grille : taille max si grand côté ≥ --size-ref-cm (→ 100cqmin).
+ * Sinon soft = edge/ref (plancher --size-min-scale) — ex. 16×19 cm.
  */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
@@ -250,10 +250,8 @@ function physicalSizeProps(raw) {
   const edge = Math.max(dims.w, dims.h);
   const ref = Math.max(1, cssNum("--size-ref-cm") || SIZE_CSS_FALLBACKS["--size-ref-cm"]);
   const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
-  let soft = 1;
-  if (edge > 0 && edge < ref) {
-    soft = floor + (1 - floor) * (edge / ref);
-  }
+  let soft = edge > 0 ? Math.min(1, edge / ref) : 1;
+  if (soft > 0 && soft < floor) soft = floor;
   return {
     physW: roundPhys((dims.w / edge) * soft),
     physH: roundPhys((dims.h / edge) * soft),
