@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Physclean2 — nettoyage helpers phys (2026-11-24)
+
+- Réordre parse / soft log / physBox ; plancher dans `softSizeScale` ; commentaire mobile 92vw/640
+- Comportement inchangé (guides soft log + true-size + légendes)
+- Cache-bust `?v=20261124-physclean2`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `9e247f2a` · preview `25c87125` · atelier `f3bbcab1` · https://galerie-vittet-preview.pages.dev/
+
 ## Metacen1 — légendes centrées, texte à gauche (2026-11-24)
 
 - `.art-meta` : `width: fit-content; margin-inline: auto; text-align: left`
