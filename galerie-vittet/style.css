@@ -76,10 +76,12 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /* Phys size (grille + lightbox repos) — lus par main.js */
-  --size-ref-cm: 50;          /* cm ≈ 100cqmin */
-  --size-log-k: 0.25;         /* ↑k → petites plus grandes */
-  --size-min-scale: 0.32;     /* plancher grand côté */
+  /* Phys size grille — lus par main.js.
+   * ≥ --size-ref-cm → pleine cellule (comme avant).
+   * < ref → très léger retrait (plancher --size-min-scale). */
+  --size-ref-cm: 15;          /* plein cadre dès ~15 cm */
+  --size-log-k: 0.55;         /* courbe sous le seuil */
+  --size-min-scale: 0.90;     /* miniatures ≈ 90 % */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */

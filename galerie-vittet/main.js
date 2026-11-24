@@ -163,9 +163,9 @@ function displayDimensions(value) {
 
 /* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
 const SIZE_CSS_FALLBACKS = {
-  "--size-ref-cm": 50,
-  "--size-log-k": 0.25,
-  "--size-min-scale": 0.32,
+  "--size-ref-cm": 15,
+  "--size-log-k": 0.55,
+  "--size-min-scale": 0.90,
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
@@ -183,7 +183,7 @@ function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
   }
 }
 
-/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1. */
+/** soft = ln(1+k·cm)/ln(1+k·ref) ; ≥ ref → 1 (pleine cellule). */
 function softSizeScale(edgeCm) {
   const refRaw = cssNum("--size-ref-cm");
   const kRaw = cssNum("--size-log-k");
