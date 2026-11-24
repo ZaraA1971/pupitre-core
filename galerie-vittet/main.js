@@ -163,8 +163,8 @@ function displayDimensions(value) {
 
 /* Phys size: knobs in style.css :root; FR H×W → --phys-h/--phys-w; loupe fills well. */
 const SIZE_CSS_FALLBACKS = {
-  "--size-ref-cm": 40,
-  "--size-min-scale": 0.4,
+  "--size-ref-cm": 16,
+  "--size-min-scale": 0.85,
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
@@ -241,28 +241,22 @@ function roundPhys(n) {
 }
 
 /**
- * --phys-w/h : cm absolus / --size-ref-cm (même échelle pour toute la grille).
- * Cap à la cellule ; plancher --size-min-scale pour les miniatures (aspect gardé).
+ * Grille : taille max (grand côté → 100cqmin).
+ * Seulement si edge < --size-ref-cm : léger retrait vers --size-min-scale.
  */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
   if (!dims) return { physW: 1, physH: 1, edgeCm: 0, wCm: 0, hCm: 0 };
+  const edge = Math.max(dims.w, dims.h);
   const ref = Math.max(1, cssNum("--size-ref-cm") || SIZE_CSS_FALLBACKS["--size-ref-cm"]);
   const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
-  let pw = dims.w / ref;
-  let ph = dims.h / ref;
-  const long = Math.max(pw, ph);
-  if (long > 1) {
-    pw /= long;
-    ph /= long;
-  } else if (long > 0 && long < floor) {
-    pw *= floor / long;
-    ph *= floor / long;
+  let soft = 1;
+  if (edge > 0 && edge < ref) {
+    soft = floor + (1 - floor) * (edge / ref);
   }
-  const edge = Math.max(dims.w, dims.h);
   return {
-    physW: roundPhys(pw),
-    physH: roundPhys(ph),
+    physW: roundPhys((dims.w / edge) * soft),
+    physH: roundPhys((dims.h / edge) * soft),
     edgeCm: roundPhys(edge),
     wCm: roundPhys(dims.w),
     hCm: roundPhys(dims.h),
