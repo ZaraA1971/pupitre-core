@@ -2,14 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
-## Physmax3 — grille plus grande + légendes centrées (2026-11-24)
+## Physlog1 — soft log adouci pour &lt;16 cm (2026-11-24)
 
-- Fit cellule via cqi/cqb (plus de cqmin) → paysages ~99 % largeur
-- `--phys-soft` séparé de l’aspect (retrait petites conservé)
-- `.art-meta { text-align: center }`
-- Cache-bust `?v=20261124-physmax3b`
+- soft = ln(1+k·cm)/ln(1+k·ref), k=0.8, ref=24, plancher 90 %
+- Ex. Philippe soft≈0,93 (était 0,79) ; Ø10,5 / 12,5 → 0,90
+- Cache-bust `?v=20261124-physlog1`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
-- Prod `e8143d22` · preview `1c31edd5` · atelier `b1d470fb` · https://galerie-vittet-preview.pages.dev/
+- Prod `76a5119c` · preview `4935ea83` · atelier `374d600a` · https://galerie-vittet-preview.pages.dev/
 
 ## Physgrid1 — grille quasi pleine taille (2026-11-24)
 
