@@ -91,7 +91,7 @@ let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
 /** Phys props of the open lightbox work (resting view). */
-let lightboxSizeProps = { physW: 1, physH: 1, edgeCm: 0, wCm: 0, hCm: 0 };
+let lightboxSizeProps = { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -171,6 +171,19 @@ const SIZE_CSS_FALLBACKS = {
   "--true-size-max-cm": 30,
 };
 
+/** Aspect (long=1) + soft ; CSS fait le fit cellule × soft. */
+function physBox(dims, soft) {
+  const edge = Math.max(dims.w, dims.h);
+  return {
+    physW: roundPhys(dims.w / edge),
+    physH: roundPhys(dims.h / edge),
+    soft: roundPhys(soft),
+    edgeCm: roundPhys(edge),
+    wCm: roundPhys(dims.w),
+    hCm: roundPhys(dims.h),
+  };
+}
+
 function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
   try {
     const n = parseFloat(
@@ -241,24 +254,18 @@ function roundPhys(n) {
 }
 
 /**
- * Grille : taille max si grand côté ≥ --size-ref-cm (→ 100cqmin).
- * Sinon soft = edge/ref (plancher --size-min-scale) — ex. 16×19 cm.
+ * Grille : aspect H×W + soft (1 = taille max cellule).
+ * soft = min(1, edge/ref) si grand côté < --size-ref-cm.
  */
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
-  if (!dims) return { physW: 1, physH: 1, edgeCm: 0, wCm: 0, hCm: 0 };
+  if (!dims) return { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
   const edge = Math.max(dims.w, dims.h);
   const ref = Math.max(1, cssNum("--size-ref-cm") || SIZE_CSS_FALLBACKS["--size-ref-cm"]);
   const floor = Math.min(1, Math.max(0.05, cssNum("--size-min-scale")));
   let soft = edge > 0 ? Math.min(1, edge / ref) : 1;
   if (soft > 0 && soft < floor) soft = floor;
-  return {
-    physW: roundPhys((dims.w / edge) * soft),
-    physH: roundPhys((dims.h / edge) * soft),
-    edgeCm: roundPhys(edge),
-    wCm: roundPhys(dims.w),
-    hCm: roundPhys(dims.h),
-  };
+  return physBox(dims, soft);
 }
 
 /** Loupe zoom cap: edge < seuil → small-max, else max. */
@@ -306,10 +313,11 @@ function clearTrueSizeCss(el) {
   el.style.removeProperty("--true-h-px");
 }
 
-function setPhysCss(el, { physW = 1, physH = 1 } = {}) {
+function setPhysCss(el, { physW = 1, physH = 1, soft = 1 } = {}) {
   if (!el) return;
   el.style.setProperty("--phys-w", String(physW));
   el.style.setProperty("--phys-h", String(physH));
+  el.style.setProperty("--phys-soft", String(soft > 0 ? soft : 1));
 }
 
 /**

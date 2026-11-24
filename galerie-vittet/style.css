@@ -87,6 +87,7 @@
   --true-size-max-cm: 30;     /* lightbox : taille réelle si grand côté < seuil */
   --phys-w: 1;
   --phys-h: 1;
+  --phys-soft: 1;
   --true-w-px: 0px;
   --true-h-px: 0px;
 }
@@ -1051,7 +1052,7 @@ html.collection-page-deep .art-grid {
   container-type: size;
 }
 
-/* Taille max = plus grand rectangle d’aspect --phys-* dans la cellule. */
+/* Taille max = fit cellule × --phys-soft (aspect --phys-w/h, long côté = 1). */
 .art-open .art-preview {
   --fit: min(
     calc(100cqi / max(var(--phys-w, 1), 0.001)),
@@ -1059,8 +1060,8 @@ html.collection-page-deep .art-grid {
   );
   position: absolute;
   inset: 2px;
-  width: calc(var(--phys-w, 1) * var(--fit));
-  height: calc(var(--phys-h, 1) * var(--fit));
+  width: calc(var(--phys-w, 1) * var(--fit) * var(--phys-soft, 1));
+  height: calc(var(--phys-h, 1) * var(--fit) * var(--phys-soft, 1));
   max-width: calc(100% - 4px);
   max-height: calc(100% - 4px);
   margin: auto;
@@ -2071,10 +2072,10 @@ footer {
     left: auto;
     top: auto;
     display: block;
-    width: calc(var(--mobile-ref) * var(--phys-w, 1));
-    height: calc(var(--mobile-ref) * var(--phys-h, 1));
+    width: calc(var(--mobile-ref) * var(--phys-w, 1) * var(--phys-soft, 1));
+    height: calc(var(--mobile-ref) * var(--phys-h, 1) * var(--phys-soft, 1));
     max-width: 100%;
-    max-height: var(--mobile-ref);
+    max-height: calc(var(--mobile-ref) * var(--phys-soft, 1));
     margin: 0 auto;
     object-fit: contain;
     transform: none;
