@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Metacen1 — légendes centrées, texte à gauche (2026-11-24)
+
+- `.art-meta` : `width: fit-content; margin-inline: auto; text-align: left`
+- Cache-bust `?v=20261124-metacen1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `4053e827` · preview `e23d781b` · atelier `e235e0a8` · https://galerie-vittet-preview.pages.dev/
+
 ## Physlog1 — soft log adouci pour &lt;16 cm (2026-11-24)
 
 - soft = ln(1+k·cm)/ln(1+k·ref), k=0.8, ref=24, plancher 90 %
