@@ -1051,14 +1051,18 @@ html.collection-page-deep .art-grid {
   container-type: size;
 }
 
-/* Proportion : grand côté → 100cqmin ; --phys-* = aspect × soft. */
+/* Taille max = plus grand rectangle d’aspect --phys-* dans la cellule. */
 .art-open .art-preview {
+  --fit: min(
+    calc(100cqi / max(var(--phys-w, 1), 0.001)),
+    calc(100cqb / max(var(--phys-h, 1), 0.001))
+  );
   position: absolute;
-  inset: 6px;
-  width: calc(var(--phys-w, 1) * 100cqmin);
-  height: calc(var(--phys-h, 1) * 100cqmin);
-  max-width: calc(100% - 12px);
-  max-height: calc(100% - 12px);
+  inset: 2px;
+  width: calc(var(--phys-w, 1) * var(--fit));
+  height: calc(var(--phys-h, 1) * var(--fit));
+  max-width: calc(100% - 4px);
+  max-height: calc(100% - 4px);
   margin: auto;
   object-fit: contain;
   filter: var(--img-enhance);
@@ -1087,7 +1091,10 @@ html.collection-page-deep .art-grid {
 }
 
 
-.art-meta { padding-top: 14px; }
+.art-meta {
+  padding-top: 14px;
+  text-align: center;
+}
 
 /* Ordre DOM: titre → auteur → taille — type via shared patterns */
 .art-meta .art-artist {
@@ -2058,7 +2065,7 @@ footer {
     container-type: normal;
   }
   .art-open .art-preview {
-    --mobile-ref: min(78vw, 560px);
+    --mobile-ref: min(92vw, 640px);
     position: static;
     inset: auto;
     left: auto;
@@ -2076,7 +2083,10 @@ footer {
   .art-open:focus-visible .art-preview {
     transform: translateY(-3px);
   }
-  .art-meta { padding-top: 6px; }
+  .art-meta {
+    padding-top: 6px;
+    text-align: center;
+  }
   .art-meta h3 { margin: 0; }
   .art-meta .art-artist {
     font-size: var(--type-artist);
