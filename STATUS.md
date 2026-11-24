@@ -2,14 +2,18 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Physabs1 — échelle cm absolue grille (2026-11-24)
+
+- Cause physgrid1 : ≥15 cm = pleine cellule → portrait 17 cm plus haut que paysage 31 cm ; Ø10,5 ≈ 90 %
+- Fix : `--phys-* = cm / --size-ref-cm` (40 cm ≈ pleine cellule), plancher 40 %
+- Ex. Troie 263×200 > Bardellino 117×142 > Ø10,5 134×134
+- Cache-bust `?v=20261124-physabs1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `48f281b4` · preview `78191dfa` · atelier `1a27a123` · https://galerie-vittet-preview.pages.dev/
+
 ## Physgrid1 — grille quasi pleine taille (2026-11-24)
 
-- ≥ 15 cm (grand côté) → pleine cellule (comme avant physcale)
-- &lt; 15 cm → très léger retrait (plancher 90 %)
-- Tokens : `--size-ref-cm: 15`, `--size-log-k: 0.55`, `--size-min-scale: 0.90`
-- Cache-bust `?v=20261124-physgrid1`
-- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
-- Prod `df654301` · preview `bf27708f` · atelier `9c7d557c` · https://galerie-vittet-preview.pages.dev/
+- Remplacé par physabs1 (incohérences portrait/paysage)
 
 ## Taille2 — aperçu inch cm→in seulement (2026-11-23)
 
