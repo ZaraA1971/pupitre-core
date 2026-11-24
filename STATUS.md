@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Physgrid1 — grille quasi pleine taille (2026-11-24)
+
+- ≥ 15 cm (grand côté) → pleine cellule (comme avant physcale)
+- &lt; 15 cm → très léger retrait (plancher 90 %)
+- Tokens : `--size-ref-cm: 15`, `--size-log-k: 0.55`, `--size-min-scale: 0.90`
+- Cache-bust `?v=20261124-physgrid1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `df654301` · preview `bf27708f` · atelier `9c7d557c` · https://galerie-vittet-preview.pages.dev/
+
 ## Taille2 — aperçu inch cm→in seulement (2026-11-23)
 
 - Saisie cm uniquement ; retrait du convertisseur inch → cm
