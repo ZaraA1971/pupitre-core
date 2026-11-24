@@ -2,14 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
-## Physmax2 — seuil petites = grand côté 24 cm (2026-11-24)
+## Physmax3 — grille plus grande + légendes centrées (2026-11-24)
 
-- Bug physmax1 : 16×19 cm avait grand côté 19 ≥ 16 → plein cadre (Philippe II trop grand)
-- soft = min(1, edge/24) ; ≥24 cm → taille max ; plancher 75 %
-- Ex. Cathédrale/Raisins soft=1 ; Philippe soft≈0,79
-- Cache-bust `?v=20261124-physmax2`
+- Fit cellule via cqi/cqb (plus de cqmin) → paysages ~99 % largeur
+- `--phys-soft` séparé de l’aspect (retrait petites conservé)
+- `.art-meta { text-align: center }`
+- Cache-bust `?v=20261124-physmax3b`
 - Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
-- Prod `24d05b34` · preview `4b5bdc16` · atelier `ba5f48b2` · https://galerie-vittet-preview.pages.dev/
+- Prod `e8143d22` · preview `1c31edd5` · atelier `b1d470fb` · https://galerie-vittet-preview.pages.dev/
 
 ## Physgrid1 — grille quasi pleine taille (2026-11-24)
 
