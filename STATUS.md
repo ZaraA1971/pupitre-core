@@ -6,7 +6,7 @@
 
 - `--lightbox-well: #ffffff` (plus de blanc cassé `--paper`)
 - Cache-bust front `?v=20261125-lbwhite1`
-- Compte Emmanuel · sync-trees · deploy preview (+ atelier-kv-preview si sync)
+- Compte Emmanuel · sync-trees · deploy preview + **main/production** (+ atelier-kv-preview)
 
 ## Saveflags1 — Enregistrer = texte ; coches immédiates (2026-11-25)
 
