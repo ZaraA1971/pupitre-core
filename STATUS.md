@@ -2,6 +2,18 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Csstour1 — tour CSS P2 + fit hero fenêtre (2026-11-25)
+
+- Carte de sections A–K dans `style.css` (tokens inchangés)
+- Media crop carousel 700px fusionné dans le bloc mobile principal
+- Sélecteurs carousel-crop simplifiés
+- `fitHeroWindow` = active ±1 (aligné hydrate)
+- Filtres img conservés (coût << images)
+- Cache-bust `?v=20261125-csstour1`
+- Compte Emmanuel · sync-trees · deploy main `8a57546f` · preview `0906cdbd` · atelier `e677c074`
+- Vérif desktop/mobile hero + collection OK
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Fontsapi1 — fonts self-host + cache API (2026-11-25)
 
 - Self-host DM Sans + Playfair (latin/latin-ext woff2, ~95 Ko) — plus d’appel Google Fonts

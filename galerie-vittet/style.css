@@ -125,6 +125,24 @@
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
 
+/* =============================================================================
+ * Galerie Vittet — style.css
+ * Map (search banners):
+ *   A. Fonts (self-host woff2)
+ *   B. Tokens (:root) — --paper / --stage / --lightbox-well / --hero-ar
+ *   C. Base + shared surfaces / type
+ *   D. Header (full-bleed over hero)
+ *   E. Hero / carousel
+ *   F. Collection grid + phys size
+ *   G. About
+ *   H. Lightbox / loupe
+ *   I. Breakpoints: 1100 → 980 → 900 → 700 (progressive; 700 owns phone)
+ *   J. Entrance / reveal motion
+ *   K. prefers-reduced-motion
+ * Do not big-bang split into files yet — tokens must stay one source of truth.
+ * ============================================================================= */
+
+/* —— B. Tokens (:root) —— */
 :root {
   /*
    * Tokens — edit here for site-wide evolution.
@@ -186,6 +204,7 @@
   --page-pad-lg: 3vw;
 
   /* —— Img enhance (SVG #img-warm-wb — no sepia) —— */
+  /* P2: keep filter; cost << image weight. Revisit only if mobile jank. */
   --img-contrast: 1.06;
   --img-brightness: 1.01;
   --img-saturate: 1.03;
@@ -218,6 +237,7 @@
   --true-h-px: 0px;
 }
 
+/* —— C. Base + shared surfaces / type —— */
 * { box-sizing: border-box; }
 
 html { scroll-behavior: smooth; }
@@ -312,6 +332,7 @@ section { scroll-margin-top: 48px; }
   outline-offset: 3px;
 }
 
+/* —— D. Header (full-bleed over hero) —— */
 /* Full-bleed hero header: brand + contact fused over the carousel photo plane. */
 .site-hero {
   position: relative;
@@ -875,6 +896,7 @@ footer a {
   background: var(--stage);
 }
 
+/* —— E. Hero / carousel —— */
 /* Avant /api/oeuvres : cadre stage seul — pas de faux carousel 01–04. */
 .hero-stage.is-pending .hero-controls {
   visibility: hidden;
@@ -947,33 +969,13 @@ footer a {
  * Ici : boîte pleine scène + contain uniquement — 100 % du crop, zéro 2ᵉ coupe.
  */
 .hero-slide[data-carousel-crop="1"] img,
-.hero-slide[data-carousel-crop="1"] .art-hero,
-.hero-slide[data-carousel-crop="1"].is-active img,
-.hero-slide[data-carousel-crop="1"].is-active .art-hero,
-.hero-slide img[data-carousel-crop="1"],
-.hero-slide .art-hero[data-carousel-crop="1"],
-.hero-slide.is-active img[data-carousel-crop="1"],
-.hero-slide.is-active .art-hero[data-carousel-crop="1"] {
+.hero-slide[data-carousel-crop="1"] .art-hero {
   width: 100%;
   height: 100%;
   max-width: none;
   max-height: none;
   object-fit: contain;
   object-position: center center;
-}
-
-@media (max-width: 700px) {
-  .hero-slide[data-carousel-crop="1"] img,
-  .hero-slide[data-carousel-crop="1"] .art-hero,
-  .hero-slide[data-carousel-crop="1"].is-active img,
-  .hero-slide[data-carousel-crop="1"].is-active .art-hero,
-  .hero-slide img[data-carousel-crop="1"],
-  .hero-slide .art-hero[data-carousel-crop="1"],
-  .hero-slide.is-active img[data-carousel-crop="1"],
-  .hero-slide.is-active .art-hero[data-carousel-crop="1"] {
-    object-fit: cover;
-    object-position: center bottom;
-  }
 }
 
 /* Caption DOM kept for #hero-live / a11y; not painted on the photo (herocaption0). */
@@ -1072,6 +1074,7 @@ footer a {
   outline-offset: 2px;
 }
 
+/* —— F. Collection grid + phys size —— */
 .collection {
   padding: 52px var(--page-pad) 80px;
 }
@@ -1305,6 +1308,7 @@ html.collection-page-deep .art-grid {
 }
 
 /* #galerie — vignette à gauche + texte à droite ; façade/salle même taille, un peu rapprochées */
+/* —— G. About —— */
 .about {
   --gal-pad-block: 64px;
   /* Même hauteur qu’avant (triptyque) ; gap un peu plus serré que space-between. */
@@ -1465,6 +1469,7 @@ footer {
   border-bottom-color: currentColor;
 }
 
+/* —— H. Lightbox / loupe —— */
 .lightbox {
   border: 0;
   padding: 0;
@@ -1864,6 +1869,8 @@ footer {
   100% { background-position: -40% 0, 0 0; }
 }
 
+/* —— I. Breakpoints (1100 → 980 → 900 → 700) —— */
+/* Each step only adds overrides; phone layout lives entirely in 700. */
 @media (max-width: 1100px) {
   .art-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 36px 12px; }
   .header {
@@ -1994,6 +2001,11 @@ footer {
   }
 
   /* —— Hero mobile: plein écran (crops en cover via JS) —— */
+  .hero-slide[data-carousel-crop="1"] img,
+  .hero-slide[data-carousel-crop="1"] .art-hero {
+    object-fit: cover;
+    object-position: center bottom;
+  }
   .hero-stage {
     width: 100%;
     aspect-ratio: auto;
@@ -2375,6 +2387,7 @@ footer {
   .lightbox-artist { font-size: 26px; }
 }
 
+/* —— J. Entrance / reveal motion —— */
 html.entrance .hero-stage {
   animation: enter .9s cubic-bezier(.22, .7, .2, 1) both;
   animation-delay: .08s;
@@ -2409,6 +2422,7 @@ html.motion [data-reveal].art-card.is-in .art-preview {
   to { opacity: 1; transform: none; }
 }
 
+/* —— K. prefers-reduced-motion —— */
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
   html.entrance .hero-stage,
