@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Aboutlay3 — portrait galerie + écart photos (2026-11-25)
+
+- Portrait float, hauteur ~texte − 2 lignes (wrap du 3ᵉ § dessous)
+- Écart façade/salle élargi (`--gal-photo-gap` ~64–112px)
+- Cache-bust `?v=20261125-aboutlay3`
+- Compte Emmanuel · sync-trees · deploy
+
 ## Csstour1 — tour CSS P2 + fit hero fenêtre (2026-11-25)
 
 - Carte de sections A–K dans `style.css` (tokens inchangés)

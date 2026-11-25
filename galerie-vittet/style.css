@@ -1311,8 +1311,8 @@ html.collection-page-deep .art-grid {
 /* —— G. About —— */
 .about {
   --gal-pad-block: 64px;
-  /* Écart façade / salle — un peu plus large que la vignette précédente. */
-  --gal-photo-gap: clamp(48px, 6vw, 88px);
+  /* Écart façade / salle — un cran au-dessus de l’ancien ~28–52. */
+  --gal-photo-gap: clamp(64px, 8vw, 112px);
   --gal-ar-sum: 4.04;
   --gal-photo-h: min(
     405px,
