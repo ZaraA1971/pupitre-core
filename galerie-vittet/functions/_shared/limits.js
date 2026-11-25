@@ -19,7 +19,7 @@ export const ASSET_RE =
 /** Chemins images site (hors /ajouts KV) pour proxy atelier/media. */
 export const PUBLIC_ASSET_RE =
   /^images\/(?:preview\/|web\/)?[a-z0-9][a-z0-9._-]{0,80}\.(webp|jpg|png)$/;
-/* Web encode max edge stays 1800 in atelier.js + scripts/backfill-web-derivatives.py. */
+/* Web encode: atelier.js + backfill — max edge 1600 WebP, budget ~220 Ko. */
 
 const WEBP = [0x52, 0x49, 0x46, 0x46];
 const JPEG = [0xff, 0xd8, 0xff];

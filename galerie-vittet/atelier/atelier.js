@@ -32,18 +32,26 @@ const catalogPagers = [...document.querySelectorAll("[data-catalog-pager]")];
 const MAX_BYTES = 12_000_000;
 /** Source avant réencodage : on accepte plus gros (scans print), puis on vérifie le blob encodé. */
 const MAX_SOURCE_BYTES = 40 * 1024 * 1024;
-/** Dérivé d’affichage web : grand côté max (px), qualité canvas ~0.82. */
-const WEB_MAX_EDGE = 1800;
-const WEB_JPEG_QUALITY = 0.82;
+/**
+ * Dérivés d’affichage — WebP préféré (JPEG secours).
+ * Budgets poids : boucle qualité puis léger retrait d’edge si encore trop lourd.
+ */
+const WEB_MAX_EDGE = 1600;
+const WEB_ENCODE_QUALITY = 0.78;
+const WEB_TARGET_BYTES = 220_000;
 const PREVIEW_MAX_EDGE = 720;
+const PREVIEW_ENCODE_QUALITY = 0.72;
+const PREVIEW_TARGET_BYTES = 90_000;
 /**
  * Cadre crop = hero desktop verrouillé 16:9 (même --hero-ar côté front).
  * Front : contain pour afficher 100 % de ce cadre (pas de re-zoom CSS).
  */
 const CAROUSEL_AR = 16 / 9;
 const CAROUSEL_AR_LOG_THRESHOLD = 0.22;
-const CAROUSEL_MAX_EDGE = 1920;
-const CAROUSEL_JPEG_QUALITY = 0.86;
+const CAROUSEL_MAX_EDGE = 1680;
+const CAROUSEL_ENCODE_QUALITY = 0.78;
+const CAROUSEL_TARGET_BYTES = 200_000;
+const ENCODE_MIN_QUALITY = 0.55;
 const LIBRARY_PAGE_SIZE = 25;
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 const ID_PATTERN = /^ajout-[a-z0-9-]{1,80}$/;
@@ -762,7 +770,7 @@ function loadBitmap(file) {
   });
 }
 
-function encodeFrom(image, maxWidth, maxHeight, type, quality = WEB_JPEG_QUALITY) {
+function encodeFrom(image, maxWidth, maxHeight, type, quality = WEB_ENCODE_QUALITY) {
   return new Promise((resolve, reject) => {
     const scale = Math.min(1, maxWidth / image.naturalWidth, maxHeight / image.naturalHeight);
     const canvas = document.createElement("canvas");
@@ -777,6 +785,65 @@ function encodeFrom(image, maxWidth, maxHeight, type, quality = WEB_JPEG_QUALITY
       resolve({ blob, width: canvas.width, height: canvas.height });
     }, type, quality);
   });
+}
+
+/**
+ * Encode avec plafond de poids : baisse la qualité, puis réduit l’edge si besoin.
+ * @returns {Promise<{blob: Blob, width: number, height: number}>}
+ */
+async function encodeFromBudget(
+  image,
+  maxEdge,
+  type,
+  {
+    quality = WEB_ENCODE_QUALITY,
+    targetBytes = WEB_TARGET_BYTES,
+    minQuality = ENCODE_MIN_QUALITY,
+    maxHeight = maxEdge,
+  } = {}
+) {
+  let edge = maxEdge;
+  let q = quality;
+  let best = null;
+  for (let pass = 0; pass < 8; pass++) {
+    const part = await encodeFrom(image, edge, maxHeight, type, q);
+    if (!best || part.blob.size < best.blob.size) best = part;
+    if (part.blob.size <= targetBytes) return part;
+    if (q > minQuality + 0.02) {
+      q = Math.max(minQuality, q - 0.08);
+      continue;
+    }
+    if (edge > 1100) {
+      edge = Math.max(1100, Math.round(edge * 0.85));
+      q = quality;
+      continue;
+    }
+    break;
+  }
+  return best;
+}
+
+/** Encode canvas crop carousel avec le même budget poids. */
+async function encodeCanvasBudget(canvas, type, {
+  quality = CAROUSEL_ENCODE_QUALITY,
+  targetBytes = CAROUSEL_TARGET_BYTES,
+  minQuality = ENCODE_MIN_QUALITY,
+} = {}) {
+  let q = quality;
+  let best = null;
+  for (let pass = 0; pass < 6; pass++) {
+    let blob;
+    try {
+      blob = await canvasToBlob(canvas, type, q);
+    } catch {
+      blob = await canvasToBlob(canvas, "image/jpeg", q);
+    }
+    if (!best || blob.size < best.size) best = blob;
+    if (blob.size <= targetBytes) return blob;
+    if (q <= minQuality + 0.02) break;
+    q = Math.max(minQuality, q - 0.08);
+  }
+  return best;
 }
 
 function extensionFor(blob) {
@@ -1081,19 +1148,19 @@ async function buildPreview() {
     for (const item of pendingItems) {
       const loaded = await loadBitmap(item.file);
       try {
-        const webPart = await encodeFrom(
-          loaded.image,
-          WEB_MAX_EDGE,
-          WEB_MAX_EDGE,
-          type,
-          WEB_JPEG_QUALITY
-        );
-        const previewPart = await encodeFrom(
+        const webPart = await encodeFromBudget(loaded.image, WEB_MAX_EDGE, type, {
+          quality: WEB_ENCODE_QUALITY,
+          targetBytes: WEB_TARGET_BYTES,
+        });
+        const previewPart = await encodeFromBudget(
           loaded.image,
           PREVIEW_MAX_EDGE,
-          Number.POSITIVE_INFINITY,
           type,
-          WEB_JPEG_QUALITY
+          {
+            quality: PREVIEW_ENCODE_QUALITY,
+            targetBytes: PREVIEW_TARGET_BYTES,
+            maxHeight: Number.POSITIVE_INFINITY,
+          }
         );
         const canKeepOriginal =
           item.file.size <= MAX_BYTES &&
@@ -1899,9 +1966,10 @@ function encodeCarouselCropBlob() {
   ctx.fillRect(0, 0, outW, outH);
   ctx.drawImage(image, sx, sy, sw, sh, 0, 0, outW, outH);
 
-  return canvasToBlob(canvas, encodeType(), CAROUSEL_JPEG_QUALITY).catch(() =>
-    canvasToBlob(canvas, "image/jpeg", CAROUSEL_JPEG_QUALITY)
-  );
+  return encodeCanvasBudget(canvas, encodeType(), {
+    quality: CAROUSEL_ENCODE_QUALITY,
+    targetBytes: CAROUSEL_TARGET_BYTES,
+  });
 }
 
 function applyCarouselWorkUpdate(work, payload) {
@@ -2133,19 +2201,19 @@ async function prepareImageDerivatives(file) {
   const type = encodeType();
   const loaded = await loadBitmap(file);
   try {
-    const webPart = await encodeFrom(
-      loaded.image,
-      WEB_MAX_EDGE,
-      WEB_MAX_EDGE,
-      type,
-      WEB_JPEG_QUALITY
-    );
-    const previewPart = await encodeFrom(
+    const webPart = await encodeFromBudget(loaded.image, WEB_MAX_EDGE, type, {
+      quality: WEB_ENCODE_QUALITY,
+      targetBytes: WEB_TARGET_BYTES,
+    });
+    const previewPart = await encodeFromBudget(
       loaded.image,
       PREVIEW_MAX_EDGE,
-      Number.POSITIVE_INFINITY,
       type,
-      WEB_JPEG_QUALITY
+      {
+        quality: PREVIEW_ENCODE_QUALITY,
+        targetBytes: PREVIEW_TARGET_BYTES,
+        maxHeight: Number.POSITIVE_INFINITY,
+      }
     );
     const canKeepOriginal =
       file.size <= MAX_BYTES && /^(image\/jpeg|image\/png|image\/webp)$/i.test(file.type || "");
@@ -2849,13 +2917,10 @@ async function backfillWebDerivatives() {
       const loaded = await loadBitmap(file);
       let webBlob;
       try {
-        const webPart = await encodeFrom(
-          loaded.image,
-          WEB_MAX_EDGE,
-          WEB_MAX_EDGE,
-          type,
-          WEB_JPEG_QUALITY
-        );
+        const webPart = await encodeFromBudget(loaded.image, WEB_MAX_EDGE, type, {
+          quality: WEB_ENCODE_QUALITY,
+          targetBytes: WEB_TARGET_BYTES,
+        });
         webBlob = webPart.blob;
       } finally {
         URL.revokeObjectURL(loaded.url);

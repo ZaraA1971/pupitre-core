@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Webpcap1 — WebP + budgets poids dérivés (2026-11-25)
+
+- Web max edge 1600, qualité ~0.78, cible ~220 Ko (boucle qualité/edge)
+- Carousel crop max 1680, cible ~200 Ko
+- Preview cible ~90 Ko
+- Backfill script → WebP (plus JPEG forcé)
+- Cache-bust atelier `?v=20261125-webpcap1`
+- Compte Emmanuel · sync-trees · deploy + backfill carousel
+
 ## Herolazy1 — hero charge active + voisines seulement (2026-11-25)
 
 - `data-src` + hydrate au `showHero` (loading=lazy inefficace en absolute)
