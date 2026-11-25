@@ -1151,11 +1151,28 @@ function fitHeroImage(img) {
   img.addEventListener("load", apply, { once: true });
 }
 
-function fitAllHeroImages() {
-  slides.forEach((slide) => {
-    const img = slide.querySelector("img");
+/** Refit only the hydrated window (active ±1) — same scope as hydrateHeroWindow. */
+function fitHeroWindow(centerIndex = heroIndex) {
+  if (!slides.length) return;
+  const n = slides.length;
+  const indices =
+    n === 1
+      ? [0]
+      : n === 2
+        ? [0, 1]
+        : [
+            wrap(centerIndex - 1, n),
+            wrap(centerIndex, n),
+            wrap(centerIndex + 1, n),
+          ];
+  indices.forEach((i) => {
+    const img = slides[i]?.querySelector("img");
     if (img && img.getAttribute("src")) fitHeroImage(img);
   });
+}
+
+function fitAllHeroImages() {
+  fitHeroWindow(heroIndex);
 }
 
 /**
