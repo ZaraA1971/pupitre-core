@@ -8,7 +8,9 @@
 - Preload fonts + `GET /api/oeuvres` ; fetch `credentials:omit`
 - Cache edge API : s-maxage=300 + stale-while-revalidate=600
 - Cache-bust `?v=20261125-fontsapi1`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `f983b64c` · preview `1fa690e8` · atelier `2f57d83f`
+- Vérif : 0 req Google Fonts ; woff2 locaux ; familles Playfair/DM Sans OK
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Webpcap1 — WebP + budgets poids dérivés (2026-11-25)
 
