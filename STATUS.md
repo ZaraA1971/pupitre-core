@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Aboutvign1 — portrait vignette + paire façade/salle (2026-11-25)
+
+- Portrait Claude = vignette à droite du texte « La galerie »
+- Façade + salle centrées en dessous, gap serré (~28 px)
+- Cache-bust `?v=20261125-aboutvign1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `dce33440` · preview `d0ac6f47` · atelier `627cd71d` · https://galerie-vittet-preview.pages.dev/
+
 ## Imgreplace3 — dirty Enregistrer + cache Remplacer (2026-11-25)
 
 - Cause « Bibliothèque indisponible » : `wireSaveDirtyState` avant `item.append` → lecture `exposed` null
