@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Aboutvign2 — vignette gauche magazine + photos taille d’origine (2026-11-25)
+
+- Vignette Claude sous « La galerie », texte à droite
+- Façade/salle : même hauteur qu’avant (~405 px), gap un peu resserré
+- Cache-bust `?v=20261125-aboutvign2`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `87a2ee79` · https://galerie-vittet-preview.pages.dev/
+
+
 ## Aboutvign1 — portrait vignette + paire façade/salle (2026-11-25)
 
 - Portrait Claude = vignette à droite du texte « La galerie »
