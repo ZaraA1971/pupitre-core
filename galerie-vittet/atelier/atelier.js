@@ -1633,7 +1633,7 @@ function readEditorFields(itemEl) {
   const altInput = itemEl.querySelector("[data-edit=alt]");
   fields.alt = altInput ? altInput.value.trim() : "";
   fields.categories = [...itemEl.querySelectorAll("input[data-edit-cat]:checked")].map((el) => el.value);
-  fields.exposed = itemEl.querySelector("[data-edit=exposed]").checked;
+  fields.exposed = !!itemEl.querySelector("[data-edit=exposed]")?.checked;
   const carouselInput = itemEl.querySelector("[data-edit=carousel]");
   fields.carousel = carouselInput ? carouselInput.checked : false;
   return fields;
@@ -2633,11 +2633,13 @@ function workItem(work) {
   save.type = "button";
   save.className = "library-save";
   save.textContent = "Enregistrer";
+  // Grisé tant que le cartouche n’a pas changé (wire après append — les champs
+  // data-edit doivent être dans le DOM de l’item pour le snapshot initial).
+  save.disabled = true;
+  save.setAttribute("aria-disabled", "true");
+  save.title = "Aucun changement à enregistrer";
   const saveStatus = document.createElement("span");
   saveStatus.className = "edit-status";
-  const dirty = wireSaveDirtyState(item, save);
-  item._refreshSaveDirty = dirty.refresh;
-  item._markSaveClean = dirty.markClean;
   save.addEventListener("click", () => {
     if (save.disabled) return;
     saveWorkMeta(work, item, saveStatus, save);
@@ -2680,6 +2682,11 @@ function workItem(work) {
 
   if (orderControls) item.append(orderControls, pick, media, editor);
   else item.append(pick, media, editor);
+
+  // Après append : lecture des champs pour baseline dirty / Enregistrer.
+  const dirty = wireSaveDirtyState(item, save);
+  item._refreshSaveDirty = dirty.refresh;
+  item._markSaveClean = dirty.markClean;
   return item;
 }
 
@@ -2852,12 +2859,18 @@ async function loadLibrary({ preserveStatus = false } = {}) {
     if (selectedIds.size === 0) {
       libraryWorks.filter((w) => w.exposed).forEach((w) => selectedIds.add(w.id));
     }
-    renderLibrary();
   } catch (error) {
     libraryWorks = [];
     snapshotFrontOrders([]);
     reorderDirty = false;
+  }
+  // Rendu hors du try réseau : une erreur DOM ne doit pas vider libraryWorks.
+  try {
     renderLibrary();
+  } catch (error) {
+    if (catalogStatus) {
+      catalogStatus.textContent = "Erreur d’affichage de la bibliothèque.";
+    }
   }
 }
 
