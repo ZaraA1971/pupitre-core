@@ -1229,16 +1229,12 @@ function syncHeroFromWorks(list) {
   heroViewport.classList.toggle("is-static", slides.length < 2);
   heroPrevBtn.hidden = slides.length < 2;
   heroNextBtn.hidden = slides.length < 2;
-  heroReady = false;
   heroSynced = true;
   heroStage.classList.remove("is-pending");
   heroStage.setAttribute("aria-busy", "false");
   showHero(startIndex);
 }
 
-let heroReady = false;
-let captionTimer = 0;
-const heroMeta = document.querySelector(".hero-meta");
 const HERO_AUTOPLAY_MS = 4000;
 let heroAutoplayTimer = 0;
 let heroAutoplayPaused = false;
@@ -1284,10 +1280,9 @@ function showHero(index) {
     fitHeroImage(slide.querySelector("img"));
   });
   const slide = slides[heroIndex];
-  const applyText = () => {
-    heroTitle.textContent = slide.dataset.title;
-    heroArtist.textContent = slide.dataset.artist;
-  };
+  // Légendes photo masquées (herocaption0) — texte seulement pour #hero-live / a11y.
+  heroTitle.textContent = slide.dataset.title;
+  heroArtist.textContent = slide.dataset.artist;
   heroCurrent.textContent = pad(heroIndex + 1);
   heroTotal.textContent = pad(slides.length);
   heroLive.textContent = t("heroLive", {
@@ -1298,19 +1293,6 @@ function showHero(index) {
   });
   renderHeroDots();
   scheduleHeroAutoplay();
-  if (!heroReady || prefersReduce()) {
-    window.clearTimeout(captionTimer);
-    applyText();
-    heroReady = true;
-    heroMeta.classList.remove("is-swap");
-    return;
-  }
-  heroMeta.classList.add("is-swap");
-  window.clearTimeout(captionTimer);
-  captionTimer = window.setTimeout(() => {
-    applyText();
-    heroMeta.classList.remove("is-swap");
-  }, 180);
 }
 
 heroPrevBtn.addEventListener("click", () => showHero(heroIndex - 1));

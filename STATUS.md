@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup10 — mort légendes hero + cache (2026-11-25)
+
+- Retrait is-swap / heroReady / styles titres photo masqués
+- Cache-bust `?v=20261125-clean10`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Plan perf : voir canvas / compte-rendu optimisation
+
 ## Heropend1 — carousel sans flash 01–04 (2026-11-25)
 
 - Plus de 4 slides HTML statiques ni `showHero(0)` avant l’API
