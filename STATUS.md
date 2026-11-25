@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Imgreplace1 — Remplacer image dans le cartouche Atelier (2026-11-25)
+
+- Bouton **Remplacer** sous la miniature bibliothèque (ajouts KV)
+- `POST /atelier/api/oeuvres/:id/image` : original + web + vignette ; métadonnées gardées ; crop carousel invalidé
+- Cache-bust atelier `?v=20261125-imgreplace1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `20c128e7` · preview `8508e17b` · atelier `ab1e9342` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Physclean2 — nettoyage helpers phys (2026-11-24)
 
 - Réordre parse / soft log / physBox ; plancher dans `softSizeScale` ; commentaire mobile 92vw/640
