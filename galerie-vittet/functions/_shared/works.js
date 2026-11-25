@@ -249,6 +249,47 @@ export async function updateWorkWeb(db, id, { web }) {
 }
 
 /**
+ * Remplace original + web + vignette d’un ajout KV (métadonnées inchangées).
+ * Efface le crop carousel (cadrage de l’ancienne image).
+ */
+export async function updateWorkImages(
+  db,
+  id,
+  { image, web, preview, detail_ctype, preview_ctype, source_file }
+) {
+  if (!ID_RE.test(id)) throw new Error("id");
+  if (!ASSET_RE.test(image) || !ASSET_RE.test(preview) || !ASSET_RE.test(web)) {
+    throw new Error("path");
+  }
+  await ensureSchema(db);
+  const current = await getWork(db, id);
+  if (!current) return null;
+  const nextSource =
+    source_file !== undefined && source_file !== null
+      ? String(source_file)
+      : current.source_file || "";
+  await db
+    .prepare(
+      `UPDATE oeuvres
+       SET image = ?, web = ?, preview = ?, detail_ctype = ?, preview_ctype = ?,
+           source_file = ?, carousel_image = '', updated_at = ?
+       WHERE id = ?`
+    )
+    .bind(
+      image,
+      web,
+      preview,
+      detail_ctype || "",
+      preview_ctype || "",
+      nextSource,
+      stampNow(),
+      id
+    )
+    .run();
+  return getWork(db, id);
+}
+
+/**
  * Enregistre / remplace le dérivé carousel (hero) sans toucher web/original/collection.
  */
 export async function updateWorkCarouselImage(db, id, { carousel_image }) {

@@ -2072,6 +2072,126 @@ async function saveWorkMeta(work, itemEl, statusEl) {
   }
 }
 
+/**
+ * Prépare original + web + vignette comme à l’import (même plafonds / qualité).
+ * @returns {Promise<{detailBlob: Blob, webBlob: Blob, previewBlob: Blob, detailName: string}|null>}
+ */
+async function prepareImageDerivatives(file) {
+  if (!file || !isImageFile(file)) return null;
+  if (file.size > MAX_SOURCE_BYTES) {
+    throw new Error(`too-heavy:${formatBytes(MAX_SOURCE_BYTES)}`);
+  }
+  const type = encodeType();
+  const loaded = await loadBitmap(file);
+  try {
+    const webPart = await encodeFrom(
+      loaded.image,
+      WEB_MAX_EDGE,
+      WEB_MAX_EDGE,
+      type,
+      WEB_JPEG_QUALITY
+    );
+    const previewPart = await encodeFrom(
+      loaded.image,
+      PREVIEW_MAX_EDGE,
+      Number.POSITIVE_INFINITY,
+      type,
+      WEB_JPEG_QUALITY
+    );
+    const canKeepOriginal =
+      file.size <= MAX_BYTES && /^(image\/jpeg|image\/png|image\/webp)$/i.test(file.type || "");
+    const detailBlob = canKeepOriginal ? file : webPart.blob;
+    const detailName =
+      canKeepOriginal && file.name
+        ? file.name
+        : `detail.${extensionFor(detailBlob)}`;
+    return {
+      detailBlob,
+      webBlob: webPart.blob,
+      previewBlob: previewPart.blob,
+      detailName,
+    };
+  } finally {
+    URL.revokeObjectURL(loaded.url);
+  }
+}
+
+async function replaceWorkImage(work, file, button, statusEl) {
+  if (!isAjout(work) || !ID_PATTERN.test(work.id || "")) {
+    if (statusEl) statusEl.textContent = "Remplacement impossible.";
+    return;
+  }
+  if (!file || !isImageFile(file)) {
+    if (statusEl) statusEl.textContent = "Choisissez une image JPEG / PNG / WebP.";
+    return;
+  }
+
+  if (button) button.disabled = true;
+  if (statusEl) statusEl.textContent = "Préparation de l’image…";
+
+  try {
+    let prepared;
+    try {
+      prepared = await prepareImageDerivatives(file);
+    } catch (error) {
+      const msg = String(error && error.message ? error.message : "");
+      if (msg.startsWith("too-heavy:")) {
+        if (statusEl) {
+          statusEl.textContent = `Fichier trop lourd (max ${msg.slice("too-heavy:".length)}).`;
+        }
+      } else if (statusEl) {
+        statusEl.textContent = "Cette image ne peut pas être préparée.";
+      }
+      if (button) button.disabled = false;
+      return;
+    }
+    if (!prepared) {
+      if (statusEl) statusEl.textContent = "Choisissez une image JPEG / PNG / WebP.";
+      if (button) button.disabled = false;
+      return;
+    }
+
+    if (statusEl) statusEl.textContent = "Remplacement…";
+    const body = new FormData();
+    body.set("detail", prepared.detailBlob, prepared.detailName);
+    body.set("web", prepared.webBlob, `web.${extensionFor(prepared.webBlob)}`);
+    body.set(
+      "preview",
+      prepared.previewBlob,
+      `preview.${extensionFor(prepared.previewBlob)}`
+    );
+    if (file.name) body.set("source_file", file.name);
+
+    const response = await fetch(
+      `api/oeuvres/${encodeURIComponent(work.id)}/image`,
+      {
+        method: "POST",
+        body,
+        credentials: "same-origin",
+        headers: { "X-Atelier": "1" },
+      }
+    );
+    const payload = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      if (statusEl) statusEl.textContent = payload.error || "Remplacement impossible.";
+      if (button) button.disabled = false;
+      return;
+    }
+
+    const idx = libraryWorks.findIndex((w) => w.id === work.id);
+    const merged = normalizeWork(payload);
+    if (idx >= 0 && merged) libraryWorks[idx] = merged;
+    if (statusEl) statusEl.textContent = "Image remplacée.";
+    if (catalogStatus) {
+      catalogStatus.textContent = `Image de « ${work.title || work.id} » remplacée (métadonnées conservées).`;
+    }
+    renderLibrary();
+  } catch (error) {
+    if (statusEl) statusEl.textContent = "Échec réseau.";
+    if (button) button.disabled = false;
+  }
+}
+
 async function deleteLibraryWork(work, button, statusEl) {
   if (!LIBRARY_ID_PATTERN.test(work.id || "")) {
     if (statusEl) statusEl.textContent = "Suppression impossible.";
@@ -2212,11 +2332,47 @@ function workItem(work) {
     orderControls.append(handle, orderBadge, up, down);
   }
 
+  const media = document.createElement("div");
+  media.className = "library-media";
   const image = document.createElement("img");
-  image.src = mediaUrl(work.preview);
+  image.src = mediaUrl(work.preview, work.updated_at || "");
   image.alt = "";
   image.className = "library-thumb";
   image.draggable = false;
+  media.append(image);
+
+  let replaceBtn = null;
+  let replaceInput = null;
+  if (isAjout(work)) {
+    replaceBtn = document.createElement("button");
+    replaceBtn.type = "button";
+    replaceBtn.className = "library-replace";
+    replaceBtn.textContent = "Remplacer";
+    replaceBtn.setAttribute(
+      "aria-label",
+      `Remplacer l’image de « ${work.title || work.id} »`
+    );
+    replaceInput = document.createElement("input");
+    replaceInput.type = "file";
+    replaceInput.accept = "image/jpeg,image/png,image/webp";
+    replaceInput.className = "visually-hidden";
+    replaceInput.setAttribute(
+      "aria-label",
+      `Choisir une nouvelle image pour « ${work.title || work.id} »`
+    );
+    replaceBtn.addEventListener("click", () => {
+      if (replaceBtn.disabled) return;
+      replaceInput.value = "";
+      replaceInput.click();
+    });
+    replaceInput.addEventListener("change", () => {
+      const file = replaceInput.files && replaceInput.files[0];
+      if (!file) return;
+      const statusEl = item.querySelector(".edit-status");
+      replaceWorkImage(work, file, replaceBtn, statusEl);
+    });
+    media.append(replaceBtn, replaceInput);
+  }
 
   const editor = document.createElement("div");
   editor.className = "library-editor";
@@ -2455,8 +2611,8 @@ function workItem(work) {
   actions.append(remove);
   editor.append(actions);
 
-  if (orderControls) item.append(orderControls, pick, image, editor);
-  else item.append(pick, image, editor);
+  if (orderControls) item.append(orderControls, pick, media, editor);
+  else item.append(pick, media, editor);
   return item;
 }
 
