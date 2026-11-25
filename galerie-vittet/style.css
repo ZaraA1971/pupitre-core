@@ -139,14 +139,6 @@ section { scroll-margin-top: 48px; }
   color: var(--ink);
 }
 
-.site-hero .hero-title {
-  color: var(--ink-photo-soft);
-}
-
-.site-hero .hero-artist {
-  color: var(--ink-photo);
-}
-
 .section-heading h2 {
   font: 400 var(--type-display) / 1.05 var(--serif);
   letter-spacing: -.035em;
@@ -756,6 +748,16 @@ footer a {
   background: var(--stage);
 }
 
+/* Avant /api/oeuvres : cadre stage seul — pas de faux carousel 01–04. */
+.hero-stage.is-pending .hero-controls {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hero-stage.is-pending .hero-viewport {
+  cursor: default;
+}
+
 .hero-viewport {
   position: absolute;
   inset: 0;
@@ -847,13 +849,7 @@ footer a {
   }
 }
 
-.hero-title,
-.hero-artist { transition: opacity .28s ease; }
-
-.hero-meta.is-swap .hero-title,
-.hero-meta.is-swap .hero-artist { opacity: 0; }
-
-/* Caption (title/artist) stays in the DOM for JS + #hero-live; not shown on the photo. */
+/* Caption DOM kept for #hero-live / a11y; not painted on the photo (herocaption0). */
 .hero-caption {
   display: none;
 }
@@ -2031,13 +2027,6 @@ footer {
       max(var(--page-pad), env(safe-area-inset-right, 0px))
       max(14px, env(safe-area-inset-bottom, 0px));
   }
-  .site-hero .hero-title {
-    font-size: clamp(13px, 3.6vw, 15px);
-  }
-  .site-hero .hero-artist {
-    font-size: clamp(22px, 6.2vw, 28px);
-    margin-top: 2px;
-  }
   .hero-controls { justify-content: space-between; width: 100%; }
 
   section { scroll-margin-top: 28px; }
@@ -2298,8 +2287,6 @@ html.motion [data-reveal].art-card.is-in .art-preview {
   html.entrance .hero-stage,
   html.motion [data-reveal],
   html.motion [data-reveal] .art-preview,
-  .hero-title,
-  .hero-artist,
   .filter,
   .hero-prev,
   .hero-next,
