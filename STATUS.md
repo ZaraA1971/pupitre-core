@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Saveflags1 — Enregistrer = texte ; coches immédiates (2026-11-25)
+
+- Enregistrer ne touche plus aux coches ni au recadrage carousel
+- Peinture/miniature/aquarelle, Exposée, Carousel : PATCH immédiat
+- Recadrage reste via le bouton Recadrer / à l’activation Carousel
+- Cache-bust atelier `?v=20261125-saveflags1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+
 ## Aboutvign2 — vignette gauche magazine + photos taille d’origine (2026-11-25)
 
 - Vignette Claude sous « La galerie », texte à droite
