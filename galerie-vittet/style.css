@@ -1307,7 +1307,7 @@ html.collection-page-deep .art-grid {
   font-size: var(--type-meta);
 }
 
-/* #galerie — portrait float (texte remonte dessous) ; façade/salle écartées */
+/* #galerie — texte seul (portrait retiré pour essai) ; façade/salle écartées */
 /* —— G. About —— */
 .about {
   --gal-pad-block: 64px;
@@ -1321,8 +1321,6 @@ html.collection-page-deep .art-grid {
         var(--gal-ar-sum) * 1.2
     )
   );
-  /* Portrait un peu sous la hauteur du texte → ~2 lignes sous la photo. */
-  --gal-vignette-h: clamp(148px, 15vw, 172px);
   display: flex;
   flex-direction: column;
   gap: clamp(28px, 3.5vw, 40px);
@@ -1344,16 +1342,9 @@ html.collection-page-deep .section-ornament {
 
 .about-intro {
   --copy-head-gap: 8px;
-  /* Block flow + float : le texte contourne le portrait puis repasse dessous. */
   display: block;
   width: 100%;
   max-width: 1100px;
-}
-
-.about-intro::after {
-  content: "";
-  display: table;
-  clear: both;
 }
 
 .about-copy-head {
@@ -1365,8 +1356,8 @@ html.collection-page-deep .section-ornament {
 }
 
 .about-copy-body {
-  /* Block flow (pas grid) pour que les lignes contournent le float portrait. */
-  display: block;
+  display: grid;
+  gap: 14px;
   width: 100%;
   max-width: 62ch;
 }
@@ -1380,29 +1371,8 @@ html.collection-page-deep .section-ornament {
   hyphens: manual;
 }
 
-.about-copy-body > p + p {
-  margin-top: 14px;
-}
-
 .about-copy-body > p:first-child {
   text-indent: 0;
-}
-
-.about-vignette {
-  float: left;
-  margin: 0 clamp(22px, 3vw, 36px) 8px 0;
-  shape-outside: margin-box;
-  line-height: 0;
-}
-
-.about-vignette img {
-  display: block;
-  height: var(--gal-vignette-h);
-  width: auto;
-  max-width: min(120px, 26vw);
-  object-fit: contain;
-  object-position: top center;
-  background: transparent;
 }
 
 .about-gallery {
@@ -1920,7 +1890,6 @@ footer {
           var(--gal-ar-sum) * 1.2
       )
     );
-    --gal-vignette-h: clamp(150px, 20vw, 190px);
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -2265,7 +2234,7 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: portrait float + photos écartées —— */
+  /* —— Galerie about: texte + photos écartées (sans portrait) —— */
   .about {
     --gal-pad-block: 36px;
     --gal-photo-gap: 28px;
@@ -2276,7 +2245,6 @@ footer {
           var(--gal-ar-sum) * 1.2
       )
     );
-    --gal-vignette-h: 140px;
     padding: 36px var(--page-pad) 44px;
     gap: 22px;
   }
@@ -2285,12 +2253,6 @@ footer {
   }
   .about-copy-body {
     max-width: none;
-  }
-  .about-vignette {
-    margin: 0 14px 8px 0;
-  }
-  .about-vignette img {
-    max-width: 92px;
   }
 
   footer { align-items: flex-start; }

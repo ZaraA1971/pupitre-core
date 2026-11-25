@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Aboutnop1 — galerie sans portrait (essai) (2026-11-25)
+
+- Retrait figure Claude ; texte seul + façade/salle
+- Cache-bust `?v=20261125-aboutnop1`
+- Compte Emmanuel · sync-trees · deploy
+
 ## Aboutlay3 — portrait galerie + écart photos (2026-11-25)
 
 - Portrait float, hauteur ~texte − 2 lignes (wrap du 3ᵉ § dessous)
