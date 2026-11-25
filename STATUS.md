@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup9 — mort saveflags + cache unifié (2026-11-25)
+
+- Retrait `readEditorFields` (inutilisé)
+- `.wrangler/` dans `.gitignore`
+- Cache-bust unifié `?v=20261125-clean9` (front + atelier)
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Puis unification git `main` ← branche mobile-tableaux
+
 ## Lbwhite1 — fond lightbox blanc (2026-11-25)
 
 - `--lightbox-well: #ffffff` (plus de blanc cassé `--paper`)

@@ -1636,17 +1636,6 @@ function readTextEditorFields(itemEl) {
   return fields;
 }
 
-function readEditorFields(itemEl) {
-  const fields = readTextEditorFields(itemEl);
-  fields.categories = [...itemEl.querySelectorAll("input[data-edit-cat]:checked")].map(
-    (el) => el.value
-  );
-  fields.exposed = !!itemEl.querySelector("[data-edit=exposed]")?.checked;
-  const carouselInput = itemEl.querySelector("[data-edit=carousel]");
-  fields.carousel = carouselInput ? carouselInput.checked : false;
-  return fields;
-}
-
 /** Snapshot texte seulement — les coches s’enregistrent immédiatement. */
 function textEditorFieldsKey(fields) {
   return JSON.stringify({
