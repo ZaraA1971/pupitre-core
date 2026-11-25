@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Imgreplace3 — dirty Enregistrer + cache Remplacer (2026-11-25)
+
+- Cause « Bibliothèque indisponible » : `wireSaveDirtyState` avant `item.append` → lecture `exposed` null
+- Enregistrer grisé (opacity 0,45) sans changement ; actif dès `input`/`change` sur le cartouche
+- Front : `?v=updated_at` (espaces → `T`) sur preview/web/original ; TTL ajouts 60 s
+- Cache-bust atelier `?v=20261125-imgreplace3` (front reste `imgreplace2`)
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+- Prod `f6d37fcc` · preview `f28eb1a3` · atelier `80add77e` · https://atelier-kv-preview.galerie-vittet-preview.pages.dev/atelier/
+
 ## Imgreplace1 — Remplacer image dans le cartouche Atelier (2026-11-25)
 
 - Bouton **Remplacer** sous la miniature bibliothèque (ajouts KV)
