@@ -752,6 +752,13 @@
   padding: 0 12px;
 }
 
+.library-actions .library-save:disabled {
+  opacity: 0.45;
+  cursor: default;
+  background: var(--paper);
+  color: var(--atelier-hint);
+}
+
 .library-actions .button-danger {
   background: #faf6f2;
   border-color: #8a4a3a;

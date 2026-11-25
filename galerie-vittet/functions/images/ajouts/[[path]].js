@@ -77,19 +77,17 @@ export async function onRequestGet(context) {
     (result.metadata && result.metadata.contentType) ||
     (match[2] === "png" ? "image/png" : match[2] === "jpg" ? "image/jpeg" : "image/webp");
 
-  // Carousel crops are rewritten in place (same path) — short TTL + updated_at ETag
-  // so a new Recadré appears without waiting for a 1h edge cache.
-  const exposedCache =
-    kind === "carousel"
-      ? "public, max-age=60, must-revalidate"
-      : "public, max-age=3600";
+  // Same-path rewrites (Remplacer / Recadré) — short TTL + updated_at ETag
+  // so the front sees the new binary without waiting for a 1h edge cache.
+  // Query `?v=updated_at` (main.js withAssetRev) is the primary bust.
+  const exposedCache = "public, max-age=60, must-revalidate";
   const headers = {
     "Content-Type": contentType,
     "Cache-Control": work.exposed ? exposedCache : "private, no-store",
     "X-Content-Type-Options": "nosniff",
   };
-  if (kind === "carousel" && work.updated_at) {
-    headers.ETag = `"crop-${work.updated_at}"`;
+  if (work.updated_at) {
+    headers.ETag = `"img-${kind}-${work.updated_at}"`;
   }
   return new Response(result.value, {
     status: 200,

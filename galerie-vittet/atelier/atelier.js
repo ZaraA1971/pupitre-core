@@ -1639,6 +1639,49 @@ function readEditorFields(itemEl) {
   return fields;
 }
 
+/** Snapshot stable pour comparer les champs du cartouche. */
+function editorFieldsKey(fields) {
+  return JSON.stringify({
+    artist: fields.artist || "",
+    title: fields.title || "",
+    note: fields.note || "",
+    signed_dated: fields.signed_dated || "",
+    support: fields.support || "",
+    dimensions: fields.dimensions || "",
+    editions: fields.editions || "",
+    alt: fields.alt || "",
+    categories: [...(fields.categories || [])].sort(),
+    exposed: !!fields.exposed,
+    carousel: !!fields.carousel,
+  });
+}
+
+/**
+ * Enregistrer grisé tant qu’il n’y a rien à sauver ; actif dès qu’un champ change.
+ * @returns {{ refresh: () => void, markClean: () => void }}
+ */
+function wireSaveDirtyState(itemEl, saveBtn) {
+  let baseline = editorFieldsKey(readEditorFields(itemEl));
+  const refresh = () => {
+    if (!saveBtn || saveBtn.dataset.saving === "1") return;
+    const dirty = editorFieldsKey(readEditorFields(itemEl)) !== baseline;
+    saveBtn.disabled = !dirty;
+    saveBtn.setAttribute("aria-disabled", dirty ? "false" : "true");
+    saveBtn.title = dirty
+      ? "Enregistrer les modifications"
+      : "Aucun changement à enregistrer";
+  };
+  const markClean = () => {
+    baseline = editorFieldsKey(readEditorFields(itemEl));
+    if (saveBtn) saveBtn.dataset.saving = "";
+    refresh();
+  };
+  itemEl.addEventListener("input", refresh);
+  itemEl.addEventListener("change", refresh);
+  refresh();
+  return { refresh, markClean };
+}
+
 /* —— Recadrage carousel (dérivé hero only) —— */
 const cropDialog = document.getElementById("carousel-crop-dialog");
 const cropFrame = document.getElementById("carousel-crop-frame");
@@ -2027,7 +2070,7 @@ async function ensureCarouselCropReady(work, itemEl, statusEl) {
   return ok;
 }
 
-async function saveWorkMeta(work, itemEl, statusEl) {
+async function saveWorkMeta(work, itemEl, statusEl, saveBtn = null) {
   const fields = readEditorFields(itemEl);
   if (!fields.artist || !fields.title) {
     statusEl.textContent = "Artiste et titre nécessaires.";
@@ -2040,6 +2083,10 @@ async function saveWorkMeta(work, itemEl, statusEl) {
   const cropOk = await ensureCarouselCropReady(work, itemEl, statusEl);
   if (!cropOk) return;
 
+  if (saveBtn) {
+    saveBtn.dataset.saving = "1";
+    saveBtn.disabled = true;
+  }
   statusEl.textContent = "Enregistrement…";
   try {
     const response = await fetch(`api/oeuvres/${encodeURIComponent(work.id)}`, {
@@ -2054,6 +2101,14 @@ async function saveWorkMeta(work, itemEl, statusEl) {
     const payload = await response.json().catch(() => ({}));
     if (!response.ok) {
       statusEl.textContent = payload.error || "Échec.";
+      if (saveBtn) {
+        saveBtn.dataset.saving = "";
+        if (typeof itemEl._refreshSaveDirty === "function") {
+          itemEl._refreshSaveDirty();
+        } else {
+          saveBtn.disabled = false;
+        }
+      }
       return;
     }
     const idx = libraryWorks.findIndex((w) => w.id === work.id);
@@ -2069,6 +2124,10 @@ async function saveWorkMeta(work, itemEl, statusEl) {
     renderLibrary();
   } catch (error) {
     statusEl.textContent = "Échec réseau.";
+    if (saveBtn) {
+      saveBtn.dataset.saving = "";
+      itemEl._refreshSaveDirty?.();
+    }
   }
 }
 
@@ -2425,6 +2484,7 @@ function workItem(work) {
           value: work[key] || "",
           nameAttr: "data-edit",
           className: "edit-field",
+          onChange: () => item._refreshSaveDirty?.(),
         })
       );
       return;
@@ -2571,10 +2631,17 @@ function workItem(work) {
   actions.className = "library-actions";
   const save = document.createElement("button");
   save.type = "button";
+  save.className = "library-save";
   save.textContent = "Enregistrer";
   const saveStatus = document.createElement("span");
   saveStatus.className = "edit-status";
-  save.addEventListener("click", () => saveWorkMeta(work, item, saveStatus));
+  const dirty = wireSaveDirtyState(item, save);
+  item._refreshSaveDirty = dirty.refresh;
+  item._markSaveClean = dirty.markClean;
+  save.addEventListener("click", () => {
+    if (save.disabled) return;
+    saveWorkMeta(work, item, saveStatus, save);
+  });
   actions.append(save, saveStatus);
 
   if (isAjout(work) && work.image) {

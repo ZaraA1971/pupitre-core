@@ -410,7 +410,7 @@ function assetPath(path) {
   return String(path).replace(/^\//, "");
 }
 
-/** Bust browser/edge cache when a same-path derivative is rewritten (carousel crop). */
+/** Bust browser/edge cache when a same-path asset is rewritten (Remplacer, crop…). */
 function withAssetRev(path, rev) {
   const base = assetPath(path);
   if (!base || !rev) return base;
@@ -426,18 +426,23 @@ function withAssetRev(path, rev) {
  * - preview = vignette
  * - original = loupe source only when distinct from display
  * - carousel = hero crop only (collection keeps display)
+ * All paths carry `updated_at` so Remplacer / Recadré invalidates caches.
  */
 function workAssetPaths(work) {
-  const display = assetPath((work && (work.web || work.image)) || "");
-  const preview = assetPath(
-    (work && (work.preview || work.web || work.image)) || ""
+  const rev = work && work.updated_at;
+  const display = withAssetRev((work && (work.web || work.image)) || "", rev);
+  const preview = withAssetRev(
+    (work && (work.preview || work.web || work.image)) || "",
+    rev
   );
-  const rawOriginal = assetPath((work && work.original) || "");
+  const rawOriginal = withAssetRev((work && work.original) || "", rev);
+  const displayBase = display.split("?")[0];
+  const originalBase = rawOriginal.split("?")[0];
   const original =
-    rawOriginal && rawOriginal !== display ? rawOriginal : "";
+    originalBase && originalBase !== displayBase ? rawOriginal : "";
   const carousel = withAssetRev(
     (work && work.carousel_image) || "",
-    work && work.updated_at
+    rev
   );
   return { display, preview, original, carousel };
 }
