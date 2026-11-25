@@ -154,7 +154,7 @@ section { scroll-margin-top: 48px; }
   color: var(--ink);
 }
 
-.about-copy h2 {
+.about-copy-head h2 {
   margin: 0;
   font: 400 var(--type-display-sm) / 1.08 var(--serif);
   letter-spacing: -.03em;
@@ -1181,24 +1181,24 @@ html.collection-page-deep .art-grid {
   font-size: var(--type-meta);
 }
 
-/* #galerie — left copy above equal-HEIGHT photos (no crop), spread full-width */
+/* #galerie — texte + vignette portrait ; paire façade/salle en dessous */
 .about {
   --gal-pad-block: 64px;
-  /* Wider breathing room between the three photos (size stays pinned below). */
-  --gal-photo-gap: clamp(40px, 5vw, 80px);
-  /* Sum of native width/height (façade + Claude + salle) — shared height, no crop. */
-  --gal-ar-sum: 4.04;
-  /* Height pinned to galerie9 (~390); gap no longer shrinks the images. */
+  /* Paire de photos : légèrement rapprochées, centrées. */
+  --gal-photo-gap: clamp(16px, 2vw, 28px);
+  /* Sum of native width/height (façade + salle only). */
+  --gal-ar-sum: 3.38;
   --gal-photo-h: min(
-    405px,
+    320px,
     calc(
-      (100vw - 2 * var(--page-pad) - 28px) /
-        var(--gal-ar-sum) * 1.2
+      (min(780px, 100vw - 2 * var(--page-pad)) - var(--gal-photo-gap)) /
+        var(--gal-ar-sum)
     )
   );
+  --gal-vignette-h: clamp(148px, 18vw, 196px);
   display: flex;
   flex-direction: column;
-  gap: clamp(24px, 3vw, 32px);
+  gap: clamp(28px, 3.5vw, 40px);
   align-items: stretch;
   padding: var(--gal-pad-block) var(--page-pad) var(--gal-pad-block);
   position: relative;
@@ -1215,35 +1215,35 @@ html.collection-page-deep .section-ornament {
   display: none !important;
 }
 
-.about-copy {
+.about-intro {
   --copy-head-gap: 8px;
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: flex-start;
-  min-width: 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  grid-template-areas:
+    "head head"
+    "body vignette";
+  column-gap: clamp(24px, 3.5vw, 44px);
+  row-gap: 16px;
+  align-items: start;
   width: 100%;
-  max-width: 68ch;
-  margin: 0;
-  padding: 0;
-  background: transparent;
-  position: static;
-  transform: none;
-  text-align: left;
+  max-width: 920px;
 }
 
 .about-copy-head {
+  grid-area: head;
   display: grid;
   gap: var(--copy-head-gap);
   align-content: start;
   text-align: left;
+  max-width: 62ch;
 }
 
 .about-copy-body {
+  grid-area: body;
   display: grid;
   gap: 14px;
   width: 100%;
-  max-width: none;
+  max-width: 62ch;
 }
 
 .about-copy-body > p {
@@ -1259,16 +1259,31 @@ html.collection-page-deep .section-ornament {
   text-indent: 0;
 }
 
+.about-vignette {
+  grid-area: vignette;
+  margin: 0;
+  line-height: 0;
+  align-self: start;
+}
+
+.about-vignette img {
+  display: block;
+  height: var(--gal-vignette-h);
+  width: auto;
+  max-width: min(140px, 26vw);
+  object-fit: contain;
+  object-position: top center;
+  background: transparent;
+}
+
 .about-gallery {
   display: flex;
-  justify-content: space-between;
+  justify-content: center;
   align-items: flex-end;
-  width: max-content;
-  max-width: none;
+  width: 100%;
+  max-width: 780px;
+  margin-inline: auto;
   gap: var(--gal-photo-gap);
-  /* Center the larger row; body overflow-x clips the sides evenly. */
-  margin-left: 50%;
-  transform: translateX(-50%);
 }
 
 .about-photo {
@@ -1765,12 +1780,13 @@ footer {
   }
   .about {
     --gal-photo-h: min(
-      343px,
+      320px,
       calc(
-        (100vw - 2 * var(--page-pad-lg) - 28px) /
-          var(--gal-ar-sum) * 1.2
+        (min(860px, 100vw - 2 * var(--page-pad-lg)) - var(--gal-photo-gap)) /
+          var(--gal-ar-sum)
       )
     );
+    --gal-vignette-h: clamp(152px, 20vw, 200px);
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -2117,22 +2133,39 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: left copy + equal-height triptych —— */
+  /* —— Galerie about: texte + vignette, puis paire de photos —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-gap: 24px;
+    --gal-photo-gap: 16px;
     --gal-photo-h: min(
-      206px,
+      168px,
       calc(
-        (100vw - 2 * var(--page-pad) - 16px) /
-          var(--gal-ar-sum) * 1.2
+        (100vw - 2 * var(--page-pad) - var(--gal-photo-gap)) /
+          var(--gal-ar-sum)
       )
     );
+    --gal-vignette-h: 132px;
     padding: 36px var(--page-pad) 44px;
-    gap: 18px;
+    gap: 22px;
   }
-  .about-copy {
+  .about-intro {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "head vignette"
+      "body body";
+    column-gap: 16px;
+    row-gap: 14px;
     max-width: none;
+  }
+  .about-copy-head,
+  .about-copy-body {
+    max-width: none;
+  }
+  .about-vignette {
+    justify-self: end;
+  }
+  .about-vignette img {
+    max-width: 104px;
   }
 
   footer { align-items: flex-start; }
