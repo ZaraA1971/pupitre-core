@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbwhite1 — fond lightbox blanc (2026-11-25)
+
+- `--lightbox-well: #ffffff` (plus de blanc cassé `--paper`)
+- Cache-bust front `?v=20261125-lbwhite1`
+- Compte Emmanuel · sync-trees · deploy preview (+ atelier-kv-preview si sync)
+
 ## Saveflags1 — Enregistrer = texte ; coches immédiates (2026-11-25)
 
 - Enregistrer ne touche plus aux coches ni au recadrage carousel
