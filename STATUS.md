@@ -2,6 +2,14 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Heropend1 — carousel sans flash 01–04 (2026-11-25)
+
+- Plus de 4 slides HTML statiques ni `showHero(0)` avant l’API
+- Cadre `--stage` en attendant `/api/oeuvres` (`hero-stage.is-pending`)
+- Un seul démarrage après `syncHeroFromWorks`
+- Cache-bust `?v=20261125-heropend1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+
 ## Cleanup9 — mort saveflags + cache unifié (2026-11-25)
 
 - Retrait `readEditorFields` (inutilisé)

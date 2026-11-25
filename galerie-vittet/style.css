@@ -756,6 +756,16 @@ footer a {
   background: var(--stage);
 }
 
+/* Avant /api/oeuvres : cadre stage seul — pas de faux carousel 01–04. */
+.hero-stage.is-pending .hero-controls {
+  visibility: hidden;
+  pointer-events: none;
+}
+
+.hero-stage.is-pending .hero-viewport {
+  cursor: default;
+}
+
 .hero-viewport {
   position: absolute;
   inset: 0;

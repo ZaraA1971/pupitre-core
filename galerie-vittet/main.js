@@ -63,10 +63,12 @@ const heroLive = document.getElementById("hero-live");
 const heroPrevBtn = heroStage.querySelector(".hero-prev");
 const heroNextBtn = heroStage.querySelector(".hero-next");
 
-/** Slides DOM du hero — remplacées par les œuvres carousel=1 si présentes. */
-let slides = [...document.querySelectorAll(".hero-slide")];
+/** Slides hero — remplies uniquement après /api/oeuvres (pas de placeholders HTML). */
+let slides = [];
 /** Œuvres liées aux slides hero (pour lightbox). */
 let heroWorks = [];
+/** true une fois syncHeroFromWorks terminé (évite un 1er démarrage fantôme). */
+let heroSynced = false;
 
 let heroIndex = 0;
 let openButton = null;
@@ -1191,6 +1193,7 @@ function renderHeroDots() {
 /**
  * Hero dynamique : œuvres exposed + carousel=1.
  * Si aucune coche → fallback sur la première œuvre de la collection (pas de cadre vide).
+ * Appelé une seule fois au boot après /api/oeuvres — pas de pré-démarrage sur HTML statique.
  */
 function syncHeroFromWorks(list) {
   if (!heroViewport) return;
@@ -1227,6 +1230,9 @@ function syncHeroFromWorks(list) {
   heroPrevBtn.hidden = slides.length < 2;
   heroNextBtn.hidden = slides.length < 2;
   heroReady = false;
+  heroSynced = true;
+  heroStage.classList.remove("is-pending");
+  heroStage.setAttribute("aria-busy", "false");
   showHero(startIndex);
 }
 
@@ -1258,12 +1264,14 @@ function scheduleHeroAutoplay() {
 }
 
 function showHero(index) {
+  // Pas de démarrage avant syncHeroFromWorks (évite 01–04 + mauvaises tailles).
+  if (!heroSynced) return;
   if (!slides.length) {
     stopHeroAutoplay();
     heroTitle.textContent = "";
     heroArtist.textContent = "";
-    heroCurrent.textContent = "00";
-    heroTotal.textContent = "00";
+    heroCurrent.textContent = "";
+    heroTotal.textContent = "";
     heroLive.textContent = t("heroEmpty");
     renderHeroDots();
     return;
@@ -1475,6 +1483,7 @@ document.addEventListener("visibilitychange", () => {
 let swipe = null;
 let swipeMoved = false;
 heroViewport.addEventListener("pointerdown", (event) => {
+  if (!heroSynced || !slides.length) return;
   if ((event.pointerType === "mouse" && event.button !== 0) || event.target.closest("button")) return;
   swipe = { x: event.clientX, y: event.clientY, id: event.pointerId };
   swipeMoved = false;
@@ -1532,7 +1541,7 @@ function openHeroLightbox() {
   dialog.querySelector(".lightbox-close").focus();
 }
 
-showHero(0);
+/* Hero démarré uniquement dans syncHeroFromWorks (après /api/oeuvres). */
 
 let detailToken = 0;
 
