@@ -2647,7 +2647,7 @@ function workItem(work) {
   if (isAjout(work) && work.image) {
     const originalLink = document.createElement("a");
     originalLink.className = "button-quiet";
-    originalLink.href = mediaUrl(work.image);
+    originalLink.href = mediaUrl(work.image, work.updated_at || "");
     originalLink.target = "_blank";
     originalLink.rel = "noopener";
     originalLink.textContent = "Original";
@@ -2660,7 +2660,7 @@ function workItem(work) {
   if (isAjout(work) && work.web) {
     const webLink = document.createElement("a");
     webLink.className = "button-quiet";
-    webLink.href = mediaUrl(work.web);
+    webLink.href = mediaUrl(work.web, work.updated_at || "");
     webLink.target = "_blank";
     webLink.rel = "noopener";
     webLink.textContent = "Web";
