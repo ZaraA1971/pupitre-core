@@ -9,7 +9,9 @@
 - Preview cible ~90 Ko
 - Backfill script → WebP (plus JPEG forcé)
 - Cache-bust atelier `?v=20261125-webpcap1`
-- Compte Emmanuel · sync-trees · deploy + backfill carousel
+- Compte Emmanuel · sync-trees · deploy main `237b1eb9` · preview `da0fd4a1` · atelier `30576619`
+- Backfill carousel `--force` : 11/11 WebP, total ~2,1 Mo (~192 Ko/slide)
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Herolazy1 — hero charge active + voisines seulement (2026-11-25)
 
