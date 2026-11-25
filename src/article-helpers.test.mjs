@@ -33,6 +33,37 @@ describe('article-helpers portable', () => {
     );
   });
 
+  it('ensureDraftTextColumns adds only the missing backup columns', async () => {
+    const seen = [];
+    const present = new Set(['draft_title']);
+    const pool = {
+      query: async (sql) => {
+        seen.push(sql);
+        const name = sql.match(/LIKE '([^']+)'/)?.[1];
+        if (sql.startsWith('SHOW COLUMNS') && present.has(name)) {
+          return [[{ Field: name }]];
+        }
+        if (sql.startsWith('SHOW COLUMNS')) return [[]];
+        return [{ affectedRows: 1 }];
+      },
+    };
+    const { ensureDraftTextColumns } = createArticleHelpers({
+      tableName: 'cms_articles',
+      canAccessDesk: () => true,
+      canEditAll: () => true,
+    });
+    await ensureDraftTextColumns(pool);
+    await ensureDraftTextColumns(pool);
+    const alters = seen.filter((sql) => sql.startsWith('ALTER TABLE'));
+    assert.deepEqual(
+      alters,
+      [
+        'ALTER TABLE `cms_articles` ADD COLUMN `draft_body` MEDIUMTEXT NULL',
+        'ALTER TABLE `cms_articles` ADD COLUMN `draft_saved_at` DATETIME NULL',
+      ]
+    );
+  });
+
   it('canEditArticle uses injected predicates', () => {
     const { canEditArticle } = createArticleHelpers({
       tableName: 'cms_articles',
