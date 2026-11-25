@@ -34,10 +34,10 @@
   <link rel="icon" href="data:,">
   <meta name="description" content="Galerie Vittet — peintures anciennes, œuvres choisies avec exigence à Paris depuis 1988.">
   <title>Galerie Vittet — L’art du regard</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Playfair+Display:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css?v=20261125-herolazy1">
+  <link rel="preload" href="/api/oeuvres" as="fetch" crossorigin>
+  <link rel="preload" href="fonts/dm-sans-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="fonts/playfair-display-latin.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="style.css?v=20261125-fontsapi1">
 </head>
 <body>
   <!-- Balance des blancs douce pour --img-enhance (pas de teinte brune / sépia). -->
@@ -279,6 +279,6 @@
     </div>
   </dialog>
   <script src="i18n.js?v=20261121-navsec" defer></script>
-  <script src="main.js?v=20261125-herolazy1" defer></script>
+  <script src="main.js?v=20261125-fontsapi1" defer></script>
 </body>
 </html>

@@ -723,7 +723,11 @@ pageNext.addEventListener("click", () => goToPage(currentPage + 1));
 const OEUVRES_API = "/api/oeuvres";
 
 async function loadWorks() {
-  const response = await fetch(OEUVRES_API, { headers: { Accept: "application/json" } });
+  // credentials:omit matches <link rel=preload as=fetch crossorigin> (anonymous).
+  const response = await fetch(OEUVRES_API, {
+    credentials: "omit",
+    headers: { Accept: "application/json" },
+  });
   if (!response.ok) throw new Error(`${OEUVRES_API} ${response.status}`);
   const type = response.headers.get("content-type") || "";
   if (!type.includes("application/json") && !type.includes("text/json") && !type.includes("+json")) {

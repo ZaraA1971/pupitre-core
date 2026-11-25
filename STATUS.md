@@ -2,6 +2,16 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Fontsapi1 — fonts self-host + cache API (2026-11-25)
+
+- Self-host DM Sans + Playfair (latin/latin-ext woff2, ~95 Ko) — plus d’appel Google Fonts
+- Preload fonts + `GET /api/oeuvres` ; fetch `credentials:omit`
+- Cache edge API : s-maxage=300 + stale-while-revalidate=600
+- Cache-bust `?v=20261125-fontsapi1`
+- Compte Emmanuel · sync-trees · deploy main `f983b64c` · preview `1fa690e8` · atelier `2f57d83f`
+- Vérif : 0 req Google Fonts ; woff2 locaux ; familles Playfair/DM Sans OK
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Webpcap1 — WebP + budgets poids dérivés (2026-11-25)
 
 - Web max edge 1600, qualité ~0.78, cible ~220 Ko (boucle qualité/edge)

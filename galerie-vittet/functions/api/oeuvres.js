@@ -19,7 +19,9 @@ function json(status, payload) {
     status,
     headers: {
       "Content-Type": "application/json; charset=utf-8",
-      "Cache-Control": "public, max-age=60",
+      // Browser 60s; edge 5 min + SWR so hero paint rarely waits on a cold D1 hit.
+      "Cache-Control": "public, max-age=60, s-maxage=300, stale-while-revalidate=600",
+      "CDN-Cache-Control": "public, max-age=300, stale-while-revalidate=600",
       "X-Content-Type-Options": "nosniff",
     },
   });
