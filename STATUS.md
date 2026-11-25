@@ -10,7 +10,9 @@
 - `fitHeroWindow` = active ±1 (aligné hydrate)
 - Filtres img conservés (coût << images)
 - Cache-bust `?v=20261125-csstour1`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `8a57546f` · preview `0906cdbd` · atelier `e677c074`
+- Vérif desktop/mobile hero + collection OK
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Fontsapi1 — fonts self-host + cache API (2026-11-25)
 
