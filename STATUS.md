@@ -7,7 +7,8 @@
 - Portrait float, hauteur ~texte − 2 lignes (wrap du 3ᵉ § dessous)
 - Écart façade/salle élargi (`--gal-photo-gap` ~64–112px)
 - Cache-bust `?v=20261125-aboutlay3`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `c61e68d8` · preview `6e3fb3b1` · atelier `1b15f081`
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Csstour1 — tour CSS P2 + fit hero fenêtre (2026-11-25)
 
