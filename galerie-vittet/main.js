@@ -1148,7 +1148,51 @@ function fitHeroImage(img) {
 }
 
 function fitAllHeroImages() {
-  slides.forEach((slide) => fitHeroImage(slide.querySelector("img")));
+  slides.forEach((slide) => {
+    const img = slide.querySelector("img");
+    if (img && img.getAttribute("src")) fitHeroImage(img);
+  });
+}
+
+/**
+ * Absolute slides ignore native loading=lazy — hydrate src on demand.
+ * data-src holds the URL until the slide (or a neighbour) becomes active.
+ */
+function hydrateHeroImage(img, { priority = "auto" } = {}) {
+  if (!img) return;
+  const url = img.dataset.src || "";
+  if (!url) return;
+  const current = img.getAttribute("src") || "";
+  if (current === url) {
+    if (priority === "high") img.fetchPriority = "high";
+    fitHeroImage(img);
+    return;
+  }
+  if (priority === "high") img.fetchPriority = "high";
+  else img.fetchPriority = "low";
+  img.decoding = "async";
+  img.src = url;
+  fitHeroImage(img);
+}
+
+/** Active + previous + next (wrap) — enough for swipe / autoplay without loading all. */
+function hydrateHeroWindow(centerIndex) {
+  if (!slides.length) return;
+  const n = slides.length;
+  const indices =
+    n === 1
+      ? [0]
+      : n === 2
+        ? [0, 1]
+        : [
+            wrap(centerIndex - 1, n),
+            wrap(centerIndex, n),
+            wrap(centerIndex + 1, n),
+          ];
+  indices.forEach((i) => {
+    const img = slides[i]?.querySelector("img");
+    hydrateHeroImage(img, { priority: i === centerIndex ? "high" : "low" });
+  });
 }
 
 function buildHeroSlide(work, index, startIndex = 0) {
@@ -1166,12 +1210,11 @@ function buildHeroSlide(work, index, startIndex = 0) {
     img.dataset.carouselCrop = "1";
     figure.dataset.carouselCrop = "1";
   }
-  img.src = assets.carousel || assets.display || assets.preview;
+  const url = assets.carousel || assets.display || assets.preview;
+  img.dataset.src = url;
   img.alt = work.alt || work.title || "";
   img.decoding = "async";
-  fitHeroImage(img);
-  if (isStart) img.fetchPriority = "high";
-  else img.loading = "lazy";
+  // Pas de src ici — hydrateHeroWindow au showHero (évite 11× web/carousel d’un coup).
   figure.append(img);
   return figure;
 }
@@ -1273,11 +1316,11 @@ function showHero(index) {
     return;
   }
   heroIndex = wrap(index, slides.length);
+  hydrateHeroWindow(heroIndex);
   slides.forEach((slide, slideIndex) => {
     const active = slideIndex === heroIndex;
     slide.classList.toggle("is-active", active);
     slide.setAttribute("aria-hidden", active ? "false" : "true");
-    fitHeroImage(slide.querySelector("img"));
   });
   const slide = slides[heroIndex];
   // Légendes photo masquées (herocaption0) — texte seulement pour #hero-live / a11y.

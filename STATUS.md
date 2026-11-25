@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Herolazy1 — hero charge active + voisines seulement (2026-11-25)
+
+- `data-src` + hydrate au `showHero` (loading=lazy inefficace en absolute)
+- Fenêtre : slide active ±1 (wrap)
+- Cache-bust `?v=20261125-herolazy1`
+- Compte Emmanuel · sync-trees · deploy main + preview + atelier-kv-preview
+
 ## Cleanup10 — mort légendes hero + cache (2026-11-25)
 
 - Retrait is-swap / heroReady / styles titres photo masqués
