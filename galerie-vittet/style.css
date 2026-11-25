@@ -1307,12 +1307,12 @@ html.collection-page-deep .art-grid {
   font-size: var(--type-meta);
 }
 
-/* #galerie — vignette à gauche + texte à droite ; façade/salle même taille, un peu rapprochées */
+/* #galerie — portrait float (texte remonte dessous) ; façade/salle écartées */
 /* —— G. About —— */
 .about {
   --gal-pad-block: 64px;
-  /* Même hauteur qu’avant (triptyque) ; gap un peu plus serré que space-between. */
-  --gal-photo-gap: clamp(28px, 3.2vw, 52px);
+  /* Écart façade / salle — un peu plus large que la vignette précédente. */
+  --gal-photo-gap: clamp(48px, 6vw, 88px);
   --gal-ar-sum: 4.04;
   --gal-photo-h: min(
     405px,
@@ -1321,7 +1321,8 @@ html.collection-page-deep .art-grid {
         var(--gal-ar-sum) * 1.2
     )
   );
-  --gal-vignette-h: clamp(220px, 28vw, 320px);
+  /* Portrait ≤ hauteur du texte, un peu moins → ~2 lignes sous la photo. */
+  --gal-vignette-h: clamp(160px, 18vw, 200px);
   display: flex;
   flex-direction: column;
   gap: clamp(28px, 3.5vw, 40px);
@@ -1343,33 +1344,31 @@ html.collection-page-deep .section-ornament {
 
 .about-intro {
   --copy-head-gap: 8px;
-  display: grid;
-  grid-template-columns: auto minmax(0, 1fr);
-  grid-template-areas:
-    "head head"
-    "vignette body";
-  column-gap: clamp(28px, 4vw, 48px);
-  row-gap: 16px;
-  align-items: start;
+  /* Block flow + float : le texte contourne le portrait puis repasse dessous. */
+  display: block;
   width: 100%;
   max-width: 1100px;
 }
 
+.about-intro::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
 .about-copy-head {
-  grid-area: head;
   display: grid;
   gap: var(--copy-head-gap);
   align-content: start;
   text-align: left;
+  margin-bottom: 16px;
 }
 
 .about-copy-body {
-  grid-area: body;
   display: grid;
   gap: 14px;
   width: 100%;
   max-width: 62ch;
-  justify-self: start;
 }
 
 .about-copy-body > p {
@@ -1386,18 +1385,16 @@ html.collection-page-deep .section-ornament {
 }
 
 .about-vignette {
-  grid-area: vignette;
-  margin: 0;
+  float: left;
+  margin: 0 clamp(22px, 3vw, 36px) 10px 0;
   line-height: 0;
-  align-self: start;
-  justify-self: start;
 }
 
 .about-vignette img {
   display: block;
   height: var(--gal-vignette-h);
   width: auto;
-  max-width: min(220px, 32vw);
+  max-width: min(140px, 28vw);
   object-fit: contain;
   object-position: top center;
   background: transparent;
@@ -1910,6 +1907,7 @@ footer {
     font-size: var(--type-sm);
   }
   .about {
+    --gal-photo-gap: clamp(40px, 5.5vw, 72px);
     --gal-photo-h: min(
       343px,
       calc(
@@ -1917,7 +1915,7 @@ footer {
           var(--gal-ar-sum) * 1.2
       )
     );
-    --gal-vignette-h: clamp(200px, 26vw, 280px);
+    --gal-vignette-h: clamp(150px, 20vw, 190px);
     padding: 56px var(--page-pad-lg) 56px;
   }
   /* Photo row flexes; fiche sits on content height (not the reverse). */
@@ -2262,10 +2260,10 @@ footer {
   }
   .search-status.is-empty { font-size: 22px; }
 
-  /* —— Galerie about: vignette gauche + texte ; photos même taille —— */
+  /* —— Galerie about: portrait float + photos écartées —— */
   .about {
     --gal-pad-block: 36px;
-    --gal-photo-gap: 20px;
+    --gal-photo-gap: 28px;
     --gal-photo-h: min(
       206px,
       calc(
@@ -2273,24 +2271,21 @@ footer {
           var(--gal-ar-sum) * 1.2
       )
     );
-    --gal-vignette-h: 168px;
+    --gal-vignette-h: 140px;
     padding: 36px var(--page-pad) 44px;
     gap: 22px;
   }
   .about-intro {
-    grid-template-columns: auto minmax(0, 1fr);
-    grid-template-areas:
-      "head head"
-      "vignette body";
-    column-gap: 16px;
-    row-gap: 12px;
     max-width: none;
   }
   .about-copy-body {
     max-width: none;
   }
+  .about-vignette {
+    margin: 0 14px 8px 0;
+  }
   .about-vignette img {
-    max-width: 110px;
+    max-width: 92px;
   }
 
   footer { align-items: flex-start; }
