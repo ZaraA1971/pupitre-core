@@ -1623,7 +1623,8 @@ function updateCatalogChrome() {
   });
 }
 
-function readEditorFields(itemEl) {
+/** Champs texte du cartouche (bouton Enregistrer). */
+function readTextEditorFields(itemEl) {
   const fields = {};
   META_FIELDS.forEach(({ key }) => {
     const input = itemEl.querySelector(`[data-edit="${key}"]`);
@@ -1632,15 +1633,22 @@ function readEditorFields(itemEl) {
   fields.dimensions = normalizeDimensionsText(fields.dimensions || "");
   const altInput = itemEl.querySelector("[data-edit=alt]");
   fields.alt = altInput ? altInput.value.trim() : "";
-  fields.categories = [...itemEl.querySelectorAll("input[data-edit-cat]:checked")].map((el) => el.value);
+  return fields;
+}
+
+function readEditorFields(itemEl) {
+  const fields = readTextEditorFields(itemEl);
+  fields.categories = [...itemEl.querySelectorAll("input[data-edit-cat]:checked")].map(
+    (el) => el.value
+  );
   fields.exposed = !!itemEl.querySelector("[data-edit=exposed]")?.checked;
   const carouselInput = itemEl.querySelector("[data-edit=carousel]");
   fields.carousel = carouselInput ? carouselInput.checked : false;
   return fields;
 }
 
-/** Snapshot stable pour comparer les champs du cartouche. */
-function editorFieldsKey(fields) {
+/** Snapshot texte seulement — les coches s’enregistrent immédiatement. */
+function textEditorFieldsKey(fields) {
   return JSON.stringify({
     artist: fields.artist || "",
     title: fields.title || "",
@@ -1650,29 +1658,26 @@ function editorFieldsKey(fields) {
     dimensions: fields.dimensions || "",
     editions: fields.editions || "",
     alt: fields.alt || "",
-    categories: [...(fields.categories || [])].sort(),
-    exposed: !!fields.exposed,
-    carousel: !!fields.carousel,
   });
 }
 
 /**
- * Enregistrer grisé tant qu’il n’y a rien à sauver ; actif dès qu’un champ change.
+ * Enregistrer grisé tant que les champs texte n’ont pas changé.
  * @returns {{ refresh: () => void, markClean: () => void }}
  */
 function wireSaveDirtyState(itemEl, saveBtn) {
-  let baseline = editorFieldsKey(readEditorFields(itemEl));
+  let baseline = textEditorFieldsKey(readTextEditorFields(itemEl));
   const refresh = () => {
     if (!saveBtn || saveBtn.dataset.saving === "1") return;
-    const dirty = editorFieldsKey(readEditorFields(itemEl)) !== baseline;
+    const dirty = textEditorFieldsKey(readTextEditorFields(itemEl)) !== baseline;
     saveBtn.disabled = !dirty;
     saveBtn.setAttribute("aria-disabled", dirty ? "false" : "true");
     saveBtn.title = dirty
-      ? "Enregistrer les modifications"
-      : "Aucun changement à enregistrer";
+      ? "Enregistrer les champs texte"
+      : "Aucun changement de champ à enregistrer";
   };
   const markClean = () => {
-    baseline = editorFieldsKey(readEditorFields(itemEl));
+    baseline = textEditorFieldsKey(readTextEditorFields(itemEl));
     if (saveBtn) saveBtn.dataset.saving = "";
     refresh();
   };
@@ -1680,6 +1685,38 @@ function wireSaveDirtyState(itemEl, saveBtn) {
   itemEl.addEventListener("change", refresh);
   refresh();
   return { refresh, markClean };
+}
+
+function mergeLibraryWork(workId, payload, fallback = {}) {
+  const idx = libraryWorks.findIndex((w) => w.id === workId);
+  const prev = idx >= 0 ? libraryWorks[idx] : null;
+  const merged = normalizeWork(payload) || (prev ? { ...prev, ...fallback } : null);
+  if (!merged) return null;
+  if (prev && !merged.carousel_image && prev.carousel_image) {
+    merged.carousel_image = prev.carousel_image;
+  }
+  if (idx >= 0) libraryWorks[idx] = merged;
+  return merged;
+}
+
+/** PATCH partiel (texte ou coches). */
+async function patchWorkPartial(workId, patch) {
+  const response = await fetch(`api/oeuvres/${encodeURIComponent(workId)}`, {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+      "X-Atelier": "1",
+    },
+    body: JSON.stringify(patch),
+  });
+  const payload = await response.json().catch(() => ({}));
+  if (!response.ok) {
+    const err = new Error(payload.error || `HTTP ${response.status}`);
+    err.payload = payload;
+    throw err;
+  }
+  return payload;
 }
 
 /* —— Recadrage carousel (dérivé hero only) —— */
@@ -2039,49 +2076,13 @@ function openCarouselCropper(work) {
   });
 }
 
-/** Avant save : crop requis si carousel coché, ratio hors cadre, pas encore de dérivé. */
-async function ensureCarouselCropReady(work, itemEl, statusEl) {
-  const fields = readEditorFields(itemEl);
-  if (!fields.carousel) return true;
-  const current = libraryWorks.find((w) => w.id === work.id) || work;
-  if (current.carousel_image) return true;
-
-  const path = sourcePathForCrop(current);
-  if (!path) {
-    if (statusEl) statusEl.textContent = "Image source indisponible pour le recadrage.";
-    return false;
-  }
-
-  try {
-    const loaded = await loadImageNaturalSize(mediaUrl(path));
-    if (!needsCarouselCrop(loaded.width, loaded.height)) return true;
-  } catch {
-    if (statusEl) statusEl.textContent = "Impossible de lire l’image source.";
-    return false;
-  }
-
-  if (statusEl) {
-    statusEl.textContent = "Recadrage carousel requis (proportions trop éloignées du cadre hero)…";
-  }
-  const ok = await openCarouselCropper(current);
-  if (!ok && statusEl) {
-    statusEl.textContent = "Recadrage carousel annulé — enregistrement interrompu.";
-  }
-  return ok;
-}
-
+/** Enregistrer = champs texte uniquement (pas de gate recadrage). */
 async function saveWorkMeta(work, itemEl, statusEl, saveBtn = null) {
-  const fields = readEditorFields(itemEl);
+  const fields = readTextEditorFields(itemEl);
   if (!fields.artist || !fields.title) {
     statusEl.textContent = "Artiste et titre nécessaires.";
     return;
   }
-  if (!fields.categories.length) {
-    statusEl.textContent = "Cochez peinture, miniature ou aquarelle.";
-    return;
-  }
-  const cropOk = await ensureCarouselCropReady(work, itemEl, statusEl);
-  if (!cropOk) return;
 
   if (saveBtn) {
     saveBtn.dataset.saving = "1";
@@ -2089,46 +2090,46 @@ async function saveWorkMeta(work, itemEl, statusEl, saveBtn = null) {
   }
   statusEl.textContent = "Enregistrement…";
   try {
-    const response = await fetch(`api/oeuvres/${encodeURIComponent(work.id)}`, {
-      method: "PATCH",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        "X-Atelier": "1",
-      },
-      body: JSON.stringify(fields),
-    });
-    const payload = await response.json().catch(() => ({}));
-    if (!response.ok) {
-      statusEl.textContent = payload.error || "Échec.";
-      if (saveBtn) {
-        saveBtn.dataset.saving = "";
-        if (typeof itemEl._refreshSaveDirty === "function") {
-          itemEl._refreshSaveDirty();
-        } else {
-          saveBtn.disabled = false;
-        }
-      }
-      return;
-    }
-    const idx = libraryWorks.findIndex((w) => w.id === work.id);
-    const merged = normalizeWork(payload) || { ...libraryWorks[idx], ...fields };
-    // Conserver le crop éventuellement créé juste avant le PATCH.
-    if (idx >= 0) {
-      if (!merged.carousel_image && libraryWorks[idx].carousel_image) {
-        merged.carousel_image = libraryWorks[idx].carousel_image;
-      }
-      libraryWorks[idx] = merged;
-    }
+    const payload = await patchWorkPartial(work.id, fields);
+    mergeLibraryWork(work.id, payload, fields);
+    Object.assign(work, libraryWorks.find((w) => w.id === work.id) || work);
     statusEl.textContent = "Enregistré.";
-    renderLibrary();
+    itemEl._markSaveClean?.();
   } catch (error) {
-    statusEl.textContent = "Échec réseau.";
+    statusEl.textContent = error.payload?.error || error.message || "Échec.";
     if (saveBtn) {
       saveBtn.dataset.saving = "";
       itemEl._refreshSaveDirty?.();
     }
   }
+}
+
+/** Coches : PATCH immédiat, sans passer par Enregistrer. */
+async function autosaveWorkFlags(work, itemEl, statusEl, patch, { busyEl } = {}) {
+  if (busyEl) busyEl.disabled = true;
+  if (statusEl) statusEl.textContent = "…";
+  try {
+    const payload = await patchWorkPartial(work.id, patch);
+    const merged = mergeLibraryWork(work.id, payload, patch);
+    if (merged) Object.assign(work, merged);
+    if (statusEl) statusEl.textContent = "";
+    updateCatalogChrome();
+    return true;
+  } catch (error) {
+    if (statusEl) statusEl.textContent = error.payload?.error || error.message || "Échec.";
+    return false;
+  } finally {
+    if (busyEl) busyEl.disabled = false;
+  }
+}
+
+function syncExposedBadge(itemEl, exposed) {
+  const badge = itemEl.querySelector(".source-badge");
+  if (!badge) return;
+  badge.className = exposed
+    ? "source-badge source-exposee"
+    : "source-badge source-ajout";
+  badge.textContent = exposed ? "Exposée" : "Non exposée";
 }
 
 /**
@@ -2616,11 +2617,6 @@ function workItem(work) {
     if (await openCarouselCropper(work)) renderLibrary();
   };
 
-  carouselInput.addEventListener("change", async () => {
-    await refreshCropChrome();
-    await maybePromptCrop();
-  });
-
   cropBtn.addEventListener("click", async () => {
     if (await openCarouselCropper(work)) renderLibrary();
   });
@@ -2633,11 +2629,10 @@ function workItem(work) {
   save.type = "button";
   save.className = "library-save";
   save.textContent = "Enregistrer";
-  // Grisé tant que le cartouche n’a pas changé (wire après append — les champs
-  // data-edit doivent être dans le DOM de l’item pour le snapshot initial).
+  // Grisé tant que les champs texte n’ont pas changé (wire après append).
   save.disabled = true;
   save.setAttribute("aria-disabled", "true");
-  save.title = "Aucun changement à enregistrer";
+  save.title = "Aucun changement de champ à enregistrer";
   const saveStatus = document.createElement("span");
   saveStatus.className = "edit-status";
   save.addEventListener("click", () => {
@@ -2645,6 +2640,71 @@ function workItem(work) {
     saveWorkMeta(work, item, saveStatus, save);
   });
   actions.append(save, saveStatus);
+
+  // Coches → sauvegarde immédiate (hors bouton Enregistrer).
+  cats.addEventListener("change", async (event) => {
+    const target = event.target;
+    if (!(target instanceof HTMLInputElement) || !target.matches("input[data-edit-cat]")) {
+      return;
+    }
+    const categories = [...cats.querySelectorAll("input[data-edit-cat]:checked")].map(
+      (el) => el.value
+    );
+    if (!categories.length) {
+      target.checked = true;
+      saveStatus.textContent = "Cochez peinture, miniature ou aquarelle.";
+      return;
+    }
+    const ok = await autosaveWorkFlags(
+      work,
+      item,
+      saveStatus,
+      { categories },
+      { busyEl: target }
+    );
+    if (!ok) {
+      // Recharger l’état connu si échec.
+      const current = libraryWorks.find((w) => w.id === work.id) || work;
+      const known = Array.isArray(current.categories) ? current.categories : [];
+      cats.querySelectorAll("input[data-edit-cat]").forEach((el) => {
+        el.checked = known.includes(el.value);
+      });
+    }
+  });
+
+  exposeInput.addEventListener("change", async () => {
+    const exposed = !!exposeInput.checked;
+    const ok = await autosaveWorkFlags(
+      work,
+      item,
+      saveStatus,
+      { exposed },
+      { busyEl: exposeInput }
+    );
+    if (!ok) {
+      exposeInput.checked = !exposed;
+      return;
+    }
+    syncExposedBadge(item, exposed);
+  });
+
+  carouselInput.addEventListener("change", async () => {
+    const carousel = !!carouselInput.checked;
+    const ok = await autosaveWorkFlags(
+      work,
+      item,
+      saveStatus,
+      { carousel },
+      { busyEl: carouselInput }
+    );
+    if (!ok) {
+      carouselInput.checked = !carousel;
+      await refreshCropChrome();
+      return;
+    }
+    await refreshCropChrome();
+    if (carousel) await maybePromptCrop();
+  });
 
   if (isAjout(work) && work.image) {
     const originalLink = document.createElement("a");
