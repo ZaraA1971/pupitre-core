@@ -51,6 +51,10 @@ fi
 echo "→ sync front-only mirror to $SITE"
 mkdir -p "$SITE"
 cp -f "$ROOT/index.html" "$ROOT/main.js" "$ROOT/style.css" "$SITE/"
+if [[ -d "$ROOT/fonts" ]]; then
+  mkdir -p "$SITE/fonts"
+  cp -f "$ROOT/fonts/"*.woff2 "$SITE/fonts/" 2>/dev/null || true
+fi
 if [[ -d "$ROOT/images" ]]; then
   mkdir -p "$SITE/images"
   (
