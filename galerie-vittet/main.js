@@ -414,7 +414,7 @@ function assetPath(path) {
 function withAssetRev(path, rev) {
   const base = assetPath(path);
   if (!base || !rev) return base;
-  const stamp = String(rev).trim().replace(/\s+/g, "");
+  const stamp = String(rev).trim().replace(/\s+/g, "T");
   if (!stamp) return base;
   const sep = base.includes("?") ? "&" : "?";
   return `${base}${sep}v=${encodeURIComponent(stamp)}`;

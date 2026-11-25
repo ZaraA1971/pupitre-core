@@ -1223,7 +1223,7 @@ function mediaUrl(path, rev = "") {
     : path.startsWith("images/")
       ? `media/${path}`
       : `../${path}`;
-  const stamp = String(rev || "").trim().replace(/\s+/g, "");
+  const stamp = String(rev || "").trim().replace(/\s+/g, "T");
   if (stamp) {
     const sep = url.includes("?") ? "&" : "?";
     url = `${url}${sep}v=${encodeURIComponent(stamp)}`;
