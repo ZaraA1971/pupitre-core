@@ -2,6 +2,11 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Mode d’emploi Atelier (2026-11-26)
+
+- `galerie-vittet/MODE-EMPLOI-ATELIER.md` — guide simple pour l’utilisateur quotidien
+- Lien atelier + gestes : ajout, coches, Enregistrer, Remplacer, recadrage, ordre, PDF
+
 ## Aboutnop1 — galerie sans portrait (essai) (2026-11-25)
 
 - Retrait figure Claude ; texte seul + façade/salle
