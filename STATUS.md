@@ -2,6 +2,25 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Mode d’emploi Atelier (2026-11-26)
+
+- `galerie-vittet/MODE-EMPLOI-ATELIER.md` — guide simple pour l’utilisateur quotidien
+- Lien atelier + gestes : ajout, coches, Enregistrer, Remplacer, recadrage, ordre, PDF
+
+## Aboutnop1 — galerie sans portrait (essai) (2026-11-25)
+
+- Retrait figure Claude ; texte seul + façade/salle
+- Cache-bust `?v=20261125-aboutnop1`
+- Compte Emmanuel · sync-trees · deploy
+
+## Aboutlay3 — portrait galerie + écart photos (2026-11-25)
+
+- Portrait float, hauteur ~texte − 2 lignes (wrap du 3ᵉ § dessous)
+- Écart façade/salle élargi (`--gal-photo-gap` ~64–112px)
+- Cache-bust `?v=20261125-aboutlay3`
+- Compte Emmanuel · sync-trees · deploy main `c61e68d8` · preview `6e3fb3b1` · atelier `1b15f081`
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Csstour1 — tour CSS P2 + fit hero fenêtre (2026-11-25)
 
 - Carte de sections A–K dans `style.css` (tokens inchangés)
