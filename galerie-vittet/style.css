@@ -222,14 +222,14 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /* Phys size — lus par main.js (grille soft log ; lightbox true-size sauf miniatures). */
+  /* Phys size — lus par main.js (grille soft log ; lightbox true-size sauf mini/Nicolle). */
   --size-ref-cm: 24;          /* plein cadre dès grand côté ≥ ref */
   --size-log-k: 0.8;          /* ↑k → petites plus proches du max */
   --size-min-scale: 0.9;      /* plancher soft (~90 %) */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */
-  --true-size-max-cm: 30;     /* lightbox : cm→px si petite (miniatures = grille) */
+  --true-size-max-cm: 30;     /* lightbox : cm→px si petite (mini/Nicolle = grille) */
   --phys-w: 1;
   --phys-h: 1;
   --phys-soft: 1;

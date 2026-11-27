@@ -2,6 +2,12 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbmini2 — lightbox Nicolle = taille grille (2026-11-27)
+
+- Idem miniatures : plus de cm→px pour les Nicolle
+- Cache-bust `?v=20261127-lbmini2`
+- Compte Emmanuel · sync-trees · deploy
+
 ## Lbmini1 — lightbox miniatures = taille grille (2026-11-27)
 
 - Plus de cm→px « taille réelle » pour les miniatures

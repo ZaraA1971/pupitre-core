@@ -94,7 +94,7 @@ let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
 /** Phys props of the open lightbox work (resting view). */
 let lightboxSizeProps = { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
-/** Miniatures : même logique de taille que la grille (pas de cm→px « taille réelle »). */
+/** Miniatures / Nicolle : même logique de taille que la grille (pas de cm→px « taille réelle »). */
 let lightboxPreferGridSize = false;
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
@@ -167,7 +167,7 @@ function displayDimensions(value) {
 
 /* Phys size — knobs in style.css :root.
  * Guides: FR H×W (« avec cadre » wins); grille = aspect × soft log
- * (plein cadre si edge ≥ ref); lightbox petites = cm→px sauf miniatures (grille). */
+ * (plein cadre si edge ≥ ref); lightbox petites = cm→px sauf miniatures/Nicolle (grille). */
 const SIZE_CSS_FALLBACKS = {
   "--size-ref-cm": 24,
   "--size-log-k": 0.8,
@@ -311,7 +311,9 @@ function trueSizeMaxCm() {
 
 function workPrefersGridLightbox(data) {
   if (!data) return false;
-  if (String(data.section || "").toLowerCase() === "miniature") return true;
+  const section = String(data.section || "").toLowerCase();
+  if (section === "miniature" || section === "nicolle") return true;
+  if (isNicolleArtist({ artist: data.artist || "" })) return true;
   const cats = String(data.categories || "")
     .toLowerCase()
     .split(/[\s,]+/)
@@ -341,7 +343,7 @@ function setPhysCss(el, { physW = 1, physH = 1, soft = 1 } = {}) {
 }
 
 /**
- * Lightbox repos : true cm→px si petite (sauf miniatures → taille grille soft),
+ * Lightbox repos : true cm→px si petite (sauf miniatures/Nicolle → grille soft),
  * sinon aspect phys × soft. Cap puits + natif (pas d’upscale). Loupe → plein puits.
  */
 function applyLightboxPhysDisplay({ forLoupe = false } = {}) {
