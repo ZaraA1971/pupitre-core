@@ -6,7 +6,9 @@
 
 - Idem miniatures : plus de cm→px pour les Nicolle
 - Cache-bust `?v=20261127-lbmini2`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `a3dd1835` · preview `01367180` · atelier `5a3ace1f`
+- Vérif Nicolle 8,9×6 cm : `is-true-size=false`
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Lbmini1 — lightbox miniatures = taille grille (2026-11-27)
 
