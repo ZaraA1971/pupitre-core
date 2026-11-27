@@ -1,17 +1,17 @@
-# Cleanup10 — Galerie Vittet (2026-11-25)
+# Cleanup10 — Galerie Vittet
 
-Nettoyage prudent après heropend1, sans changer le comportement visible.
+## Objectif
+Nettoyage prudent après retrait de la taille réelle lightbox et du portrait About.
 
-## Retiré
-- Animation `is-swap` / `captionTimer` (légendes photo déjà `display: none`)
-- Flag `heroReady` redondant avec `heroSynced`
-- Styles photo pour `.site-hero .hero-title/.hero-artist` (masqués)
-- Classe HTML `hero-index-sep` inutile
+## Fait
+- Suppression `images/galerie-claude.webp` (plus référencé)
+- Suppression clés i18n `claudeAlt` (FR/EN)
+- `--gal-ar-sum` 4.04 → 3.39 (façade + salle uniquement)
+- `physBox` / `lightboxSizeProps` : drop `wCm`/`hCm` morts
+- `sync-trees.sh` : purge `galerie-claude.webp` sur pages + site
+- Cache-bust front `?v=20261127-clean10`
 
-## Conservé
-- Hero pending → sync unique après `/api/oeuvres`
-- Fond lightbox blanc, saveflags Atelier
-- Tokens / structure CSS (tour général prévu ensuite)
-
-## Cache-bust
-- Front `?v=20261125-clean10`
+## Non touché
+- Atelier « taille réelle en cm » (saisie dimensions)
+- Soft grille lightbox (comportement conservé)
+- Historique STATUS / comptes-rendus
