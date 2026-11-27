@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbmini1 — lightbox miniatures = taille grille (2026-11-27)
+
+- Plus de cm→px « taille réelle » pour les miniatures
+- Soft + aspect comme la grille (`--phys-soft`)
+- Cache-bust `?v=20261127-lbmini1`
+- Compte Emmanuel · sync-trees · deploy
+
 ## Mode d’emploi Atelier (2026-11-26)
 
 - `galerie-vittet/MODE-EMPLOI-ATELIER.md` — guide simple pour l’utilisateur quotidien

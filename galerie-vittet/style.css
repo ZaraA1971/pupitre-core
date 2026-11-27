@@ -222,14 +222,14 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /* Phys size — lus par main.js (grille soft log ; lightbox true-size). */
+  /* Phys size — lus par main.js (grille soft log ; lightbox true-size sauf miniatures). */
   --size-ref-cm: 24;          /* plein cadre dès grand côté ≥ ref */
   --size-log-k: 0.8;          /* ↑k → petites plus proches du max */
   --size-min-scale: 0.9;      /* plancher soft (~90 %) */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */
-  --true-size-max-cm: 30;     /* lightbox : cm→px si grand côté < seuil */
+  --true-size-max-cm: 30;     /* lightbox : cm→px si petite (miniatures = grille) */
   --phys-w: 1;
   --phys-h: 1;
   --phys-soft: 1;
@@ -1533,8 +1533,9 @@ footer {
 
 .lightbox-photo img.art-detail {
   background: var(--lightbox-well);
-  width: calc(var(--phys-w, 1) * 100cqmin);
-  height: calc(var(--phys-h, 1) * 100cqmin);
+  /* Même proportion + soft que la grille (--phys-soft). */
+  width: calc(var(--phys-w, 1) * var(--phys-soft, 1) * 100cqmin);
+  height: calc(var(--phys-h, 1) * var(--phys-soft, 1) * 100cqmin);
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
