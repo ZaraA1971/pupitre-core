@@ -7,7 +7,9 @@
 - Plus de cm→px « taille réelle » pour les miniatures
 - Soft + aspect comme la grille (`--phys-soft`)
 - Cache-bust `?v=20261127-lbmini1`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `081ed95e` · preview `e49efb84` · atelier `04d3ec37`
+- Vérif : miniature lightbox `is-true-size=false`, soft 0.9
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Mode d’emploi Atelier (2026-11-26)
 
