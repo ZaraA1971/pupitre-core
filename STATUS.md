@@ -2,6 +2,23 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbmini2 — lightbox Nicolle = taille grille (2026-11-27)
+
+- Idem miniatures : plus de cm→px pour les Nicolle
+- Cache-bust `?v=20261127-lbmini2`
+- Compte Emmanuel · sync-trees · deploy main `a3dd1835` · preview `01367180` · atelier `5a3ace1f`
+- Vérif Nicolle 8,9×6 cm : `is-true-size=false`
+- Prod https://galerie-vittet-preview.pages.dev/
+
+## Lbmini1 — lightbox miniatures = taille grille (2026-11-27)
+
+- Plus de cm→px « taille réelle » pour les miniatures
+- Soft + aspect comme la grille (`--phys-soft`)
+- Cache-bust `?v=20261127-lbmini1`
+- Compte Emmanuel · sync-trees · deploy main `081ed95e` · preview `e49efb84` · atelier `04d3ec37`
+- Vérif : miniature lightbox `is-true-size=false`, soft 0.9
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Mode d’emploi Atelier (2026-11-26)
 
 - `galerie-vittet/MODE-EMPLOI-ATELIER.md` — guide simple pour l’utilisateur quotidien
