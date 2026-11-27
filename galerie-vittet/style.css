@@ -2287,7 +2287,14 @@ footer {
     grid-template-rows: minmax(0, 1fr);
     height: 100%;
   }
+  /*
+   * Mobile well hugs the image (height:auto). container-type:size
+   * applies size containment, so height ignores content → 0 and the
+   * artwork vanishes (soft cqmin and overflow:hidden). Use inline-size
+   * so height can grow; size the img from cqi (width is definite).
+   */
   .lightbox-photo {
+    container-type: inline-size;
     max-height: min(72dvh, 100%);
     height: auto;
     min-height: 0;
@@ -2295,11 +2302,15 @@ footer {
   }
   .lightbox-photo.is-zoomed,
   .lightbox.is-loupe .lightbox-photo {
+    container-type: size; /* loupe needs a definite well again */
     max-height: none;
     height: 100%;
     min-height: 0;
   }
   .lightbox-photo img.art-detail {
+    width: calc(var(--phys-w, 1) * var(--phys-soft, 1) * 100cqi);
+    height: calc(var(--phys-h, 1) * var(--phys-soft, 1) * 100cqi);
+    max-width: 100%;
     max-height: min(72dvh, calc(100dvh - 168px));
   }
   .lightbox-photo.is-true-size img.art-detail {
