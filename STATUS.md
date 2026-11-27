@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbsoftall1 — lightbox = soft grille pour toutes (2026-11-27)
+
+- Plus de cm→px « taille réelle » en lightbox
+- Toutes les œuvres : même soft / aspect que la grille
+- Cache-bust `?v=20261127-lbsoftall1`
+- Compte Emmanuel · sync-trees · deploy main `081bb9e8` · preview `4f073b84` · atelier `ad085f66`
+- Vérif : petite peinture 16×19 `is-true-size=false`, soft ~0.93 ; mobile image visible
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Lbsoft1 — lightbox mobile image visible (2026-11-27)
 
 - Après lbmini (soft grille), le puits mobile `height:auto` + `container-type:size` faisait 0 px → image invisible
