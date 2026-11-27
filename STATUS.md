@@ -7,7 +7,9 @@
 - Hero stage = 100 % viewport (plus de boîte 16:9 centrée)
 - object-fit: cover toujours (carousel inclus)
 - Cache-bust `?v=20261127-herocover1`
-- Compte Emmanuel · sync-trees · deploy
+- Compte Emmanuel · sync-trees · deploy main `df44448e` · preview `bcd9ac3a` · atelier `a97f1649`
+- Vérif ultrawide 2400×900 : stage = fenêtre, object-fit cover
+- Prod https://galerie-vittet-preview.pages.dev/
 
 ## Lbmini2 — lightbox Nicolle = taille grille (2026-11-27)
 
