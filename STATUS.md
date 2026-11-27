@@ -2,6 +2,13 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Herocover1 — carousel plein écran sans bandes (2026-11-27)
+
+- Hero stage = 100 % viewport (plus de boîte 16:9 centrée)
+- object-fit: cover toujours (carousel inclus)
+- Cache-bust `?v=20261127-herocover1`
+- Compte Emmanuel · sync-trees · deploy
+
 ## Lbmini2 — lightbox Nicolle = taille grille (2026-11-27)
 
 - Idem miniatures : plus de cm→px pour les Nicolle
