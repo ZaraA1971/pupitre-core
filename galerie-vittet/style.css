@@ -222,19 +222,16 @@
     brightness(var(--img-hero-brightness))
     saturate(var(--img-saturate));
 
-  /* Phys size — lus par main.js (grille soft log ; lightbox true-size sauf mini/Nicolle). */
+  /* Phys size — lus par main.js (grille + lightbox : soft log / aspect). */
   --size-ref-cm: 24;          /* plein cadre dès grand côté ≥ ref */
   --size-log-k: 0.8;          /* ↑k → petites plus proches du max */
   --size-min-scale: 0.9;      /* plancher soft (~90 %) */
   --loupe-small-edge-cm: 15;  /* seuil loupe */
   --loupe-small-max: 1.2;     /* plafond < seuil */
   --loupe-max: 1.8;           /* plafond ≥ seuil */
-  --true-size-max-cm: 30;     /* lightbox : cm→px si petite (mini/Nicolle = grille) */
   --phys-w: 1;
   --phys-h: 1;
   --phys-soft: 1;
-  --true-w-px: 0px;
-  --true-h-px: 0px;
 }
 
 /* —— C. Base + shared surfaces / type —— */
@@ -1549,15 +1546,7 @@ footer {
   -webkit-user-drag: none;
 }
 
-/* Petites : 1 cm Atelier ≈ 1 cm écran (px mesurés) ; plafonné au puits. */
-.lightbox-photo.is-true-size img.art-detail {
-  width: var(--true-w-px);
-  height: var(--true-h-px);
-  max-width: 100%;
-  max-height: 100%;
-}
-
-/* Loupe : plein puits (phys / true-size ignorés) ; max* inline via applyNativeSizeCap. */
+/* Loupe : plein puits (soft ignoré) ; max* inline via applyNativeSizeCap. */
 .lightbox.is-loupe .lightbox-photo img.art-detail,
 .lightbox-photo.is-zoomed img.art-detail,
 .lightbox-photo.is-loading-zoom img.art-detail {
@@ -2312,9 +2301,6 @@ footer {
     height: calc(var(--phys-h, 1) * var(--phys-soft, 1) * 100cqi);
     max-width: 100%;
     max-height: min(72dvh, calc(100dvh - 168px));
-  }
-  .lightbox-photo.is-true-size img.art-detail {
-    max-height: min(72dvh, calc(100dvh - 168px), var(--true-h-px));
   }
   .lightbox.is-loupe .lightbox-photo img.art-detail {
     max-height: 100%;

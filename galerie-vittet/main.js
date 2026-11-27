@@ -94,8 +94,6 @@ let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
 /** Phys props of the open lightbox work (resting view). */
 let lightboxSizeProps = { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
-/** Miniatures / Nicolle : même logique de taille que la grille (pas de cm→px « taille réelle »). */
-let lightboxPreferGridSize = false;
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -167,7 +165,7 @@ function displayDimensions(value) {
 
 /* Phys size — knobs in style.css :root.
  * Guides: FR H×W (« avec cadre » wins); grille = aspect × soft log
- * (plein cadre si edge ≥ ref); lightbox petites = cm→px sauf miniatures/Nicolle (grille). */
+ * (plein cadre si edge ≥ ref). Lightbox = même soft / aspect que la grille. */
 const SIZE_CSS_FALLBACKS = {
   "--size-ref-cm": 24,
   "--size-log-k": 0.8,
@@ -175,7 +173,6 @@ const SIZE_CSS_FALLBACKS = {
   "--loupe-max": 1.8,
   "--loupe-small-max": 1.2,
   "--loupe-small-edge-cm": 15,
-  "--true-size-max-cm": 30,
 };
 
 function cssNum(name, fallback = SIZE_CSS_FALLBACKS[name]) {
@@ -289,52 +286,6 @@ function loupePhysCap() {
   return edge < (threshold > 0 ? threshold : 15) ? lo : hi;
 }
 
-/** CSS px for 1 cm (browser reference pixel ≈ 96 dpi). */
-function measureCssPxPerCm() {
-  if (typeof document === "undefined" || !document.body) return 96 / 2.54;
-  const probe = document.createElement("div");
-  probe.setAttribute("aria-hidden", "true");
-  probe.style.cssText =
-    "position:absolute;left:-9999px;top:0;width:1cm;height:1cm;padding:0;border:0;margin:0;visibility:hidden;pointer-events:none;";
-  document.body.appendChild(probe);
-  const px = probe.offsetWidth;
-  probe.remove();
-  return px > 0 ? px : 96 / 2.54;
-}
-
-function trueSizeMaxCm() {
-  const n = cssNum("--true-size-max-cm");
-  if (n > 0) return n;
-  const loupe = cssNum("--loupe-small-edge-cm");
-  return loupe > 0 ? loupe : SIZE_CSS_FALLBACKS["--true-size-max-cm"];
-}
-
-function workPrefersGridLightbox(data) {
-  if (!data) return false;
-  const section = String(data.section || "").toLowerCase();
-  if (section === "miniature" || section === "nicolle") return true;
-  if (isNicolleArtist({ artist: data.artist || "" })) return true;
-  const cats = String(data.categories || "")
-    .toLowerCase()
-    .split(/[\s,]+/)
-    .filter(Boolean);
-  if (cats.includes("miniature")) return true;
-  const text = `${data.note || ""} ${data.support || ""} ${data.title || ""}`.toLowerCase();
-  return text.includes("miniature");
-}
-
-function wantsLightboxTrueSize(edgeCm) {
-  if (lightboxPreferGridSize) return false;
-  return edgeCm > 0 && edgeCm < trueSizeMaxCm();
-}
-
-function clearTrueSizeCss(el) {
-  if (!el) return;
-  el.classList.remove("is-true-size");
-  el.style.removeProperty("--true-w-px");
-  el.style.removeProperty("--true-h-px");
-}
-
 function setPhysCss(el, { physW = 1, physH = 1, soft = 1 } = {}) {
   if (!el) return;
   el.style.setProperty("--phys-w", String(physW));
@@ -343,44 +294,18 @@ function setPhysCss(el, { physW = 1, physH = 1, soft = 1 } = {}) {
 }
 
 /**
- * Lightbox repos : true cm→px si petite (sauf miniatures/Nicolle → grille soft),
- * sinon aspect phys × soft. Cap puits + natif (pas d’upscale). Loupe → plein puits.
+ * Lightbox repos : même soft / aspect que la grille (pas de cm→px « taille réelle »).
+ * Cap puits + natif (pas d’upscale). Loupe → plein puits.
  */
 function applyLightboxPhysDisplay({ forLoupe = false } = {}) {
   if (!dialogPhoto) return;
   const inLoupe = forLoupe || lightboxZoomed || lightboxZoomLoading;
   if (inLoupe) {
-    clearTrueSizeCss(dialogPhoto);
     setPhysCss(dialogPhoto, { physW: 1, physH: 1, soft: 1 });
     return;
   }
 
-  const { edgeCm, wCm, hCm, physW, physH, soft } = lightboxSizeProps || {};
-  if (wantsLightboxTrueSize(edgeCm) && wCm > 0 && hCm > 0) {
-    const pxPerCm = measureCssPxPerCm();
-    let wPx = wCm * pxPerCm;
-    let hPx = hCm * pxPerCm;
-    const well = dialogPhoto.getBoundingClientRect();
-    if (well.width > 0 && well.height > 0) {
-      const fit = Math.min(1, well.width / wPx, well.height / hPx);
-      wPx *= fit;
-      hPx *= fit;
-    }
-    const nw = dialogImage?.naturalWidth || 0;
-    const nh = dialogImage?.naturalHeight || 0;
-    if (nw > 0 && nh > 0) {
-      const native = Math.min(1, nw / wPx, nh / hPx);
-      wPx *= native;
-      hPx *= native;
-    }
-    dialogPhoto.classList.add("is-true-size");
-    dialogPhoto.style.setProperty("--true-w-px", `${Math.round(wPx)}px`);
-    dialogPhoto.style.setProperty("--true-h-px", `${Math.round(hPx)}px`);
-    setPhysCss(dialogPhoto, { physW: 1, physH: 1, soft: 1 });
-    return;
-  }
-
-  clearTrueSizeCss(dialogPhoto);
+  const { physW, physH, soft } = lightboxSizeProps || {};
   setPhysCss(dialogPhoto, {
     physW: physW > 0 ? physW : 1,
     physH: physH > 0 ? physH : 1,
@@ -1651,7 +1576,7 @@ function applyZoomTransform() {
     : "";
 }
 
-/** Plafond natif (jamais d’upscale). Repos : phys / true-size ; loupe : plein puits. */
+/** Plafond natif (jamais d’upscale). Repos : soft grille ; loupe : plein puits. */
 function applyNativeSizeCap({ forLoupe = false } = {}) {
   const nw = dialogImage.naturalWidth;
   const nh = dialogImage.naturalHeight;
@@ -1699,10 +1624,9 @@ function resetZoomChrome() {
   zoomDrag = null;
   zoomMoved = false;
   dialog.classList.remove("is-loupe");
-  dialogPhoto.classList.remove("is-zoomed", "is-loading-zoom", "is-panning", "is-true-size");
+  dialogPhoto.classList.remove("is-zoomed", "is-loading-zoom", "is-panning");
   dialogImage.classList.remove("is-zoomed");
   dialogImage.style.transform = "";
-  clearTrueSizeCss(dialogPhoto);
   clearNativeSizeCap();
   applyLoupeZoomMax(1);
   if (dialogLoupe) {
@@ -1887,7 +1811,7 @@ function fadeDetailIn() {
     if (!lightboxZoomed) applyNativeSizeCap();
     requestAnimationFrame(() => {
       if (token !== detailToken) return;
-      // Re-measure well after layout — true-size needs real photo box.
+      // Re-measure well after layout (soft sizing).
       if (!lightboxZoomed && !lightboxZoomLoading) applyLightboxPhysDisplay();
       if (prefersReduce()) {
         dialogImage.classList.remove("is-entering");
@@ -1918,8 +1842,6 @@ function fillDialogFromDataset(data, { imageAlt = "", positionLabel = "", navEna
   lightboxOriginalSrc =
     rawOriginal && rawOriginal !== lightboxDisplaySrc ? rawOriginal : "";
   lightboxSizeProps = physicalSizeProps(data.dimensions || "");
-  lightboxPreferGridSize = workPrefersGridLightbox(data);
-  clearTrueSizeCss(dialogPhoto);
   clearNativeSizeCap();
   applyLightboxPhysDisplay();
   dialogImage.src = lightboxDisplaySrc;
@@ -2093,7 +2015,6 @@ dialog.addEventListener("close", () => {
   clearLoupeChromeIdle();
   loupeChromeNodes().forEach((node) => node.classList.remove("is-idle-hidden"));
   syncLoupeAvailability();
-  clearTrueSizeCss(dialogPhoto);
   lightboxSource = "grid";
   if (opener) opener.focus();
 });
