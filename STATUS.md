@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Lbsoft1 — lightbox mobile image visible (2026-11-27)
+
+- Après lbmini (soft grille), le puits mobile `height:auto` + `container-type:size` faisait 0 px → image invisible
+- Mobile : `inline-size` + taille soft via `cqi` ; loupe garde `size`
+- Cache-bust `?v=20261127-lbsoft1`
+- Compte Emmanuel · sync-trees · deploy main / preview / atelier-kv-preview
+- Vérif mobile Nicolle 8,9×6 cm : photoH > 0, image visible
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Herocover1 — carousel plein écran sans bandes (2026-11-27)
 
 - Hero stage = 100 % viewport (plus de boîte 16:9 centrée)
