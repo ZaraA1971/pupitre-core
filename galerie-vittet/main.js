@@ -93,7 +93,7 @@ let lightboxZoomed = false;
 let lightboxZoomLoading = false;
 let lightboxZoomToken = 0;
 /** Phys props of the open lightbox work (resting view). */
-let lightboxSizeProps = { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
+let lightboxSizeProps = { physW: 1, physH: 1, soft: 1, edgeCm: 0 };
 /** Taille affichée lightbox normale (avant loupe) — base 100 %. */
 let lightboxDefaultFit = { w: 0, h: 0 };
 let zoomPan = { x: 0, y: 0 };
@@ -265,14 +265,12 @@ function physBox(dims, soft) {
     physH: roundPhys(dims.h / edge),
     soft: roundPhys(soft),
     edgeCm: roundPhys(edge),
-    wCm: roundPhys(dims.w),
-    hCm: roundPhys(dims.h),
   };
 }
 
 function physicalSizeProps(raw) {
   const dims = parsePhysCm(raw);
-  if (!dims) return { physW: 1, physH: 1, soft: 1, edgeCm: 0, wCm: 0, hCm: 0 };
+  if (!dims) return { physW: 1, physH: 1, soft: 1, edgeCm: 0 };
   return physBox(dims, softSizeScale(Math.max(dims.w, dims.h)));
 }
 

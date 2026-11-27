@@ -1304,13 +1304,14 @@ html.collection-page-deep .art-grid {
   font-size: var(--type-meta);
 }
 
-/* #galerie — texte seul (portrait retiré pour essai) ; façade/salle écartées */
+/* #galerie — texte + façade/salle (portrait retiré) */
 /* —— G. About —— */
 .about {
   --gal-pad-block: 64px;
   /* Écart façade / salle — un cran au-dessus de l’ancien ~28–52. */
   --gal-photo-gap: clamp(64px, 8vw, 112px);
-  --gal-ar-sum: 4.04;
+  /* façade (~1.45) + salle (~1.93) — portrait Claude retiré */
+  --gal-ar-sum: 3.39;
   --gal-photo-h: min(
     405px,
     calc(

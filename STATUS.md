@@ -2,6 +2,15 @@
 
 **Statut : bloqué — attente API token du compte Vittet**
 
+## Cleanup10 — restes morts post soft / about (2026-11-27)
+
+- Drop `galerie-claude.webp` + i18n `claudeAlt`
+- `--gal-ar-sum` 3.39 (façade+salle)
+- Drop `wCm`/`hCm` lightbox morts ; sync-trees purge Claude
+- Cache-bust `?v=20261127-clean10`
+- Compte Emmanuel · sync-trees · deploy main `2978eba4` · preview `ef154260` · atelier `c6a988de`
+- Prod https://galerie-vittet-preview.pages.dev/
+
 ## Lbsoftall1 — lightbox = soft grille pour toutes (2026-11-27)
 
 - Plus de cm→px « taille réelle » en lightbox
