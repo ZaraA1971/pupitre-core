@@ -1096,23 +1096,11 @@ function bindSiteSearch() {
 
 /**
  * Per-slide hero fit.
- *
- * Rules:
- * 1. If 100% of the photo (contain) would leave black bands on the SIDES
- *    (image narrower than the stage) → cover: zoom to fill width.
- * 2. Else if aspects are close → cover (tiny crop beats letterbox).
- * 3. Else contain (top/bottom letterbox on --stage when the photo is wider).
- * 4. Mobile portrait stage: landscape / near-square → cover (amplify).
- * Cover crops are anchored to the bottom edge (not vertically centered).
+ * Always cover the full viewport stage — no letterbox bands on --stage.
+ * Cover is anchored to the bottom edge (painting feet stay in frame).
  */
-const HERO_FIT_LOG_THRESHOLD = 0.2;
-const HERO_MOBILE_MAX_WIDTH = 700;
-/** imgAR ≥ this → treat as landscape/square on phone (prefer cover). */
-const HERO_MOBILE_COVER_MIN_AR = 0.88;
-
-function applyHeroFit(img, fit) {
+function applyHeroFit(img, fit = "cover") {
   img.style.objectFit = fit;
-  /* Zoomed slides: keep the bottom of the painting in frame. */
   img.style.objectPosition = fit === "cover" ? "center bottom" : "center center";
 }
 
@@ -1120,47 +1108,9 @@ function fitHeroImage(img) {
   if (!img) return;
 
   const apply = () => {
-    const nw = img.naturalWidth;
-    const nh = img.naturalHeight;
-    const stage = heroViewport || heroStage;
-    const sw = stage ? stage.clientWidth : 0;
-    const sh = stage ? stage.clientHeight : 0;
-    const imgAR = nw > 0 && nh > 0 ? nw / nh : 0;
-    const stageAR = sw > 0 && sh > 0 ? sw / sh : 0;
-
-    // Crop atelier : contain 1:1 si le bitmap ≈ stage (cadre 16:9).
-    // Sinon cover (ex. vieux crops 16:10, ou mobile portrait) — pas de bandes latérales.
-    if (img.dataset.carouselCrop === "1") {
-      img.style.setProperty("width", "100%");
-      img.style.setProperty("height", "100%");
-      const portraitPhone = sw > 0 && sh > 0 && sw <= HERO_MOBILE_MAX_WIDTH && sh > sw;
-      if (portraitPhone || (imgAR > 0 && stageAR > 0 && imgAR < stageAR)) {
-        applyHeroFit(img, "cover");
-      } else {
-        img.style.setProperty("object-fit", "contain");
-        img.style.setProperty("object-position", "center center");
-      }
-      return;
-    }
-    if (!(nw > 0 && nh > 0 && sw > 0 && sh > 0)) {
-      applyHeroFit(img, "cover");
-      return;
-    }
-    /* Contain would pillarbox (side bands) → zoom/cover instead. */
-    if (imgAR < stageAR) {
-      applyHeroFit(img, "cover");
-      return;
-    }
-    const portraitPhone = sw <= HERO_MOBILE_MAX_WIDTH && sh > sw;
-    if (portraitPhone && imgAR >= HERO_MOBILE_COVER_MIN_AR) {
-      applyHeroFit(img, "cover");
-      return;
-    }
-    const delta = Math.abs(Math.log(imgAR / stageAR));
-    applyHeroFit(
-      img,
-      delta < HERO_FIT_LOG_THRESHOLD ? "cover" : "contain"
-    );
+    img.style.setProperty("width", "100%");
+    img.style.setProperty("height", "100%");
+    applyHeroFit(img, "cover");
   };
 
   if (img.complete && img.naturalWidth > 0) {

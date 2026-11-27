@@ -885,13 +885,14 @@ footer a {
 .hero-stage {
   position: relative;
   min-width: 0;
-  /* Boîte 16:9 verrouillée = cadre crop atelier ; centrée si l’écran est plus large. */
-  width: min(100%, calc(100dvh * 16 / 9));
-  aspect-ratio: var(--hero-ar);
+  /* Plein viewport — pas de bandes latérales quand la fenêtre s’élargit. */
+  width: 100%;
+  aspect-ratio: auto;
   height: auto;
-  max-height: 100dvh;
-  min-height: 0;
-  margin-inline: auto;
+  max-height: none;
+  min-height: 100dvh;
+  min-height: 100svh;
+  margin-inline: 0;
   isolation: isolate;
   background: var(--stage);
 }
@@ -964,9 +965,8 @@ footer a {
 }
 
 /*
- * Dérivé carousel (cadre atelier) : rupture totale avec la règle cover ci-dessus.
- * width/height 100% + object-fit:cover se chevauchaient et re-zoomaient le bitmap.
- * Ici : boîte pleine scène + contain uniquement — 100 % du crop, zéro 2ᵉ coupe.
+ * Dérivé carousel : cover plein cadre (même règle que les autres slides).
+ * Priorité = remplir la fenêtre ; léger recadrage acceptable vs bandes --stage.
  */
 .hero-slide[data-carousel-crop="1"] img,
 .hero-slide[data-carousel-crop="1"] .art-hero {
@@ -974,8 +974,8 @@ footer a {
   height: 100%;
   max-width: none;
   max-height: none;
-  object-fit: contain;
-  object-position: center center;
+  object-fit: cover;
+  object-position: center bottom;
 }
 
 /* Caption DOM kept for #hero-live / a11y; not painted on the photo (herocaption0). */
